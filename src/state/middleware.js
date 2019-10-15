@@ -1,9 +1,9 @@
 // @flow strict
 
-import { save, clear } from './storage';
+import {save, clear} from './storage';
 
-import type { Middleware } from 'redux';
-import type { StoreState, Action, Dispatch } from '../types';
+import type {Middleware} from 'redux';
+import type {StoreState, Action, Dispatch} from '../types';
 
 export const logger: Middleware<
   StoreState,

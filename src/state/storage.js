@@ -2,7 +2,7 @@
 
 // import fs from 'fs';
 
-import type {StoreState} from '../types';
+import type { StoreState } from '../types';
 
 export const initialState: StoreState = {
   loaded: false,
@@ -11,12 +11,13 @@ export const initialState: StoreState = {
   volume: 100,
   sort: {
     column: 'TITLE',
-    direction: false,
+    direction: false
   },
   shuffle: false,
   nextSong: null,
   dlQueue: [],
   dlProgress: 0,
+  currScreen: null
 };
 
 export function save(state: StoreState) {

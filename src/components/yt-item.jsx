@@ -1,25 +1,30 @@
 // @flow strict
 
 import React from 'react';
-import {StyleSheet, View, Text, Image} from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
-const colors = {
-  screen: '#333',
-  text: '#ddd',
-};
+import colors from '../colors';
+import { formatDuration, readableViews } from '../util';
 
-const YtItem = () => {
+import type { VideoSong } from '../types';
+
+type PassedProps = {|
+  +onClick?: () => void,
+  +video: VideoSong
+|};
+
+const YtItem = (props: PassedProps) => {
+  const { video } = props;
+
   return (
     <View style={styles.root}>
-      <Image
-        style={styles.thumbnail}
-        source={{uri: 'https://i.ytimg.com/vi/kKHlcgZ5xsY/default.jpg'}}
-      />
+      <Image style={styles.thumbnail} source={{ uri: video.thumbnail.url }} />
       <View style={styles.text}>
-        <Text style={styles.title}>
-          【MV】Royal Scandal 「チェルシー」/ luz-Chelsea
+        <Text style={styles.title}>{video.title}</Text>
+        <Text style={styles.details}>
+          {video.artist} • {formatDuration(video.duration)} •{' '}
+          {readableViews(video.views)} views
         </Text>
-        <Text style={styles.details}>luz channel • 5:16 • 615K views</Text>
       </View>
     </View>
   );
@@ -28,26 +33,27 @@ const YtItem = () => {
 const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   thumbnail: {
     width: 120,
     height: 90,
-    margin: 5,
+    margin: 5
   },
   text: {
     height: 100,
     justifyContent: 'center',
+    flex: 1
   },
   title: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.text
   },
   details: {
-    fontSize: 15,
-    color: colors.text,
-  },
+    fontSize: 12,
+    color: colors.text
+  }
 });
 
 export default YtItem;

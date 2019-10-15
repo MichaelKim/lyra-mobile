@@ -1,76 +1,39 @@
-/**
- * @format
- * @flow
- */
+// @flow strict
 
 import React from 'react';
-import {SafeAreaView, StatusBar, Button, View, Text} from 'react-native';
-import {Provider} from 'react-redux';
-import {useScreens} from 'react-native-screens';
-// import {createAppContainer} from 'react-navigation';
-// import {createStackNavigator} from 'react-navigation-stack';
+import { Provider } from 'react-redux';
+import { StatusBar } from 'react-native';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+import { useScreens } from 'react-native-screens';
 
-import Root from './components/root';
+import YtPlaying from './components/screens/yt-playing';
+import YtSearch from './components/screens/yt-search';
+
 import store from './state/store';
 
 useScreens();
+
+const AppNavigator = createStackNavigator(
+  {
+    YtSearch: YtSearch,
+    YtPlaying: YtPlaying
+  },
+  {
+    initialRouteName: 'YtSearch',
+    headerMode: 'none'
+  }
+);
+
+const Root = createAppContainer(AppNavigator);
 
 const App = () => {
   return (
     <Provider store={store}>
       <StatusBar barStyle="default" />
-      <SafeAreaView>
-        <Root />
-      </SafeAreaView>
+      <Root />
     </Provider>
   );
 };
 
 export default App;
-// class HomeScreen extends React.Component {
-//   render() {
-//     return (
-//       <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-//         <Text>Home Screen</Text>
-//         <Button
-//           title="Go to Details"
-//           onPress={() => this.props.navigation.navigate('Details')}
-//         />
-//       </View>
-//     );
-//   }
-// }
-
-// class DetailsScreen extends React.Component {
-//   render() {
-//     return (
-//       <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-//         <Text>Details Screen</Text>
-//         <Button
-//           title="Go to Details... again"
-//           onPress={() => this.props.navigation.push('Details')}
-//         />
-//         <Button
-//           title="Go to Home"
-//           onPress={() => this.props.navigation.navigate('Home')}
-//         />
-//         <Button
-//           title="Go back"
-//           onPress={() => this.props.navigation.goBack()}
-//         />
-//       </View>
-//     );
-//   }
-// }
-
-// const AppNavigator = createStackNavigator(
-//   {
-//     Home: HomeScreen,
-//     Details: DetailsScreen,
-//   },
-//   {
-//     initialRouteName: 'Home',
-//   },
-// );
-
-// export default createAppContainer(AppNavigator);
