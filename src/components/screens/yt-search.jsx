@@ -11,12 +11,12 @@ import {
 } from 'react-native';
 
 import Loading from '../loading';
-import PlaybackBar from '../playback-bar';
 import Search from '../search';
 import YtItem from '../yt-item';
 
-import { ytSearch } from '../../yt-util';
 import colors from '../../colors';
+import { useDispatch } from '../../hooks';
+import { ytSearch } from '../../yt-util';
 
 import type { VideoSong } from '../../types';
 
@@ -30,6 +30,7 @@ type Props = {|
 const YtSearch = (props: Props) => {
   const [searching, setSearching] = React.useState(false);
   const [videos, setVideos] = React.useState<Array<VideoSong>>([]);
+  const dispatch = useDispatch();
 
   const onSearch = (value: string) => {
     setSearching(true);
@@ -41,9 +42,7 @@ const YtSearch = (props: Props) => {
   };
 
   const onSelect = (song: VideoSong) => {
-    props.navigation.push('YtPlaying', {
-      song
-    });
+    dispatch({ type: 'SELECT_SONG', song });
   };
 
   return (
@@ -67,7 +66,6 @@ const YtSearch = (props: Props) => {
             ))
           )}
         </ScrollView>
-        <PlaybackBar />
       </View>
     </SafeAreaView>
   );

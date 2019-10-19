@@ -8,6 +8,7 @@ module.exports = {
   ],
   rules: {
     'comma-dangle': 'off',
-    curly: 'off'
+    curly: 'off',
+    'flowtype/generic-spacing': 0
   }
 };

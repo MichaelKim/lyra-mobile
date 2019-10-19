@@ -4,6 +4,7 @@ import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import Video from 'react-native-video';
 
+import colors from '../colors';
 import { getStreamURL } from '../yt-util';
 import { useSelector } from '../hooks';
 
@@ -12,10 +13,13 @@ const Playback = () => {
   const [src, setSrc] = React.useState('');
 
   React.useEffect(() => {
-    console.log(currSong);
     if (currSong == null) return;
 
-    getStreamURL(currSong.id).then(url => setSrc(url));
+    if (currSong.source === 'LOCAL') {
+      setSrc(currSong.filepath);
+    } else {
+      getStreamURL(currSong.id).then(url => setSrc(url));
+    }
   }, [currSong]);
 
   if (currSong == null) {
@@ -24,7 +28,7 @@ const Playback = () => {
 
   return (
     <View style={styles.root}>
-      {src !== '' && <Video source={{ uri: src }} />}
+      {src !== '' && <Video source={{ uri: src }} playInBackground />}
       <View style={styles.song}>
         <Text style={styles.songTitle}>{currSong.title}</Text>
         <Text style={styles.songArtist}>{currSong.artist}</Text>
@@ -47,11 +51,11 @@ const styles = StyleSheet.create({
   },
   songTitle: {
     fontSize: 15,
-    color: '#ddd'
+    color: colors.text
   },
   songArtist: {
     fontSize: 12,
-    color: '#ddd'
+    color: colors.text
   },
   playPause: {
     width: 30,

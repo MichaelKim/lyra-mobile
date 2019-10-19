@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 
 import Loading from '../loading';
-import PlaybackBar from '../playback-bar';
 import YtItem from '../yt-item';
 
 import colors from '../../colors';
@@ -72,7 +71,6 @@ const YtPlaying = (props: Props) => {
             ))
           )}
         </ScrollView>
-        <PlaybackBar />
       </View>
     </SafeAreaView>
   );

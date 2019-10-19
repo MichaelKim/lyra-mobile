@@ -1,9 +1,10 @@
 // @flow strict
 
-import {save, clear} from './storage';
+import { getSongs } from '../util';
+import { save, clear } from './storage';
 
-import type {Middleware} from 'redux';
-import type {StoreState, Action, Dispatch} from '../types';
+import type { Middleware } from 'redux';
+import type { StoreState, Action, Dispatch } from '../types';
 
 export const logger: Middleware<
   StoreState,
@@ -12,6 +13,20 @@ export const logger: Middleware<
 > = () => next => action => {
   console.log(action);
   return next(action);
+};
+
+export const loadSongs: Middleware<
+  StoreState,
+  Action,
+  Dispatch
+> = store => next => action => {
+  const result = next(action);
+
+  if (action.type === 'LOAD_STORAGE') {
+    getSongs().then(songs => store.dispatch({ type: 'ADD_SONGS', songs }));
+  }
+
+  return result;
 };
 
 export const saveToStorage: Middleware<

@@ -39,6 +39,7 @@ esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
 
 module.file_ext=.js
+module.file_ext=.jsx
 module.file_ext=.json
 module.file_ext=.ios.js
 
@@ -88,11 +89,11 @@ deprecated-utility=error
 
 [strict]
 deprecated-type
-nonstrict-import
+; nonstrict-import
 sketchy-null
 unclear-type
 unsafe-getters-setters
-untyped-import
+; untyped-import
 untyped-type-import
 
 [version]

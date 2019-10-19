@@ -1,8 +1,11 @@
 // @flow strict
 
-// import { remote } from 'neutrinojs';
+import MusicFiles from 'react-native-get-music-files';
+import Permissions from 'react-native-permissions';
 
-import type { Song, SongID, SortType } from './types';
+import { createID, getFileName } from './node';
+
+import type { LocalSong, Song, SongID, SortType } from './types';
 
 // export function fileExists(path: string) {
 //   return new Promise<boolean>(resolve => {
@@ -12,35 +15,34 @@ import type { Song, SongID, SortType } from './types';
 //   });
 // }
 
-// export function getSongs(dir: string): Promise<LocalSong[]> {
-//   return new Promise<LocalSong[]>(resolve => {
-//     fs.readdir(dir, (err, files) => {
-//       if (err) {
-//         resolve([]);
-//         return;
-//       }
+export async function getSongs(): Promise<LocalSong[]> {
+  const result = await Permissions.request(
+    Permissions.PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+  );
 
-//       const names = files.filter(file => path.extname(file) === '.mp3');
+  if (result !== Permissions.RESULTS.GRANTED) {
+    return [];
+  }
 
-//       const promises: Promise<LocalSong>[] = names.map(name =>
-//         getMetadata(dir, name).then(metadata => ({
-//           id: createHash('sha256')
-//             .update(path.join(dir, name))
-//             .digest('hex'),
-//           title: metadata.title,
-//           artist: metadata.artist,
-//           duration: metadata.duration,
-//           source: 'LOCAL',
-//           filepath: path.join(dir, name),
-//           playlists: [],
-//           date: Date.now()
-//         }))
-//       );
+  const tracks = await MusicFiles.getAll({
+    title: true,
+    artist: true,
+    duration: true
+  });
 
-//       Promise.all(promises).then(songs => resolve(songs));
-//     });
-//   });
-// }
+  const songs = tracks.map(track => ({
+    id: createID(track.path),
+    title: track.title || getFileName(track.path),
+    artist: track.author || '',
+    duration: track.duration / 1000,
+    source: 'LOCAL',
+    filepath: track.path,
+    playlists: [],
+    date: Date.now()
+  }));
+
+  return songs;
+}
 
 // Flow doesn't like Object.values(), so this is an alternative with Object.keys()
 export function values<K, V, T: { [key: K]: V }>(obj: T): V[] {

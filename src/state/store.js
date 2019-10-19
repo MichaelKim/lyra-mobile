@@ -1,22 +1,22 @@
 // @flow strict
 
 // import fs from 'fs';
-import {createStore, applyMiddleware} from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 
 import reducer from './reducer';
-import {logger, saveToStorage} from './middleware';
-import {initialState} from './storage';
+import { logger, loadSongs, saveToStorage } from './middleware';
+import { initialState } from './storage';
 
-import type {Store} from '../types';
+import type { Store } from '../types';
 
 const store: Store = createStore(
   reducer,
   initialState,
-  applyMiddleware(logger, saveToStorage),
+  applyMiddleware(logger, loadSongs, saveToStorage)
 );
 store.dispatch({
   type: 'LOAD_STORAGE',
-  state: initialState,
+  state: initialState
 });
 
 // fs.readFile('state.json', 'utf-8', (err, data) => {
