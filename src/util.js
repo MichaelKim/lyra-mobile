@@ -5,7 +5,7 @@ import Permissions from 'react-native-permissions';
 
 import { createID, getFileName } from './node';
 
-import type { LocalSong, Song, SongID, SortType } from './types';
+import type { Song, SongID, SortType } from './types';
 
 // export function fileExists(path: string) {
 //   return new Promise<boolean>(resolve => {
@@ -15,7 +15,7 @@ import type { LocalSong, Song, SongID, SortType } from './types';
 //   });
 // }
 
-export async function getSongs(): Promise<LocalSong[]> {
+export async function getSongs(): Promise<Song[]> {
   const result = await Permissions.request(
     Permissions.PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
   );

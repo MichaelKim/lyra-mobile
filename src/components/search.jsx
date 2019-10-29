@@ -3,7 +3,7 @@
 import React from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 
-import colors from '../colors';
+import { Colors } from '../constants';
 
 type Props = {|
   +initialValue?: string,
@@ -27,7 +27,7 @@ const Search = (props: Props) => {
     <TextInput
       style={styles.textInput}
       placeholder="Search..."
-      placeholderTextColor={colors.placeholder}
+      placeholderTextColor={Colors.placeholder}
       value={value}
       onChangeText={onChange}
       onSubmitEditing={onEnter}
@@ -37,10 +37,10 @@ const Search = (props: Props) => {
 
 const styles = StyleSheet.create({
   textInput: {
-    color: colors.text,
+    color: Colors.text,
     padding: 0,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border
+    borderBottomColor: Colors.border
   }
 });
 

@@ -13,24 +13,26 @@ import {
 import Loading from '../loading';
 import YtItem from '../yt-item';
 
-import colors from '../../colors';
+import { Colors } from '../../constants';
 import { getRelatedVideos } from '../../yt-util';
 import { useDispatch } from '../../hooks';
 
 import type { VideoSong } from '../../types';
 
 type Props = {|
-  +navigation: {|
-    +navigate: (screenName: string) => void,
-    +getParam: <T>(paramName: string, defaultValue: T) => T
-  |}
+  // +navigation: {|
+  //   +navigate: (screenName: string) => void,
+  //   +getParam: <T>(paramName: string, defaultValue: T) => T
+  // |}
+  +song: VideoSong
 |};
 
 const YtPlaying = (props: Props) => {
   const [related, setRelated] = React.useState<Array<VideoSong>>([]);
   const dispatch = useDispatch();
 
-  const song = props.navigation.getParam('song');
+  // const song = props.navigation.getParam<VideoSong>('song');
+  const song = props.song;
 
   React.useEffect(() => {
     dispatch({ type: 'SELECT_SONG', song });
@@ -42,9 +44,9 @@ const YtPlaying = (props: Props) => {
   }, []);
 
   const onSelect = (newSong: VideoSong) => {
-    props.navigation.push('YtPlaying', {
-      song: newSong
-    });
+    // props.navigation.push('YtPlaying', {
+    //   song: newSong
+    // });
   };
 
   return (
@@ -79,7 +81,7 @@ const YtPlaying = (props: Props) => {
 const styles = StyleSheet.create({
   root: {
     height: '100%',
-    backgroundColor: colors.screen
+    backgroundColor: Colors.screen
   },
   scrollView: {
     paddingTop: 32,
@@ -90,16 +92,16 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    color: colors.text
+    color: Colors.text
   },
   subtitle: {
     fontSize: 20,
-    color: colors.text
+    color: Colors.text
   },
   divider: {
     height: 1,
     borderTopWidth: 1,
-    borderTopColor: colors.border
+    borderTopColor: Colors.border
   }
 });
 

@@ -2,10 +2,10 @@
 
 // A collection of utility functions that require built-in Node modules
 
-import SHA256 from 'crypto-js/sha256';
+import crypto from 'crypto-js';
 
-export function createID(filepath: string) {
-  return SHA256(filepath);
+export function createID(filepath: string): string {
+  return crypto.SHA256(filepath).toString(crypto.enc.Hex);
 }
 
 export function getFileName(filepath: string) {

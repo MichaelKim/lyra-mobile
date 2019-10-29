@@ -3,12 +3,12 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import colors from '../colors';
+import { Colors } from '../constants';
 
 const Loading = () => {
   return (
     <View style={styles.loading}>
-      <ActivityIndicator size="large" color={colors.border} />
+      <ActivityIndicator size="large" color={Colors.border} />
     </View>
   );
 };

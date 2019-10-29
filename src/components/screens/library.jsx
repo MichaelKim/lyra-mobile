@@ -12,7 +12,7 @@ import {
 
 import SongItem from '../song-item';
 
-import colors from '../../colors';
+import { Colors } from '../../constants';
 import { useSelector, useDispatch } from '../../hooks';
 import { getSongList } from '../../util';
 
@@ -57,7 +57,7 @@ const Library = (props: Props) => {
 const styles = StyleSheet.create({
   root: {
     height: '100%',
-    backgroundColor: colors.screen
+    backgroundColor: Colors.screen
   },
   scrollView: {
     paddingTop: 32,
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    color: colors.text
+    color: Colors.text
   }
 });
 

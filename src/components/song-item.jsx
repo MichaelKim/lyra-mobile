@@ -3,10 +3,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import colors from '../colors';
+import { Colors } from '../constants';
 import { useSelector } from '../hooks';
 
-import type { Song } from '../../types';
+import type { Song } from '../types';
 
 type Props = {|
   +song: Song
@@ -36,11 +36,11 @@ const styles = StyleSheet.create({
   },
   songTitle: {
     fontSize: 15,
-    color: colors.text
+    color: Colors.text
   },
   songArtist: {
     fontSize: 12,
-    color: colors.text
+    color: Colors.text
   }
 });
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-import colors from '../colors';
+import { Colors } from '../constants';
 import { formatDuration, readableViews } from '../util';
 
 import type { VideoSong } from '../types';
@@ -48,11 +48,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: colors.text
+    color: Colors.text
   },
   details: {
     fontSize: 12,
-    color: colors.text
+    color: Colors.text
   }
 });
 

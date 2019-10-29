@@ -14,17 +14,17 @@ import Loading from '../loading';
 import Search from '../search';
 import YtItem from '../yt-item';
 
-import colors from '../../colors';
+import { Colors } from '../../constants';
 import { useDispatch } from '../../hooks';
 import { ytSearch } from '../../yt-util';
 
 import type { VideoSong } from '../../types';
 
 type Props = {|
-  +navigation: {|
-    +navigate: (screenName: string) => void,
-    +getParam: <T>(paramName: string, defaultValue: T) => T
-  |}
+  // +navigation: {|
+  //   +navigate: (screenName: string) => void,
+  //   +getParam: <T>(paramName: string, defaultValue: T) => T
+  // |}
 |};
 
 const YtSearch = (props: Props) => {
@@ -74,7 +74,7 @@ const YtSearch = (props: Props) => {
 const styles = StyleSheet.create({
   root: {
     height: '100%',
-    backgroundColor: colors.screen
+    backgroundColor: Colors.screen
   },
   scrollView: {
     paddingTop: 32,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    color: colors.text
+    color: Colors.text
   }
 });
 
