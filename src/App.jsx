@@ -11,7 +11,6 @@ import { useScreens } from 'react-native-screens';
 
 import Library from './components/screens/library';
 import PlaybackBar from './components/playback';
-import YtPlaying from './components/screens/yt-playing';
 import YtSearch from './components/screens/yt-search';
 
 import store from './state/store';
@@ -19,11 +18,16 @@ import { Colors } from './constants';
 
 useScreens();
 
+// createStackNavigator({
+//   Library: Library,
+//   AllSongs: AllSongs,
+
+// })
+
 const Navigator = createBottomTabNavigator(
   {
     Library: Library,
-    YtSearch: YtSearch,
-    YtPlaying: YtPlaying
+    YouTube: YtSearch
   },
   {
     initialRouteName: 'Library',

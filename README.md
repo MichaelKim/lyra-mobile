@@ -11,3 +11,13 @@ adb reverse tcp:8097 tcp:8097
 react-native run-android
 npm run devtools
 ```
+
+## TODO
+
+- open / close bottom sheet on tap
+- animation when opening / closing bottom sheet
+
+## IDEAS
+
+- reimplement bottom sheet?
+  - remove reanimated + gesture-handler dependencies

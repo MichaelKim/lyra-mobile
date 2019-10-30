@@ -10,7 +10,7 @@ import PlaybackHeader from './header';
 import { getStreamURL } from '../../yt-util';
 
 import { BAR_HEIGHT } from '../../constants';
-import { useSelector } from '../../hooks';
+import { useDispatch, useSelector } from '../../hooks';
 
 const Playback = () => {
   const currSong = useSelector(state => state.currSong);
@@ -22,6 +22,8 @@ const Playback = () => {
     playableDuration: 0,
     seekableDuration: 0
   });
+  const player = React.useRef(null);
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     if (currSong == null) {
@@ -41,11 +43,16 @@ const Playback = () => {
     return null;
   }
 
+  const onSeek = (seek: number) => {
+    player.current?.seek(seek);
+  };
+
   return (
     <View style={styles.container}>
       {src !== '' && (
         <Video
           source={{ uri: src }}
+          ref={player}
           playInBackground
           paused={paused}
           onLoad={() => {
@@ -53,10 +60,12 @@ const Playback = () => {
             setLoading(false);
           }}
           onProgress={setProgress}
+          onEnd={() => dispatch({ type: 'SKIP_NEXT' })}
         />
       )}
       <BottomSheet
         snapPoints={[BAR_HEIGHT, '100%']}
+        enabledContentGestureInteraction={false}
         renderHeader={() => (
           <PlaybackHeader
             currSong={currSong}
@@ -66,7 +75,15 @@ const Playback = () => {
             progress={progress}
           />
         )}
-        renderContent={() => <PlaybackContent currSong={currSong} />}
+        renderContent={() => (
+          <PlaybackContent
+            currSong={currSong}
+            progress={progress}
+            onSeek={onSeek}
+            paused={paused}
+            setPaused={setPaused}
+          />
+        )}
       />
     </View>
   );
