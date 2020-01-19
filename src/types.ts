@@ -1,4 +1,4 @@
-import { MiddlewareAPI, Dispatch, Store as ReduxStore } from 'redux';
+import { Dispatch, MiddlewareAPI, Store as ReduxStore } from 'redux';
 
 export type SongID = string;
 export type PlaylistID = string;
@@ -38,11 +38,6 @@ export interface Playlist {
   songs: SongID[];
 }
 
-export interface Tags {
-  title: string;
-  artist: string;
-}
-
 export interface Metadata {
   title: string;
   artist: string;
@@ -59,16 +54,23 @@ export interface SortType {
 // Redux types
 export type Store = ReduxStore<StoreState, Action>;
 
+export interface QueueType {
+  prev: SongID[];
+  curr: SongID | null;
+  next: SongID[];
+  cache: { [ID in SongID]: { song: Song; count: number } };
+}
+
 export interface StoreState {
   loaded: boolean;
-  currSong?: Song;
-  currScreen?: string | null | undefined;
+  currScreen?: string | null;
   songs: { [ID in SongID]: Song };
   playlists: { [ID in PlaylistID]: Playlist };
-  volume: number;
+  volume: { amount: number; muted: boolean };
   sort: SortType;
   shuffle: boolean;
-  nextSong: Song | null; // Only for YouTube
+  queue: QueueType;
+  history: string[]; // Search history
   dlQueue: SongID[]; // Queue of downloading videos
   dlProgress: number;
 }
@@ -80,22 +82,86 @@ export interface Middleware {
 }
 
 export type Action =
-  | { type: 'LOAD_STORAGE'; state: StoreState }
-  | { type: 'SELECT_SONG'; song: Song }
-  | { type: 'SELECT_PLAYLIST'; id: string | null }
-  | { type: 'ADD_SONGS'; songs: Song[] }
-  | { type: 'REMOVE_SONG'; id: SongID }
-  | { type: 'CREATE_PLAYLIST'; playlist: Playlist }
-  | { type: 'DELETE_PLAYLIST'; id: PlaylistID }
-  | { type: 'SET_PLAYLISTS'; sid: SongID; pids: PlaylistID[] }
-  | { type: 'CHANGE_VOLUME'; volume: number }
+  | {
+      type: 'LOAD_STORAGE';
+      state: StoreState;
+    }
+  | {
+      type: 'SELECT_SONG';
+      song: Song;
+    }
+  | {
+      type: 'SELECT_PLAYLIST';
+      id: string | null;
+    }
+  | {
+      type: 'ADD_SONGS';
+      songs: Song[];
+    }
+  | {
+      type: 'REMOVE_SONG';
+      id: SongID;
+    }
+  | {
+      type: 'CREATE_PLAYLIST';
+      playlist: Playlist;
+    }
+  | {
+      type: 'DELETE_PLAYLIST';
+      id: PlaylistID;
+    }
+  | {
+      type: 'SET_PLAYLISTS';
+      sid: SongID;
+      pids: PlaylistID[];
+    }
+  | {
+      type: 'CHANGE_VOLUME';
+      volume: number;
+    }
+  | {
+      type: 'MUTE';
+      muted: boolean;
+    }
   | { type: 'SKIP_PREVIOUS' }
   | { type: 'SKIP_NEXT' }
-  | { type: 'UPDATE_TAGS'; id: SongID; title: string; artist: string }
-  | { type: 'SET_SORT'; column: SortColumn; direction: boolean }
-  | { type: 'SET_SHUFFLE'; shuffle: boolean }
-  | { type: 'SET_NEXT_SONG'; song: Song }
-  | { type: 'DOWNLOAD_ADD'; id: SongID }
-  | { type: 'DOWNLOAD_PROGRESS'; progress: number }
-  | { type: 'DOWNLOAD_FINISH'; song: Song | null }
+  | {
+      type: 'UPDATE_TAGS';
+      id: SongID;
+      title: string;
+      artist: string;
+    }
+  | {
+      type: 'SET_SORT';
+      column: SortColumn;
+      direction: boolean;
+    }
+  | {
+      type: 'SET_SHUFFLE';
+      shuffle: boolean;
+    }
+  | {
+      type: 'QUEUE_SONG';
+      song: Song;
+    }
+  | {
+      type: 'ADD_TO_HISTORY';
+      search: string;
+    }
+  | {
+      type: 'REMOVE_FROM_HISTORY';
+      search: string;
+    }
+  | {
+      type: 'DOWNLOAD_ADD';
+      id: SongID;
+    }
+  | {
+      type: 'DOWNLOAD_PROGRESS';
+      progress: number;
+    }
+  | {
+      type: 'DOWNLOAD_FINISH';
+      song: Song | null;
+    }
   | { type: 'CLEAR_DATA' };

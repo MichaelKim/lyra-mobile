@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 import Library from './components/library';
 import YtSearch from './components/search';
+import Playback from './components/playback';
 import store from './state/store';
 
 import { Colors } from './constants';
@@ -34,7 +35,7 @@ const App = () => {
     <Provider store={store}>
       <StatusBar barStyle="default" />
       <Root />
-      {/* <PlaybackBar /> */}
+      <Playback />
     </Provider>
   );
 };

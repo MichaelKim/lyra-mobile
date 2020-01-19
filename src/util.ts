@@ -5,13 +5,9 @@ import { createID, getFileName } from './node';
 
 import { Song, SongID, SortType } from './types';
 
-// export function fileExists(path: string) {
-//   return new Promise<boolean>(resolve => {
-//     fs.access(path, fs.constants.F_OK, err => {
-//       resolve(!err);
-//     });
-//   });
-// }
+export function fileExists(_: string) {
+  return false;
+}
 
 export async function getSongs(): Promise<Song[]> {
   const result = await Permissions.request(
@@ -83,30 +79,6 @@ function spaceship(a, b) {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-// export function getMetadata(dir: string, name: string): Promise<Metadata> {
-//   const filepath = path.join(dir, name);
-//   return mm
-//     .parseFile(filepath)
-//     .then(metadata => ({
-//       title: metadata.common.title || path.basename(name, path.extname(name)),
-//       artist: metadata.common.artist || '',
-//       duration: metadata.format.duration
-//     }))
-//     .catch(() => ({
-//       title: name,
-//       artist: '',
-//       duration: ''
-//     }));
-// }
-
-// export function setTags(filepath: string, tags: Tags) {
-//   // Adding a callback makes the method async,
-//   // avoiding blocking the UI
-//   return new Promise<void>((resolve, reject) =>
-//     id3.update(tags, filepath, err => (err ? reject(err) : resolve()))
-//   );
-// }
-
 export function formatDuration(duration: number) {
   const min = Math.floor(duration / 60);
   const sec = String(Math.floor(duration % 60)).padStart(2, '0');
@@ -152,17 +124,14 @@ export function readableViews(viewCount: number) {
   );
 }
 
-interface ContextItem {
-  label: string;
-  click: () => void;
+interface Shortcuts {
+  [key: string]: () => void;
 }
 
-export function showContextMenu(items: Array<ContextItem>) {
-  items;
-  // const menu = new remote.Menu();
-  // for (const item of items) {
-  //   const menuItem = new remote.MenuItem(item);
-  //   menu.append(menuItem);
-  // }
-  // menu.popup(remote.getCurrentWindow());
+export function registerShortcuts(_: Shortcuts) {}
+
+export function removeShortcuts(_: Shortcuts) {}
+
+export function selectLocalDir(): Array<string> | null {
+  return null;
 }

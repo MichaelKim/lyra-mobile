@@ -37,7 +37,7 @@ const YtPlaying = (props: Props) => {
 
     getRelatedVideos(song.id).then(relatedVideos => {
       setRelated(relatedVideos);
-      dispatch({ type: 'SET_NEXT_SONG', song: relatedVideos[0] });
+      dispatch({ type: 'SELECT_SONG', song: relatedVideos[0] });
     });
   }, []);
 

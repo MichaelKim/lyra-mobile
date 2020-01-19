@@ -60,3 +60,4 @@ buck-out/
 
 .jest/
 yarn-error.log
+.vscode/

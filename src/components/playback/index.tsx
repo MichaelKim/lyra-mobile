@@ -11,7 +11,12 @@ import { BAR_HEIGHT } from '../../constants';
 import { useDispatch, useSelector } from '../../hooks';
 
 const Playback = () => {
-  const currSong = useSelector(state => state.currSong);
+  const currSong = useSelector(state => {
+    const { queue } = state;
+    const { curr } = queue;
+
+    return curr != null ? state.songs[curr] ?? queue.cache[curr]?.song : null;
+  });
   const [src, setSrc] = React.useState('');
   const [loading, setLoading] = React.useState(true);
   const [paused, setPaused] = React.useState(false);
@@ -20,7 +25,7 @@ const Playback = () => {
     playableDuration: 0,
     seekableDuration: 0
   });
-  const player = React.useRef(null);
+  const player = React.useRef<Video>(null);
   const dispatch = useDispatch();
 
   React.useEffect(() => {

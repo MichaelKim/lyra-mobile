@@ -1,34 +1,31 @@
-// import fs from 'fs';
-
 import { StoreState } from '../types';
 
 export const initialState: StoreState = {
   loaded: false,
   songs: {},
   playlists: {},
-  volume: 100,
+  volume: {
+    amount: 1,
+    muted: false
+  },
   sort: {
     column: 'TITLE',
     direction: false
   },
   shuffle: false,
-  nextSong: null,
+  queue: {
+    prev: [],
+    curr: null,
+    next: [],
+    cache: {}
+  },
+  history: [],
   dlQueue: [],
-  dlProgress: 0,
-  currScreen: null
+  dlProgress: 0
 };
 
 export function save(state: StoreState) {
-  state;
-  // fs.writeFile('state.json', JSON.stringify(state), err => {
-  //   if (err) console.log(err);
-  //   else console.log('Stored state:', state);
-  // });
+  console.log('Saved state:', state);
 }
 
-export function clear() {
-  // fs.writeFile('state.json', JSON.stringify(initialState), err => {
-  //   if (err) console.log(err);
-  //   else console.log('Cleared state');
-  // });
-}
+export function clear() {}
