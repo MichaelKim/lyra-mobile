@@ -1,8 +1,11 @@
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+import Loading from '../loading';
+import { Play, Pause } from '../../icons';
 
 import { Colors, BAR_HEIGHT } from '../../constants';
-
 import { Song } from '../../types';
 
 interface Props {
@@ -44,11 +47,19 @@ const PlaybackHeader = (props: Props) => {
           <Text style={styles.songTitle}>{currSong.title}</Text>
           <Text style={styles.songArtist}>{currSong.artist}</Text>
         </View>
-        <Button
-          title={loading ? '...' : paused ? '>' : '||'}
-          onPress={() => setPaused(!paused)}
-          disabled={loading}
-        />
+        {loading ? (
+          <View style={styles.icon}>
+            <Loading />
+          </View>
+        ) : (
+          <TouchableOpacity onPress={() => setPaused(!paused)}>
+            {paused ? (
+              <Play width={25} height={25} />
+            ) : (
+              <Pause width={25} height={25} />
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -79,6 +90,10 @@ const styles = StyleSheet.create({
   songArtist: {
     fontSize: 12,
     color: Colors.text
+  },
+  icon: {
+    width: 25,
+    height: 25
   }
   // playPause: {
   //   width: 30,

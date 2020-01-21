@@ -24,6 +24,7 @@
     "react-native-reanimated": "^1.7.0",
     "react-native-safe-area-context": "^0.6.2",
     "react-native-screens": "^2.0.0-alpha.25",
+    "react-native-svg": "^11.0.1",
     "react-native-video": "^5.0.2",
     "react-navigation": "^4.0.10",
     "react-navigation-tabs": "^2.7.0",
@@ -48,6 +49,7 @@
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.56.0",
     "react-devtools": "^3.6.3",
+    "react-native-svg-transformer": "^0.14.3",
     "react-test-renderer": "16.9.0",
     "typescript": "^3.7.5"
   },

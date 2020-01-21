@@ -1,12 +1,22 @@
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Slider from '../slider';
+import {
+  Queue,
+  Previous,
+  Replay,
+  Play,
+  Pause,
+  Forward,
+  Next,
+  Shuffle
+} from '../../icons';
 
 import { Colors } from '../../constants';
 import { useDispatch, useSelector, useToggle } from '../../hooks';
 import { formatDuration } from '../../util';
-
 import { Song } from '../../types';
 
 interface Props {
@@ -56,37 +66,39 @@ const PlaybackContent = (props: Props) => {
         </View>
         <View style={styles.controls}>
           <View style={styles.buttonsLeft}>
-            <Button onPress={toggleQueue} title={showQueue ? 'Qon' : 'Qoff'} />
+            <TouchableOpacity onPress={toggleQueue}>
+              <Queue width={30} height={30} fillOpacity={showQueue ? 1 : 0.5} />
+            </TouchableOpacity>
           </View>
           <View style={styles.buttonsCenter}>
-            <Button
-              onPress={() => dispatch({ type: 'SKIP_PREVIOUS' })}
-              title="|<"
-            />
-            <Button
-              onPress={() => onSeek(progress.currentTime - 10)}
-              title="<-"
-            />
-            <Button
-              onPress={() => setPaused(!paused)}
-              title={paused ? '>' : '||'}
-            />
-            <Button
-              onPress={() => onSeek(progress.currentTime + 10)}
-              title="->"
-            />
-            <Button
-              onPress={() => dispatch({ type: 'SKIP_NEXT' })}
-              title=">|"
-            />
+            <TouchableOpacity
+              onPress={() => dispatch({ type: 'SKIP_PREVIOUS' })}>
+              <Previous width={30} height={30} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => onSeek(progress.currentTime - 10)}>
+              <Replay width={30} height={30} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setPaused(!paused)}>
+              {paused ? (
+                <Play width={30} height={30} />
+              ) : (
+                <Pause width={30} height={30} />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => onSeek(progress.currentTime + 10)}>
+              <Forward width={30} height={30} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => dispatch({ type: 'SKIP_NEXT' })}>
+              <Next width={30} height={30} />
+            </TouchableOpacity>
           </View>
           <View style={styles.buttonsRight}>
-            <Button
+            <TouchableOpacity
               onPress={() =>
                 dispatch({ type: 'SET_SHUFFLE', shuffle: !shuffle })
-              }
-              title={shuffle ? 'Son' : 'Soff'}
-            />
+              }>
+              <Shuffle width={30} height={30} fillOpacity={shuffle ? 1 : 0.5} />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
