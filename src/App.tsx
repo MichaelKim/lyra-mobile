@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { StatusBar } from 'react-native';
 import { createAppContainer } from 'react-navigation';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createBottomTabNavigator, BottomTabBar } from 'react-navigation-tabs';
 
 import Library from './components/library';
 import YtSearch from './components/search';
@@ -10,6 +10,16 @@ import Playback from './components/playback';
 import store from './state/store';
 
 import { Colors } from './constants';
+
+const TabBarComponent = (props: React.ComponentProps<typeof BottomTabBar>) => {
+  return (
+    <>
+      {/* <Slide /> */}
+      <Playback />
+      <BottomTabBar {...props} />
+    </>
+  );
+};
 
 const Navigator = createBottomTabNavigator(
   {
@@ -24,7 +34,8 @@ const Navigator = createBottomTabNavigator(
         backgroundColor: Colors.playback,
         borderTopWidth: 0
       }
-    }
+    },
+    tabBarComponent: props => <TabBarComponent {...props} />
   }
 );
 
@@ -35,7 +46,6 @@ const App = () => {
     <Provider store={store}>
       <StatusBar barStyle="default" />
       <Root />
-      <Playback />
     </Provider>
   );
 };

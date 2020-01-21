@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import BottomSheet from 'reanimated-bottom-sheet';
+import { StyleSheet, View, Dimensions } from 'react-native';
 import Video from 'react-native-video';
 
 import PlaybackContent from './content';
 import PlaybackHeader from './header';
+import Slide from './slide';
 import { getStreamURL } from '../../yt-util';
 
 import { BAR_HEIGHT } from '../../constants';
@@ -50,6 +50,8 @@ const Playback = () => {
     player.current && player.current.seek(seek);
   };
 
+  const { height } = Dimensions.get('window');
+
   return (
     <View style={styles.container}>
       {src !== '' && (
@@ -66,9 +68,7 @@ const Playback = () => {
           onEnd={() => dispatch({ type: 'SKIP_NEXT' })}
         />
       )}
-      <BottomSheet
-        snapPoints={[BAR_HEIGHT, '100%']}
-        enabledContentGestureInteraction={false}
+      <Slide
         renderHeader={() => (
           <PlaybackHeader
             currSong={currSong}

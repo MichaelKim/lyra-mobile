@@ -108,9 +108,13 @@ export default function rootReducer(
 
     case 'ADD_SONGS': {
       const newSongs = action.songs.reduce((acc: StoreState['songs'], song) => {
-        acc[song.id] = song;
-        return acc;
-      }, {});
+        return u(
+          {
+            [song.id]: song
+          },
+          acc
+        ) as StoreState['songs'];
+      }, state.songs);
 
       // Remove songs from cache
       const songIDs = action.songs.map(s => s.id);

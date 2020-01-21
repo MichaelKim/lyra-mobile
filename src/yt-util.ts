@@ -14,7 +14,7 @@ import { SongID, VideoSong } from './types';
 
 // const USE_API = process.env.LYRA_USE_API ? '1' : '';
 
-const LYRA_URL = 'http://192.168.1.115:5000';
+const LYRA_URL = 'http://localhost:5000';
 const USE_API = '';
 
 export async function getStreamURL(id: SongID): Promise<string> {
