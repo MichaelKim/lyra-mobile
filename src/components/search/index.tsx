@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  Text,
-  TouchableHighlight,
-  View
-} from 'react-native';
+import { StyleSheet, ScrollView, Text, TouchableHighlight } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 
 import Loading from '../loading';
 import Search from '../search-bar';
@@ -16,16 +10,11 @@ import { Colors } from '../../constants';
 import { useDispatch } from '../../hooks';
 import { ytSearch } from '../../yt-util';
 
-import { VideoSong } from '../../types';
+import { VideoSong, NavigationProps } from '../../types';
 
-interface Props {
-  navigation: {
-    navigate: (screenName: string) => void;
-    getParam: <T>(paramName: string, defaultValue: T) => T;
-  };
-}
+interface Props extends NavigationProps {}
 
-const YtSearch = (_: Props) => {
+const YtSearch = (props: Props) => {
   const [searching, setSearching] = React.useState(false);
   const [videos, setVideos] = React.useState<Array<VideoSong>>([]);
   const dispatch = useDispatch();
@@ -41,30 +30,27 @@ const YtSearch = (_: Props) => {
 
   const onSelect = (song: VideoSong) => {
     dispatch({ type: 'SELECT_SONG', song });
+    props.navigation.navigate('Playing');
   };
 
   return (
-    <SafeAreaView>
-      <View style={styles.root}>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContainer}>
-          <Text style={styles.title}>YouTube</Text>
-          <Search onEnter={onSearch} />
-          {searching ? (
-            <Loading />
-          ) : (
-            videos.map(video => (
-              <TouchableHighlight
-                key={video.id}
-                onPress={() => onSelect(video)}>
-                <YtItem video={video} />
-              </TouchableHighlight>
-            ))
-          )}
-        </ScrollView>
-      </View>
+    <SafeAreaView style={styles.root}>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContainer}>
+        <Text style={styles.title}>YouTube</Text>
+        <Search onEnter={onSearch} />
+        {searching ? (
+          <Loading />
+        ) : (
+          videos.map(video => (
+            <TouchableHighlight key={video.id} onPress={() => onSelect(video)}>
+              <YtItem video={video} />
+            </TouchableHighlight>
+          ))
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };

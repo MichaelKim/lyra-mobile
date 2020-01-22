@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
+
+import { Search as SearchIcon } from '../icons';
 
 import { Colors } from '../constants';
 
@@ -22,23 +24,34 @@ const Search = (props: Props) => {
   };
 
   return (
-    <TextInput
-      style={styles.textInput}
-      placeholder="Search..."
-      placeholderTextColor={Colors.placeholder}
-      value={value}
-      onChangeText={onChange}
-      onSubmitEditing={onEnter}
-    />
+    <View style={styles.box}>
+      <SearchIcon width={25} height={25} />
+      <TextInput
+        style={styles.textInput}
+        placeholder="Search..."
+        placeholderTextColor={Colors.placeholder}
+        value={value}
+        onChangeText={onChange}
+        onSubmitEditing={onEnter}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  box: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   textInput: {
     color: Colors.text,
     padding: 0,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border
+    borderBottomColor: Colors.border,
+    fontSize: 16,
+    height: 32,
+    paddingLeft: 4,
+    flex: 1
   }
 });
 

@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import MusicFiles from 'react-native-get-music-files';
 import Permissions from 'react-native-permissions';
 
@@ -10,12 +11,14 @@ export function fileExists(_: string) {
 }
 
 export async function getSongs(): Promise<Song[]> {
-  const result = await Permissions.request(
-    Permissions.PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
-  );
+  if (Platform.OS === 'android') {
+    const result = await Permissions.request(
+      Permissions.PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+    );
 
-  if (result !== Permissions.RESULTS.GRANTED) {
-    return [];
+    if (result !== Permissions.RESULTS.GRANTED) {
+      return [];
+    }
   }
 
   const tracks = await MusicFiles.getAll({

@@ -3,6 +3,8 @@ import { StyleSheet, View, Dimensions } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
+import { Colors, BAR_HEIGHT } from '../../constants';
+
 const {
   set,
   cond,
@@ -32,9 +34,8 @@ interface IState {
 }
 
 const NAVIGATION_HEIGHT = 50;
-const HEADER_HEIGHT = 60;
 const windowHeight = Dimensions.get('window').height;
-const TOP = -windowHeight + NAVIGATION_HEIGHT + HEADER_HEIGHT;
+const TOP = -windowHeight + NAVIGATION_HEIGHT + BAR_HEIGHT;
 
 export class BottomSheet extends React.Component<Props, IState> {
   // tapRef = React.createRef<TapGestureHandler>();
@@ -188,22 +189,20 @@ export class BottomSheet extends React.Component<Props, IState> {
 
 const styles = StyleSheet.create({
   root: {
-    height: HEADER_HEIGHT
+    height: BAR_HEIGHT,
+    backgroundColor: Colors.playback
   },
   container: {
     position: 'absolute',
     left: 0,
     right: 0,
     top: 0
-    // top: TOP
   },
   header: {
-    height: HEADER_HEIGHT,
-    backgroundColor: 'blue'
+    height: BAR_HEIGHT
   },
   content: {
-    height: -TOP,
-    backgroundColor: 'red'
+    height: -TOP
   }
 });
 

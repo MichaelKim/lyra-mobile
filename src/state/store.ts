@@ -2,14 +2,14 @@ import { createStore, applyMiddleware } from 'redux';
 
 import reducer from './reducer';
 import { initialState } from './storage';
-import { logger, loadSongs, saveToStorage } from './middleware';
+import { logger, queueSong, loadSongs, saveToStorage } from './middleware';
 
 import { Store } from '../types';
 
 const store: Store = createStore(
   reducer,
   initialState,
-  applyMiddleware(logger, loadSongs, saveToStorage)
+  applyMiddleware(logger, queueSong, loadSongs, saveToStorage)
 );
 
 store.dispatch({

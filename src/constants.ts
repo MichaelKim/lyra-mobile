@@ -7,4 +7,5 @@ export const Colors = {
   accent: '#4286f4'
 };
 
+// Height of playback bottom sheet header
 export const BAR_HEIGHT = 60;

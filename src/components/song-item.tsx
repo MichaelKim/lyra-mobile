@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Colors } from '../constants';
-import { useSelector } from '../hooks';
+import { useCurrSong } from '../hooks';
 
 import { Song } from '../types';
 
@@ -12,7 +12,7 @@ interface Props {
 
 const SongItem = (props: Props) => {
   const { song } = props;
-  const currSong = useSelector(state => state.currSong);
+  const currSong = useCurrSong();
   const isPlaying = currSong?.id === song.id;
 
   return (

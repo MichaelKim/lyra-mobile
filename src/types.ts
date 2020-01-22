@@ -51,6 +51,13 @@ export interface SortType {
   direction: boolean;
 }
 
+export interface NavigationProps {
+  navigation: {
+    navigate: (screenName: string) => void;
+    getParam: <T>(paramName: string, defaultValue: T) => T;
+  };
+}
+
 // Redux types
 export type Store = ReduxStore<StoreState, Action>;
 

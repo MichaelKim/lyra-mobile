@@ -32,11 +32,6 @@ export const queueSong: Middleware = store => next => action => {
     return result;
   }
 
-  if (action.type === 'SET_SHUFFLE' && !action.shuffle) {
-    // Turned shuffle off
-    return result;
-  }
-
   const { queue } = newState;
   const { curr } = queue;
   if (curr == null) {
@@ -56,11 +51,13 @@ export const queueSong: Middleware = store => next => action => {
     return result;
   }
 
-  // Enable autoplay for youtube if shuffle is on
-  if (newState.shuffle && currSong.source === 'YOUTUBE') {
-    getRelatedVideos(currSong.id).then(related => {
-      store.dispatch({ type: 'QUEUE_SONG', song: related[0] });
-    });
+  // Enable autoplay for youtube only if shuffle is on
+  if (currSong.source === 'YOUTUBE') {
+    if (newState.shuffle) {
+      getRelatedVideos(currSong.id).then(related => {
+        store.dispatch({ type: 'QUEUE_SONG', song: related[0] });
+      });
+    }
     return result;
   }
 

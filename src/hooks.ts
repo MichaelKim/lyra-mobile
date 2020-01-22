@@ -22,3 +22,14 @@ export function useToggle(defaultValue: boolean): [boolean, () => void] {
 
   return [value, () => setValue(!value)];
 }
+
+export function useCurrSong() {
+  return useSelector(state => {
+    const {
+      songs,
+      queue: { cache, curr }
+    } = state;
+
+    return curr != null ? songs[curr] ?? cache[curr]?.song : null;
+  });
+}

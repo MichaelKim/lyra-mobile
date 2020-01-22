@@ -6,8 +6,10 @@ import { createBottomTabNavigator, BottomTabBar } from 'react-navigation-tabs';
 
 import Library from './components/library';
 import YtSearch from './components/search';
+import YtPlaying from './components/playing';
+import Queue from './components/queue';
 import Playback from './components/playback';
-import { Play, Search } from './icons';
+import { Play, Search, Queue as QueueIcon } from './icons';
 
 import store from './state/store';
 import { Colors } from './constants';
@@ -20,10 +22,20 @@ const TabBarComponent = (props: React.ComponentProps<typeof BottomTabBar>) => {
     </>
   );
 };
+
+const Icons = {
+  Library: Play,
+  YouTube: Search,
+  Playing: Play,
+  Queue: QueueIcon
+};
+
 const Navigator = createBottomTabNavigator(
   {
     Library: Library,
-    YouTube: YtSearch
+    YouTube: YtSearch,
+    Playing: YtPlaying,
+    Queue
   },
   {
     initialRouteName: 'Library',
@@ -37,8 +49,10 @@ const Navigator = createBottomTabNavigator(
     defaultNavigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused }) => {
         const { routeName } = navigation.state;
-        const Icon = routeName === 'Library' ? Play : Search;
-
+        const Icon = Icons[routeName as keyof typeof Icons];
+        if (Icon == null) {
+          return null;
+        }
         return <Icon width={25} height={25} fillOpacity={focused ? 1 : 0.5} />;
       }
     }),
