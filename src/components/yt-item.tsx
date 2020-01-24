@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { Colors } from '../constants';
-import { formatDuration, readableViews } from '../util';
+import { formatDuration } from '../util';
 
 import { VideoSong } from '../types';
 
@@ -20,8 +20,8 @@ const YtItem = (props: PassedProps) => {
       <View style={styles.text}>
         <Text style={styles.title}>{video.title}</Text>
         <Text style={styles.details}>
-          {video.artist} • {formatDuration(video.duration)} •{' '}
-          {readableViews(video.views)} views
+          {video.artist} • {formatDuration(video.duration)}
+          {video.views && ` • ${video.views} views`}
         </Text>
       </View>
     </View>

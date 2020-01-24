@@ -102,31 +102,6 @@ export function parseDuration(iso: string) {
   );
 }
 
-// As of 2019, the most viewed YouTube video has ~6B views.
-// This method works up to billions, and should be enough.
-export function readableViews(viewCount: number) {
-  const length = Math.floor(Math.log10(viewCount));
-
-  if (length < 3) return viewCount;
-  if (length < 6)
-    return (
-      Math.floor(viewCount / Math.pow(10, length - 2)) /
-        Math.pow(10, 5 - length) +
-      'K'
-    );
-  if (length < 9)
-    return (
-      Math.floor(viewCount / Math.pow(10, length - 2)) /
-        Math.pow(10, 8 - length) +
-      'M'
-    );
-  return (
-    Math.floor(viewCount / Math.pow(10, length - 2)) /
-      Math.pow(10, 11 - length) +
-    'B'
-  );
-}
-
 interface Shortcuts {
   [key: string]: () => void;
 }
