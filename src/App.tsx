@@ -5,11 +5,10 @@ import { createAppContainer } from 'react-navigation';
 import { createBottomTabNavigator, BottomTabBar } from 'react-navigation-tabs';
 
 import Library from './components/library';
-import YtSearch from './components/search';
-import YtPlaying from './components/playing';
+import Search from './components/search';
 import Queue from './components/queue';
 import Playback from './components/playback';
-import { Play, Search, Queue as QueueIcon } from './icons';
+import { Play, Search as SearchIcon, Queue as QueueIcon } from './icons';
 
 import store from './state/store';
 import { Colors } from './constants';
@@ -25,16 +24,14 @@ const TabBarComponent = (props: React.ComponentProps<typeof BottomTabBar>) => {
 
 const Icons = {
   Library: Play,
-  YouTube: Search,
-  Playing: Play,
+  Search: SearchIcon,
   Queue: QueueIcon
 };
 
 const Navigator = createBottomTabNavigator(
   {
-    Library: Library,
-    YouTube: YtSearch,
-    Playing: YtPlaying,
+    Library,
+    Search,
     Queue
   },
   {
