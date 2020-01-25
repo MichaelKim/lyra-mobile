@@ -2,17 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import Controls from './controls';
 import Playing from './playing';
 import Slider from '../slider';
-import {
-  Previous,
-  Replay,
-  Play,
-  Pause,
-  Forward,
-  Next,
-  Shuffle
-} from '../../icons';
+import { Shuffle } from '../../icons';
 
 import { Colors } from '../../constants';
 import { useDispatch, useSelector } from '../../hooks';
@@ -20,6 +13,7 @@ import { formatDuration } from '../../util';
 import { Song } from '../../types';
 
 interface Props {
+  paused: boolean;
   currSong: Song;
   progress: {
     currentTime: number;
@@ -27,14 +21,22 @@ interface Props {
     seekableDuration: number;
   };
   onSeek: (seek: number) => void;
-  paused: boolean;
-  setPaused: (paused: boolean) => void;
+  togglePause: () => void;
 }
 
-const PlaybackContent = (props: Props) => {
-  const { currSong, progress, onSeek, paused, setPaused } = props;
+const PlaybackContent = ({
+  paused,
+  currSong,
+  progress,
+  onSeek,
+  togglePause
+}: Props) => {
   const shuffle = useSelector(state => state.shuffle);
+
   const dispatch = useDispatch();
+  const skipPrevious = () => dispatch({ type: 'SKIP_PREVIOUS' });
+  const skipNext = () => dispatch({ type: 'SKIP_NEXT' });
+  const onDeltaSeek = (delta: number) => onSeek(progress.currentTime + delta);
 
   return (
     <View style={styles.root}>
@@ -64,28 +66,13 @@ const PlaybackContent = (props: Props) => {
         </View>
         <View style={styles.controls}>
           <View style={styles.buttonsLeft} />
-          <View style={styles.buttonsCenter}>
-            <TouchableOpacity
-              onPress={() => dispatch({ type: 'SKIP_PREVIOUS' })}>
-              <Previous width={30} height={30} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => onSeek(progress.currentTime - 10)}>
-              <Replay width={30} height={30} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setPaused(!paused)}>
-              {paused ? (
-                <Play width={30} height={30} />
-              ) : (
-                <Pause width={30} height={30} />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => onSeek(progress.currentTime + 10)}>
-              <Forward width={30} height={30} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => dispatch({ type: 'SKIP_NEXT' })}>
-              <Next width={30} height={30} />
-            </TouchableOpacity>
-          </View>
+          <Controls
+            paused={paused}
+            skipPrevious={skipPrevious}
+            skipNext={skipNext}
+            togglePause={togglePause}
+            onDeltaSeek={onDeltaSeek}
+          />
           <View style={styles.buttonsRight}>
             <TouchableOpacity
               onPress={() =>
@@ -123,20 +110,15 @@ const styles = StyleSheet.create({
     color: Colors.text
   },
   controls: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  buttonsLeft: {
-    position: 'absolute',
-    left: 0
-  },
-  buttonsCenter: {
     flexDirection: 'row'
   },
+  buttonsLeft: {
+    flex: 1
+  },
   buttonsRight: {
-    position: 'absolute',
-    right: 0
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end'
   }
 });
 

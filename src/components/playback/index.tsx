@@ -21,7 +21,9 @@ const Playback = () => {
   });
   const player = React.useRef<Video>(null);
   const currSong = useCurrSong();
+
   const dispatch = useDispatch();
+  const togglePause = () => setPaused(!paused);
 
   React.useEffect(() => {
     if (currSong == null) {
@@ -42,11 +44,24 @@ const Playback = () => {
   }
 
   const onSeek = (seek: number) => {
-    player.current && player.current.seek(seek);
+    if (player.current) {
+      setLoading(true);
+      player.current.seek(seek);
+    }
+  };
+
+  const onLoad = () => {
+    setPaused(false);
+    setLoading(false);
+  };
+
+  const onFinishedSeek = () => {
+    setLoading(false);
   };
 
   const onEnd = () => {
     setPaused(true);
+    onSeek(0);
     dispatch({ type: 'SKIP_NEXT' });
   };
 
@@ -58,10 +73,8 @@ const Playback = () => {
           ref={player}
           playInBackground
           paused={paused}
-          onLoad={() => {
-            setPaused(false);
-            setLoading(false);
-          }}
+          onLoad={onLoad}
+          onSeek={onFinishedSeek}
           onProgress={setProgress}
           onEnd={onEnd}
         />
@@ -82,7 +95,7 @@ const Playback = () => {
             progress={progress}
             onSeek={onSeek}
             paused={paused}
-            setPaused={setPaused}
+            togglePause={togglePause}
           />
         )}
       />
