@@ -34,7 +34,12 @@ const PlaybackContent = ({
   const shuffle = useSelector(state => state.shuffle);
 
   const dispatch = useDispatch();
-  const skipPrevious = () => dispatch({ type: 'SKIP_PREVIOUS' });
+  const skipPrevious = () => {
+    onSeek(0);
+    if (progress.currentTime < 3) {
+      dispatch({ type: 'SKIP_PREVIOUS' });
+    }
+  };
   const skipNext = () => dispatch({ type: 'SKIP_NEXT' });
   const onDeltaSeek = (delta: number) => onSeek(progress.currentTime + delta);
 
