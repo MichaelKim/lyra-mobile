@@ -1,12 +1,12 @@
 import React from 'react';
-import { TouchableHighlight } from 'react-native';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
-import Loading from '../loading';
-import YtItem from '../yt-item';
-import { getRelatedVideos } from '../../yt-util';
+import Loading from '../../loading';
+import YtItem from '../../yt-item';
+import { getRelatedVideos } from '../../../yt-util';
 
-import { useDispatch } from '../../hooks';
-import { VideoSong } from '../../types';
+import { useDispatch } from '../../../hooks';
+import { VideoSong } from '../../../types';
 
 interface Props {
   currSong: VideoSong;
