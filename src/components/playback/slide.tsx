@@ -1,21 +1,27 @@
 import React from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  State,
+  TapGestureHandler
+} from 'react-native-gesture-handler';
 
-import { Colors, BAR_HEIGHT } from '../../constants';
+import { BAR_HEIGHT } from '../../constants';
 
 const {
   set,
   cond,
   block,
   event,
+  or,
   eq,
   neq,
   add,
   sub,
   multiply,
-  lessThan,
+  lessOrEq,
+  greaterOrEq,
   Value,
   Clock,
   startClock,
@@ -29,15 +35,12 @@ interface Props {
   renderContent: () => React.ReactNode;
 }
 
-interface IState {
-  lastSnap: number;
-}
-
 const NAVIGATION_HEIGHT = 50;
+// TODO: make this dynamic
 const windowHeight = Dimensions.get('window').height;
 const TOP = -windowHeight + NAVIGATION_HEIGHT + BAR_HEIGHT;
 
-export class BottomSheet extends React.Component<Props, IState> {
+export class BottomSheet extends React.Component<Props> {
   // tapRef = React.createRef<TapGestureHandler>();
   // panRef = React.createRef<PanGestureHandler>();
 
@@ -77,15 +80,14 @@ export class BottomSheet extends React.Component<Props, IState> {
     time: new Value(0)
   };
 
-  // Next expected position, if let go
-  next = add(
-    this.prev,
-    sub(this.delta, this.prevDelta),
-    multiply(0.5, this.velocity)
-  );
+  // Next position
+  next = add(this.prev, sub(this.delta, this.prevDelta));
+
+  // Expected position, if let go
+  slide = add(this.next, multiply(0.5, this.velocity));
 
   // Snapping point, if let go
-  snap = cond(lessThan(this.next, TOP / 2), TOP, 0);
+  snap = cond(lessOrEq(this.slide, TOP / 2), TOP, 0);
 
   config = {
     damping: 50,
@@ -115,12 +117,27 @@ export class BottomSheet extends React.Component<Props, IState> {
   //   }
   // ]);
 
+  // Velocity, clamped
+  newVelocity = cond(
+    or(lessOrEq(this.next, TOP), greaterOrEq(this.next, 0)),
+    0,
+    this.velocity
+  );
+
   pos = block([
     cond(
       eq(this.panState, State.ACTIVE),
       [
         cond(clockRunning(this.clock), stopClock(this.clock)),
-        set(this.prev, add(this.prev, sub(this.delta, this.prevDelta))),
+        // Clamp prev to [TOP, 0]
+        set(
+          this.prev,
+          cond(
+            lessOrEq(this.next, TOP),
+            TOP,
+            cond(greaterOrEq(this.next, 0), 0, this.next)
+          )
+        ),
         set(this.prevDelta, this.delta)
       ],
       cond(neq(this.panState, -1), [
@@ -131,7 +148,7 @@ export class BottomSheet extends React.Component<Props, IState> {
         cond(clockRunning(this.clock), 0, [
           // Start clock
           set(this.clockState.finished, 0),
-          set(this.clockState.velocity, this.velocity),
+          set(this.clockState.velocity, this.newVelocity),
           set(this.clockState.position, this.prev),
           set(this.config.toValue, this.snap),
           startClock(this.clock)
@@ -148,56 +165,38 @@ export class BottomSheet extends React.Component<Props, IState> {
     this.prev
   ]);
 
-  // clamped = Animated.diffClamp(this.pos, TOP, 0);
-
   render() {
     return (
-      <View style={styles.root}>
-        {/* <Animated.Code>
-          {() => Animated.call([this.snap], console.log)}
-        </Animated.Code> */}
-        <PanGestureHandler
-          // ref={this.panRef}
-          // simultaneousHandlers={[this.tapRef]}
-          // waitFor={this.tapRef}
-          // minDist={20}
-          onGestureEvent={this.handlePan}
-          onHandlerStateChange={this.handlePan}>
-          <Animated.View
-            style={[
-              styles.container,
-              {
-                top: this.pos
-              }
-            ]}>
-            {/* <TapGestureHandler
+      <PanGestureHandler
+        // ref={this.panRef}
+        // simultaneousHandlers={[this.tapRef]}
+        // waitFor={this.tapRef}
+        // minDist={20}
+        onGestureEvent={this.handlePan}
+        onHandlerStateChange={this.handlePan}>
+        <Animated.View
+          style={{
+            transform: [{ translateY: this.pos }]
+          }}>
+          {/* <TapGestureHandler
               ref={this.tapRef}
               simultaneousHandlers={[this.panRef]}
               onHandlerStateChange={this.handleTouch}
               > */}
-            <Animated.View style={styles.header}>
-              {this.props.renderHeader()}
+          <TapGestureHandler>
+            <Animated.View>
+              <View style={styles.header}>{this.props.renderHeader()}</View>
+              {/* </TapGestureHandler> */}
+              <View style={styles.content}>{this.props.renderContent()}</View>
             </Animated.View>
-            {/* </TapGestureHandler> */}
-            <View style={styles.content}>{this.props.renderContent()}</View>
-          </Animated.View>
-        </PanGestureHandler>
-      </View>
+          </TapGestureHandler>
+        </Animated.View>
+      </PanGestureHandler>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  root: {
-    height: BAR_HEIGHT,
-    backgroundColor: Colors.playback
-  },
-  container: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0
-  },
   header: {
     height: BAR_HEIGHT
   },
