@@ -2,9 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import Playing from './playing';
 import Slider from '../slider';
 import {
-  Queue,
   Previous,
   Replay,
   Play,
@@ -15,7 +15,7 @@ import {
 } from '../../icons';
 
 import { Colors } from '../../constants';
-import { useDispatch, useSelector, useToggle } from '../../hooks';
+import { useDispatch, useSelector } from '../../hooks';
 import { formatDuration } from '../../util';
 import { Song } from '../../types';
 
@@ -36,13 +36,11 @@ const PlaybackContent = (props: Props) => {
   const shuffle = useSelector(state => state.shuffle);
   const dispatch = useDispatch();
 
-  const [showQueue, toggleQueue] = useToggle(false);
-
   return (
     <View style={styles.root}>
       <View style={styles.thumbnail}>
-        {showQueue ? (
-          <Text>queue</Text>
+        {currSong.source === 'YOUTUBE' ? (
+          <Playing currSong={currSong} />
         ) : (
           <>
             <Text>{currSong.title}</Text>
@@ -65,11 +63,7 @@ const PlaybackContent = (props: Props) => {
           </Text>
         </View>
         <View style={styles.controls}>
-          <View style={styles.buttonsLeft}>
-            <TouchableOpacity onPress={toggleQueue}>
-              <Queue width={30} height={30} fillOpacity={showQueue ? 1 : 0.5} />
-            </TouchableOpacity>
-          </View>
+          <View style={styles.buttonsLeft} />
           <View style={styles.buttonsCenter}>
             <TouchableOpacity
               onPress={() => dispatch({ type: 'SKIP_PREVIOUS' })}>
