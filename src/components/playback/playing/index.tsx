@@ -1,6 +1,15 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import {
+  StyleSheet,
+  Text,
+  View,
+  NativeSyntheticEvent,
+  NativeScrollEvent
+} from 'react-native';
+import {
+  ScrollView,
+  NativeViewGestureHandler
+} from 'react-native-gesture-handler';
 
 import YtItem from '../../yt-item';
 import Related from './related';
@@ -13,18 +22,43 @@ interface Props {
 }
 
 const Playing = ({ currSong }: Props) => {
+  const [scroll, setScroll] = React.useState(true);
+
+  const onScrollEnd = ({
+    nativeEvent
+  }: NativeSyntheticEvent<NativeScrollEvent>) => {
+    console.log('animation end', nativeEvent);
+
+    if (nativeEvent.contentOffset.y === 0) {
+      setScroll(false);
+    } else {
+      setScroll(true);
+    }
+  };
+
+  const onScrollStart = ({
+    nativeEvent
+  }: NativeSyntheticEvent<NativeScrollEvent>) => {
+    console.log('start', nativeEvent);
+    setScroll(true);
+  };
+
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={styles.scrollView}
-      contentContainerStyle={styles.scrollViewContainer}
-      enabled>
-      <Text style={styles.subtitle}>Currently Playing</Text>
-      <YtItem video={currSong} />
-      <View style={styles.divider} />
-      <Text style={styles.subtitle}>Related Videos</Text>
-      <Related key={currSong.id} currSong={currSong} />
-    </ScrollView>
+    <NativeViewGestureHandler>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContainer}
+        onMomentumScrollEnd={onScrollEnd}
+        onScrollBeginDrag={onScrollStart}
+        enabled={scroll}>
+        <Text style={styles.subtitle}>Currently Playing</Text>
+        <YtItem video={currSong} />
+        <View style={styles.divider} />
+        <Text style={styles.subtitle}>Related Videos</Text>
+        <Related key={currSong.id} currSong={currSong} />
+      </ScrollView>
+    </NativeViewGestureHandler>
   );
 };
 
