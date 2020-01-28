@@ -20,6 +20,7 @@
     "react-native": "0.61.5",
     "react-native-gesture-handler": "^1.5.3",
     "react-native-get-music-files": "^2.1.0",
+    "react-native-music-control": "^0.10.8",
     "react-native-permissions": "^2.0.9",
     "react-native-reanimated": "^1.7.0",
     "react-native-safe-area-context": "^0.6.2",

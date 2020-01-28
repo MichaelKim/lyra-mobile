@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import MusicControl from 'react-native-music-control';
 
 import { Previous, Replay, Play, Pause, Forward, Next } from '../../icons';
 
@@ -21,6 +22,26 @@ const Controls = ({
 }: Props) => {
   const onReplay = () => onDeltaSeek(-10);
   const onForward = () => onDeltaSeek(10);
+
+  // Enable media controls
+  React.useEffect(() => {
+    MusicControl.enableControl('previousTrack', true);
+    MusicControl.enableControl('skipBackward', true, { interval: 10 });
+    MusicControl.enableControl('play', true);
+    MusicControl.enableControl('pause', true);
+    MusicControl.enableControl('skipForward', true, { interval: 10 });
+    MusicControl.enableControl('nextTrack', true);
+  }, []);
+
+  // Register media control listeners
+  React.useEffect(() => {
+    MusicControl.on('previousTrack', skipPrevious);
+    MusicControl.on('skipBackward', () => onDeltaSeek(-10));
+    MusicControl.on('play', togglePause);
+    MusicControl.on('pause', togglePause);
+    MusicControl.on('skipForward', () => onDeltaSeek(10));
+    MusicControl.on('nextTrack', skipNext);
+  }, [skipPrevious, togglePause, skipNext, onDeltaSeek]);
 
   return (
     <View style={styles.root}>

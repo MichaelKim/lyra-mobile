@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import MusicControl from 'react-native-music-control';
 
 import Controls from './controls';
 import Playing from './playing';
@@ -42,6 +43,35 @@ const PlaybackContent = ({
   };
   const skipNext = () => dispatch({ type: 'SKIP_NEXT' });
   const onDeltaSeek = (delta: number) => onSeek(progress.currentTime + delta);
+
+  React.useEffect(() => {
+    MusicControl.updatePlayback({
+      state: paused ? MusicControl.STATE_PAUSED : MusicControl.STATE_PLAYING,
+      elapsedTime: progress.currentTime
+    });
+  }, [paused, progress.currentTime]);
+
+  React.useEffect(() => {
+    if (currSong.source === 'YOUTUBE') {
+      MusicControl.setNowPlaying({
+        title: currSong.title,
+        artist: currSong.artist,
+        duration: Number(currSong.duration),
+        artwork: currSong.thumbnail.url
+        // description: '', // Android Only
+        // color: 0xFFFFFF, // Notification Color - Android Only
+        // date: '1983-01-02T00:00:00Z', // Release Date (RFC 3339) - Android Only
+        // rating: 84, // Android Only (Boolean or Number depending on the type)
+        // notificationIcon: 'my_custom_icon' // Android Only (String), Android Drawable resource name for a custom notification icon
+      });
+    } else {
+      MusicControl.setNowPlaying({
+        title: currSong.title,
+        artist: currSong.artist,
+        duration: currSong.duration
+      });
+    }
+  }, [currSong]);
 
   return (
     <View style={styles.root}>
