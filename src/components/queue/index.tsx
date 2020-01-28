@@ -22,7 +22,6 @@ const Queue = (_: Props) => {
     <SafeAreaView style={styles.root}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContainer}>
         <Text style={styles.title}>Queue</Text>
         <Text style={styles.subtitle}>Now Playing</Text>
@@ -44,14 +43,12 @@ const Queue = (_: Props) => {
 
 const styles = StyleSheet.create({
   root: {
-    height: '100%',
+    flex: 1,
     backgroundColor: Colors.screen
   },
-  scrollView: {
-    paddingTop: 32,
-    paddingHorizontal: 24
-  },
   scrollViewContainer: {
+    paddingTop: 32,
+    marginHorizontal: 24,
     flexGrow: 1
   },
   title: {

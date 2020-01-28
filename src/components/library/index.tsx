@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
 
 import SongItem from '../song-item';
@@ -26,13 +27,10 @@ const Library = (_: Props) => {
     <SafeAreaView style={styles.root}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContainer}>
         <Text style={styles.title}>Library</Text>
         {songs.map(song => (
-          <TouchableHighlight key={song.id} onPress={() => onSelect(song)}>
-            <SongItem song={song} />
-          </TouchableHighlight>
+          <SongItem key={song.id} song={song} onPress={() => onSelect(song)} />
         ))}
       </ScrollView>
     </SafeAreaView>
@@ -41,19 +39,17 @@ const Library = (_: Props) => {
 
 const styles = StyleSheet.create({
   root: {
-    height: '100%',
+    flex: 1,
     backgroundColor: Colors.screen
   },
-  scrollView: {
-    paddingTop: 32,
-    paddingHorizontal: 24
-  },
   scrollViewContainer: {
-    flexGrow: 1
+    paddingTop: 32,
+    marginHorizontal: 24
   },
   title: {
     fontSize: 30,
-    color: Colors.text
+    color: Colors.text,
+    marginBottom: 10
   }
 });
 

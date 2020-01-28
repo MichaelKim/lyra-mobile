@@ -6,7 +6,7 @@ import { Colors } from '../constants';
 const Loading = () => {
   return (
     <View style={styles.loading}>
-      <ActivityIndicator size="large" color={Colors.border} />
+      <ActivityIndicator size="large" color={Colors.lightborder} />
     </View>
   );
 };

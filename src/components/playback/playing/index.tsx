@@ -27,8 +27,6 @@ const Playing = ({ currSong }: Props) => {
   const onScrollEnd = ({
     nativeEvent
   }: NativeSyntheticEvent<NativeScrollEvent>) => {
-    console.log('animation end', nativeEvent);
-
     if (nativeEvent.contentOffset.y === 0) {
       setScroll(false);
     } else {
@@ -36,10 +34,7 @@ const Playing = ({ currSong }: Props) => {
     }
   };
 
-  const onScrollStart = ({
-    nativeEvent
-  }: NativeSyntheticEvent<NativeScrollEvent>) => {
-    console.log('start', nativeEvent);
+  const onScrollStart = () => {
     setScroll(true);
   };
 
@@ -64,11 +59,11 @@ const Playing = ({ currSong }: Props) => {
 
 const styles = StyleSheet.create({
   scrollView: {
-    paddingTop: 32,
-    paddingHorizontal: 24,
     overflow: 'hidden'
   },
   scrollViewContainer: {
+    paddingTop: 24,
+    marginHorizontal: 24,
     flexGrow: 1
   },
   subtitle: {
