@@ -4,6 +4,8 @@ import {
   useDispatch as _useDispatch
 } from 'react-redux';
 import { Dispatch } from 'redux';
+import MusicControl from 'react-native-music-control';
+
 import { StoreState, Action } from './types';
 
 // Type wrappers for built-in hooks
@@ -31,5 +33,19 @@ export function useCurrSong() {
     } = state;
 
     return curr != null ? songs[curr] ?? cache[curr]?.song : null;
+  });
+}
+
+export function useMediaControls(actionHandlers: { [key: string]: Function }) {
+  Object.entries(actionHandlers).forEach(([eventName, handler]) => {
+    React.useEffect(() => {
+      // @ts-ignore
+      MusicControl.on(eventName, handler);
+
+      return () => {
+        // @ts-ignore
+        MusicControl.off(eventName);
+      };
+    }, [eventName, handler]);
   });
 }

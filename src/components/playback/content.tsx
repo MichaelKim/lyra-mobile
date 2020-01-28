@@ -1,7 +1,8 @@
 import React from 'react';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import MusicControl from 'react-native-music-control';
 
 import Controls from './controls';
 import Playing from './playing';
@@ -9,13 +10,13 @@ import Slider from '../slider';
 import { Shuffle } from '../../icons';
 
 import { Colors } from '../../constants';
-import { useDispatch, useSelector } from '../../hooks';
 import { formatDuration } from '../../util';
-import { Song } from '../../types';
+import { Song, StoreState, Action } from '../../types';
 
 interface Props {
   paused: boolean;
   currSong: Song;
+  shuffle: boolean;
   progress: {
     currentTime: number;
     playableDuration: number;
@@ -23,104 +24,103 @@ interface Props {
   };
   onSeek: (seek: number) => void;
   togglePause: () => void;
+  skipPrevious: () => void;
+  skipNext: () => void;
+  setShuffle: (shuffle: boolean) => void;
 }
 
-const PlaybackContent = ({
-  paused,
-  currSong,
-  progress,
-  onSeek,
-  togglePause
-}: Props) => {
-  const shuffle = useSelector(state => state.shuffle);
-
-  const dispatch = useDispatch();
-  const skipPrevious = () => {
-    onSeek(0);
-    if (progress.currentTime < 3) {
-      dispatch({ type: 'SKIP_PREVIOUS' });
+class PlaybackContent extends React.Component<Props> {
+  skipPreviousOrStart = () => {
+    this.props.onSeek(0);
+    if (this.props.progress.currentTime < 3) {
+      this.props.skipPrevious();
     }
   };
-  const skipNext = () => dispatch({ type: 'SKIP_NEXT' });
-  const onDeltaSeek = (delta: number) => onSeek(progress.currentTime + delta);
 
-  React.useEffect(() => {
-    MusicControl.updatePlayback({
-      state: paused ? MusicControl.STATE_PAUSED : MusicControl.STATE_PLAYING,
-      elapsedTime: progress.currentTime
-    });
-  }, [paused, progress.currentTime]);
+  skipNext = () => {
+    this.props.onSeek(0);
+    this.props.skipNext();
+  };
 
-  React.useEffect(() => {
-    if (currSong.source === 'YOUTUBE') {
-      MusicControl.setNowPlaying({
-        title: currSong.title,
-        artist: currSong.artist,
-        duration: Number(currSong.duration),
-        artwork: currSong.thumbnail.url
-        // description: '', // Android Only
-        // color: 0xFFFFFF, // Notification Color - Android Only
-        // date: '1983-01-02T00:00:00Z', // Release Date (RFC 3339) - Android Only
-        // rating: 84, // Android Only (Boolean or Number depending on the type)
-        // notificationIcon: 'my_custom_icon' // Android Only (String), Android Drawable resource name for a custom notification icon
-      });
-    } else {
-      MusicControl.setNowPlaying({
-        title: currSong.title,
-        artist: currSong.artist,
-        duration: currSong.duration
-      });
-    }
-  }, [currSong]);
+  onDeltaSeek = (delta: number) => {
+    this.props.onSeek(this.props.progress.currentTime + delta);
+  };
 
-  return (
-    <View style={styles.root}>
-      <View style={styles.thumbnail}>
-        {currSong.source === 'YOUTUBE' ? (
-          <Playing currSong={currSong} />
-        ) : (
-          <>
-            <Text>{currSong.title}</Text>
-            <Text>{currSong.artist}</Text>
-          </>
-        )}
-      </View>
-      <View style={styles.playback}>
-        <Slider
-          value={progress.currentTime}
-          max={progress.seekableDuration}
-          onChange={onSeek}
-        />
-        <View style={styles.timeBar}>
-          <Text style={styles.time}>
-            {formatDuration(progress.currentTime)}
-          </Text>
-          <Text style={styles.time}>
-            {formatDuration(progress.seekableDuration)}
-          </Text>
+  render() {
+    const {
+      paused,
+      shuffle,
+      currSong,
+      progress,
+      onSeek,
+      togglePause,
+      skipNext,
+      setShuffle
+    } = this.props;
+
+    return (
+      <View style={styles.root}>
+        <View style={styles.thumbnail}>
+          {currSong.source === 'YOUTUBE' ? (
+            <Playing currSong={currSong} />
+          ) : (
+            <>
+              <Text>{currSong.title}</Text>
+              <Text>{currSong.artist}</Text>
+            </>
+          )}
         </View>
-        <View style={styles.controls}>
-          <View style={styles.buttonsLeft} />
-          <Controls
-            paused={paused}
-            skipPrevious={skipPrevious}
-            skipNext={skipNext}
-            togglePause={togglePause}
-            onDeltaSeek={onDeltaSeek}
+        <View style={styles.playback}>
+          <Slider
+            value={progress.currentTime}
+            max={progress.seekableDuration}
+            onChange={onSeek}
           />
-          <View style={styles.buttonsRight}>
-            <TouchableOpacity
-              onPress={() =>
-                dispatch({ type: 'SET_SHUFFLE', shuffle: !shuffle })
-              }>
-              <Shuffle width={30} height={30} fillOpacity={shuffle ? 1 : 0.5} />
-            </TouchableOpacity>
+          <View style={styles.timeBar}>
+            <Text style={styles.time}>
+              {formatDuration(progress.currentTime)}
+            </Text>
+            <Text style={styles.time}>
+              {formatDuration(progress.seekableDuration)}
+            </Text>
+          </View>
+          <View style={styles.controls}>
+            <View style={styles.buttonsLeft} />
+            <Controls
+              paused={paused}
+              skipPrevious={this.skipPreviousOrStart}
+              skipNext={skipNext}
+              togglePause={togglePause}
+              onDeltaSeek={this.onDeltaSeek}
+              onSeek={onSeek}
+            />
+            <View style={styles.buttonsRight}>
+              <TouchableOpacity onPress={() => setShuffle(!shuffle)}>
+                <Shuffle
+                  width={30}
+                  height={30}
+                  fillOpacity={shuffle ? 1 : 0.5}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  }
+}
+
+const mapState = (state: StoreState) => {
+  return {
+    shuffle: state.shuffle
+  };
 };
+
+const mapDispatch = (dispatch: Dispatch<Action>) => ({
+  skipPrevious: () => dispatch({ type: 'SKIP_PREVIOUS' }),
+  skipNext: () => dispatch({ type: 'SKIP_NEXT' }),
+  setShuffle: (shuffle: boolean) => dispatch({ type: 'SET_SHUFFLE', shuffle })
+});
 
 const styles = StyleSheet.create({
   root: {
@@ -157,4 +157,5 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PlaybackContent;
+// eslint-disable-next-line prettier/prettier
+export default connect(mapState, mapDispatch)(PlaybackContent);

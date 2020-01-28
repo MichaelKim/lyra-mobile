@@ -12,7 +12,7 @@ interface Props {
   currSong: Song;
   loading: boolean;
   paused: boolean;
-  setPaused: (paused: boolean) => void;
+  togglePause: () => void;
   progress: {
     currentTime: number;
     playableDuration: number;
@@ -20,15 +20,13 @@ interface Props {
   };
 }
 
-const PlaybackHeader = (props: Props) => {
-  const {
-    currSong,
-    loading,
-    paused,
-    setPaused,
-    progress: { currentTime, seekableDuration }
-  } = props;
-
+const PlaybackHeader = ({
+  currSong,
+  loading,
+  paused,
+  togglePause,
+  progress: { currentTime, seekableDuration }
+}: Props) => {
   return (
     <View style={styles.root}>
       <View style={styles.progressBar}>
@@ -52,7 +50,7 @@ const PlaybackHeader = (props: Props) => {
             <Loading />
           </View>
         ) : (
-          <TouchableOpacity onPress={() => setPaused(!paused)}>
+          <TouchableOpacity onPress={togglePause}>
             {paused ? (
               <Play width={25} height={25} />
             ) : (
@@ -95,10 +93,6 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25
   }
-  // playPause: {
-  //   width: 30,
-  //   height: 30
-  // }
 });
 
 export default PlaybackHeader;

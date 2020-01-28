@@ -102,14 +102,6 @@ export function parseDuration(iso: string) {
   );
 }
 
-interface Shortcuts {
-  [key: string]: () => void;
-}
-
-export function registerShortcuts(_: Shortcuts) {}
-
-export function removeShortcuts(_: Shortcuts) {}
-
 export function selectLocalDir(): Array<string> | null {
   return null;
 }
