@@ -1,4 +1,4 @@
-import { getSongs, getSongList } from '../util';
+import { getSongList } from '../util';
 import { save, clear } from './storage';
 import { downloadVideo, getRelatedVideos } from '../yt-util';
 
@@ -7,16 +7,6 @@ import { Middleware, Song } from '../types';
 export const logger: Middleware = () => next => action => {
   console.log(action);
   return next(action);
-};
-
-export const loadSongs: Middleware = store => next => action => {
-  const result = next(action);
-
-  if (action.type === 'LOAD_STORAGE') {
-    getSongs().then(songs => store.dispatch({ type: 'ADD_SONGS', songs }));
-  }
-
-  return result;
 };
 
 export const queueSong: Middleware = store => next => action => {

@@ -7,8 +7,14 @@ import { createBottomTabNavigator, BottomTabBar } from 'react-navigation-tabs';
 import Library from './components/library';
 import Search from './components/search';
 import Queue from './components/queue';
+import Settings from './components/settings';
 import Playback from './components/playback';
-import { Play, Search as SearchIcon, Queue as QueueIcon } from './icons';
+import {
+  Library as LibraryIcon,
+  Search as SearchIcon,
+  Queue as QueueIcon,
+  Settings as SettingsIcon
+} from './icons';
 
 import store from './state/store';
 import { Colors } from './constants';
@@ -23,16 +29,18 @@ const TabBarComponent = (props: React.ComponentProps<typeof BottomTabBar>) => {
 };
 
 const Icons = {
-  Library: Play,
+  Library: LibraryIcon,
   Search: SearchIcon,
-  Queue: QueueIcon
+  Queue: QueueIcon,
+  Settings: SettingsIcon
 };
 
 const Navigator = createBottomTabNavigator(
   {
     Library,
     Search,
-    Queue
+    Queue,
+    Settings
   },
   {
     initialRouteName: 'Library',

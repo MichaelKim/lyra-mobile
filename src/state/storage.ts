@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-community/async-storage';
+
 import { StoreState } from '../types';
 
 export const initialState: StoreState = {
@@ -25,7 +27,15 @@ export const initialState: StoreState = {
 };
 
 export function save(state: StoreState) {
-  console.log('Saved state:', state);
+  AsyncStorage.setItem('state', JSON.stringify(state))
+    .then(() => {
+      console.log('Saved state:', state);
+    })
+    .catch(err => {
+      console.log(err);
+    });
 }
 
-export function clear() {}
+export function clear() {
+  AsyncStorage.removeItem('state');
+}
