@@ -45,7 +45,7 @@ class Footer extends React.Component<Props> {
   };
 
   toggleShuffle = () => {
-    this.props.setShuffle(shuffle => !shuffle);
+    this.props.setShuffle(!this.props.shuffle);
   };
 
   render() {

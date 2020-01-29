@@ -163,9 +163,45 @@ class Playback extends React.Component<Props, State> {
     this.props.skipNext();
   };
 
+  renderHeader = () => {
+    const { currSong } = this.props;
+    const { loading, paused, progress } = this.state;
+
+    if (currSong == null) {
+      return null;
+    }
+
+    return (
+      <PlaybackHeader
+        currSong={currSong}
+        loading={loading}
+        paused={paused}
+        progress={progress}
+        togglePause={this.togglePause}
+      />
+    );
+  };
+
+  renderContent = () => {
+    const { currSong } = this.props;
+    return <PlaybackContent currSong={currSong} />;
+  };
+
+  renderFooter = () => {
+    const { paused, progress } = this.state;
+    return (
+      <PlaybackFooter
+        paused={paused}
+        progress={progress}
+        onSeek={this.onSeek}
+        togglePause={this.togglePause}
+      />
+    );
+  };
+
   render() {
     const { currSong } = this.props;
-    const { src, loading, paused, progress } = this.state;
+    const { src, paused } = this.state;
 
     if (currSong == null) {
       return null;
@@ -186,24 +222,9 @@ class Playback extends React.Component<Props, State> {
           />
         )}
         <Slide
-          renderHeader={() => (
-            <PlaybackHeader
-              currSong={currSong}
-              loading={loading}
-              paused={paused}
-              togglePause={this.togglePause}
-              progress={progress}
-            />
-          )}
-          renderContent={() => <PlaybackContent currSong={currSong} />}
-          renderFooter={() => (
-            <PlaybackFooter
-              progress={progress}
-              onSeek={this.onSeek}
-              paused={paused}
-              togglePause={this.togglePause}
-            />
-          )}
+          renderHeader={this.renderHeader}
+          renderContent={this.renderContent}
+          renderFooter={this.renderFooter}
         />
       </View>
     );

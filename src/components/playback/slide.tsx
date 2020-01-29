@@ -16,6 +16,7 @@ const {
   event,
   eq,
   neq,
+  not,
   add,
   sub,
   multiply,
@@ -42,10 +43,41 @@ const windowHeight = Dimensions.get('window').height;
 const TOP = -windowHeight + NAVIGATION_HEIGHT + BAR_HEIGHT;
 
 export class BottomSheet extends React.Component<Props> {
+  headerHeight = new Value(60);
   contentHeight = new Value(646);
+  footerHeight = new Value(70);
+
+  onHeaderLayout = event([
+    {
+      nativeEvent: {
+        layout: {
+          height: this.headerHeight
+        }
+      }
+    }
+  ]);
+
+  onContentLayout = event([
+    {
+      nativeEvent: {
+        layout: {
+          height: this.contentHeight
+        }
+      }
+    }
+  ]);
+
+  onFooterLayout = event([
+    {
+      nativeEvent: {
+        layout: {
+          height: this.footerHeight
+        }
+      }
+    }
+  ]);
 
   clock = new Clock(); // Clock for spring
-  clock2 = new Clock(); // Clock for spring
 
   // Clock state
   clockState = {
@@ -55,7 +87,7 @@ export class BottomSheet extends React.Component<Props> {
     time: new Value(0)
   };
 
-  // Clock config
+  // Snap (spring) config
   config = {
     damping: 50,
     mass: 0.3,
@@ -66,6 +98,7 @@ export class BottomSheet extends React.Component<Props> {
     toValue: new Value(0)
   };
 
+  // Sliding (delay) config
   config2 = {
     deceleration: 0.998
   };
@@ -98,91 +131,87 @@ export class BottomSheet extends React.Component<Props> {
   // Velocity, clamped
   newVelocity = cond(greaterOrEq(this.next, 0), 0, this.velocity);
 
+  // Content height + footer height: the highest the content can go (negative value)
+  contentLimit = sub(sub(0, this.contentHeight), this.footerHeight);
+
+  clamp = (
+    value: Animated.Adaptable<number>,
+    min: Animated.Adaptable<number>,
+    max: Animated.Adaptable<number>
+  ) => {
+    return cond(
+      lessOrEq(value, min),
+      min,
+      cond(greaterOrEq(value, max), max, value)
+    );
+  };
+
   pos = block([
     cond(
       eq(this.panState, State.ACTIVE),
       [
         cond(clockRunning(this.clock), stopClock(this.clock)),
-        cond(clockRunning(this.clock2), stopClock(this.clock2)),
         // Clamp prev to [TOP, 0]
-        set(
-          this.prev,
-          cond(
-            lessOrEq(this.next, sub(sub(0, this.contentHeight, 70))),
-            sub(sub(0, this.contentHeight, 70)),
-            cond(greaterOrEq(this.next, 0), 0, this.next)
-          )
-        ),
+        set(this.prev, this.clamp(this.next, this.contentLimit, 0)),
         set(this.prevDelta, this.delta)
       ],
       cond(neq(this.panState, -1), [
-        // Start of spring
+        // Start of animation, reset values
         cond(eq(this.panState, State.BEGAN), set(this.velocity, 0)), // TODO: find out why this is required
         set(this.delta, 0),
         set(this.prevDelta, 0),
         cond(
           lessOrEq(this.prev, TOP),
           [
-            // Scroll
+            // Content higher than TOP: scroll
+            cond(not(clockRunning(this.clock)), [
+              // Start clock
+              set(this.clockState.finished, 0),
+              set(this.clockState.velocity, this.velocity),
+              set(this.clockState.position, this.prev),
+              set(this.clockState.time, 0), // Avoid jumping at start
+              startClock(this.clock)
+            ]),
+            decay(this.clock, this.clockState, this.config2),
+            // Finished
+            cond(this.clockState.finished, [
+              stopClock(this.clock),
+              set(this.velocity, 0)
+            ]),
+            // Move prev, clamped to bottom of content
+            set(
+              this.prev,
+              this.clamp(this.clockState.position, this.contentLimit, 0)
+            ),
+            // If prev is moved below TOP, then it has slid past TOP: clamp to TOP and end sliding
+            cond(
+              greaterOrEq(this.prev, TOP),
+              [
+                set(this.prev, TOP),
+                stopClock(this.clock),
+                set(this.clockState.finished, 1),
+                set(this.velocity, 0)
+              ],
+              set(this.velocity, this.clockState.velocity)
+            )
+          ],
+          [
+            // Snap
             cond(clockRunning(this.clock), 0, [
               // Start clock
               set(this.clockState.finished, 0),
               set(this.clockState.velocity, this.newVelocity),
               set(this.clockState.position, this.prev),
+              set(this.config.toValue, this.snap),
               startClock(this.clock)
             ]),
-            decay(this.clock, this.clockState, this.config2),
-            // Animated.call([this.prev], ([p]) => console.log('decay', p)),
+            spring(this.clock, this.clockState, this.config),
             cond(this.clockState.finished, [
               stopClock(this.clock),
               set(this.velocity, 0)
             ]),
-            set(
-              this.prev,
-              cond(
-                lessOrEq(
-                  this.clockState.position,
-                  sub(sub(0, this.contentHeight, 70))
-                ),
-                sub(sub(0, this.contentHeight, 70)),
-                cond(
-                  greaterOrEq(this.clockState.position, 0),
-                  0,
-                  this.clockState.position
-                )
-              )
-            ),
+            set(this.prev, this.clockState.position),
             set(this.velocity, this.clockState.velocity)
-          ],
-          [
-            // Snap
-            cond(
-              clockRunning(this.clock),
-              [
-                // TODO: Bounce
-                stopClock(this.clock),
-                set(this.prev, TOP),
-                set(this.velocity, 0)
-              ],
-              [
-                cond(clockRunning(this.clock2), 0, [
-                  // Start clock
-                  set(this.clockState.finished, 0),
-                  set(this.clockState.velocity, this.newVelocity),
-                  set(this.clockState.position, this.prev),
-                  set(this.config.toValue, this.snap),
-                  startClock(this.clock2)
-                ]),
-                spring(this.clock2, this.clockState, this.config),
-                // Animated.call([this.prev], ([p]) => console.log('spring', p)),
-                cond(this.clockState.finished, [
-                  stopClock(this.clock2),
-                  set(this.velocity, 0)
-                ]),
-                set(this.prev, this.clockState.position),
-                set(this.velocity, this.clockState.velocity)
-              ]
-            )
           ]
         )
       ])
@@ -190,9 +219,10 @@ export class BottomSheet extends React.Component<Props> {
     this.prev
   ]);
 
-  // fixed = cond(lessOrEq(this.prev, TOP), sub(TOP, this.prev), 0);
+  // Sensor position: clamped to TOP
+  fixed = cond(lessOrEq(this.pos, TOP), TOP - 1, this.pos);
 
-  fixed = cond(lessOrEq(this.pos, TOP), TOP, this.pos);
+  // Content position: additional delta
   diff = cond(lessOrEq(this.pos, TOP), sub(this.pos, TOP), 0);
 
   render() {
@@ -207,48 +237,33 @@ export class BottomSheet extends React.Component<Props> {
               transform: [{ translateY: this.fixed }]
             }
           ]}>
-          {/* <Animated.Code>
-            {() => Animated.call([this.next, this.pos], console.log)}
-          </Animated.Code> */}
           <TapGestureHandler>
             <Animated.View>
               <Animated.View
-                style={[
-                  styles.header,
-                  {
-                    // transform: [{ translateY: this.fixed }]
-                  }
-                ]}>
+                style={styles.header}
+                onLayout={this.onHeaderLayout}>
                 {this.props.renderHeader()}
               </Animated.View>
               <Animated.View
                 style={[
                   styles.content,
                   {
-                    transform: [{ translateY: this.diff }]
+                    transform: [{ translateY: this.diff }],
+                    top: this.headerHeight,
+                    minHeight: sub(sub(0, TOP), this.footerHeight)
                   }
                 ]}
-                onLayout={event([
-                  {
-                    nativeEvent: {
-                      layout: {
-                        height: this.contentHeight
-                      }
-                    }
-                  }
-                ])}>
+                onLayout={this.onContentLayout}>
                 {this.props.renderContent()}
-                {/* {Array.from(Array(100).keys()).map(i => (
-                  <Text key={i}>{i}</Text>
-                ))} */}
               </Animated.View>
               <Animated.View
                 style={[
                   styles.footer,
                   {
-                    // transform: [{ translateY: this.fixed }]
+                    bottom: add(TOP, this.footerHeight)
                   }
-                ]}>
+                ]}
+                onLayout={this.onFooterLayout}>
                 {this.props.renderFooter()}
               </Animated.View>
             </Animated.View>
@@ -261,27 +276,20 @@ export class BottomSheet extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   sensor: {
-    height: -TOP,
-    backgroundColor: 'black'
+    height: -TOP
   },
   header: {
-    height: BAR_HEIGHT,
-    backgroundColor: 'lightgoldenrodyellow',
     zIndex: 1
   },
   content: {
     position: 'absolute',
-    top: BAR_HEIGHT,
     left: 0,
     right: 0,
-    backgroundColor: 'lightblue',
-    flex: 1,
-    minHeight: -TOP - 70
+    flex: 1
   },
   footer: {
     position: 'relative',
-    zIndex: 1,
-    bottom: TOP + 70
+    zIndex: 1
   }
 });
 
