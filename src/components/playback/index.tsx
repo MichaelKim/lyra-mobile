@@ -6,6 +6,7 @@ import MusicControl from 'react-native-music-control';
 
 import PlaybackContent from './content';
 import PlaybackHeader from './header';
+import PlaybackFooter from './footer';
 import Slide from './slide';
 import { getStreamURL } from '../../yt-util';
 
@@ -194,9 +195,9 @@ class Playback extends React.Component<Props, State> {
               progress={progress}
             />
           )}
-          renderContent={() => (
-            <PlaybackContent
-              currSong={currSong}
+          renderContent={() => <PlaybackContent currSong={currSong} />}
+          renderFooter={() => (
+            <PlaybackFooter
               progress={progress}
               onSeek={this.onSeek}
               paused={paused}
