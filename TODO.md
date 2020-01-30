@@ -3,5 +3,7 @@
 - on header slide, directly move bottom sheet
   - need two sensors: one of header and one for content
 - set app icon
-- state storage
 - download?
+- be able to close notification while paused
+- nav button wider?
+- reorder notificaton media control buttons

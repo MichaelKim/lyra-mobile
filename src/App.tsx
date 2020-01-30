@@ -48,7 +48,8 @@ const Navigator = createBottomTabNavigator(
       activeTintColor: Colors.text,
       style: {
         backgroundColor: Colors.playback,
-        borderTopWidth: 0
+        borderTopWidth: 0,
+        zIndex: 10
       }
     },
     defaultNavigationOptions: ({ navigation }) => ({

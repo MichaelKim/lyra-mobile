@@ -28,6 +28,7 @@ const Controls = ({
 
   // Enable media controls
   React.useEffect(() => {
+    MusicControl.enableControl('closeNotification', true, { when: 'paused' });
     MusicControl.enableBackgroundMode(true);
     MusicControl.enableControl('previousTrack', true);
     MusicControl.enableControl('skipBackward', true, { interval: 10 });

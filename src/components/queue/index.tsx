@@ -30,6 +30,7 @@ const Queue = (_: Props) => {
             <SongItem song={currSong} />
           </View>
         )}
+        <View style={styles.divider} />
         <Text style={styles.subtitle}>Next Up</Text>
         <View>
           {nextSongs.map(song => (
@@ -58,6 +59,11 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 20,
     color: Colors.text
+  },
+  divider: {
+    height: 1,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border
   }
 });
 

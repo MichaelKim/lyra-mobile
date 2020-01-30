@@ -112,7 +112,8 @@ const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 60
+    paddingTop: 10,
+    paddingBottom: 10
   },
   left: {
     flexDirection: 'column',
