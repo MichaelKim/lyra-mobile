@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Text, TouchableHighlight } from 'react-native';
+import { StyleSheet, ScrollView, Text } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
 
 import Loading from '../loading';
@@ -44,9 +45,12 @@ const YtSearch = (props: Props) => {
           <Loading />
         ) : (
           videos.map(video => (
-            <TouchableHighlight key={video.id} onPress={() => onSelect(video)}>
+            <RectButton
+              key={video.id}
+              rippleColor="#111"
+              onPress={() => onSelect(video)}>
               <YtItem video={video} />
-            </TouchableHighlight>
+            </RectButton>
           ))
         )}
       </ScrollView>
