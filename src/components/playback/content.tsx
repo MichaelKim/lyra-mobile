@@ -34,7 +34,7 @@ const PlaybackContent = ({ currSong }: Props) => {
 
 const styles = StyleSheet.create({
   root: {
-    backgroundColor: Colors.screen,
+    backgroundColor: '#282828',
     flex: 1,
     padding: 24
   },

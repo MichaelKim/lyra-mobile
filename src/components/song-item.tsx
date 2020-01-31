@@ -42,6 +42,7 @@ const SongItem = ({ song, onPress }: Props) => {
           pageX: number,
           pageY: number
         ) => {
+          // TODO: check for unmount
           setMenuPosition(pageY);
         }
       );

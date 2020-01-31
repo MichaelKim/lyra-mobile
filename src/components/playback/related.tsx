@@ -21,6 +21,7 @@ const Related = ({ currSong }: Props) => {
   React.useEffect(() => {
     if (currSong && currSong.source === 'YOUTUBE') {
       getRelatedVideos(currSong.id).then(relatedVideos => {
+        // TODO: cancel on unmount
         setRelated(relatedVideos);
       });
     }
