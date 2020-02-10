@@ -10,7 +10,7 @@ interface Props {
   paused: boolean;
   skipPrevious: () => void;
   skipNext: () => void;
-  togglePause: () => void;
+  setPaused: (paused: boolean) => void;
   onDeltaSeek: (delta: number) => void;
   onSeek: (amount: number) => void;
 }
@@ -19,12 +19,16 @@ const Controls = ({
   paused,
   skipPrevious,
   skipNext,
-  togglePause,
+  setPaused,
   onDeltaSeek,
   onSeek
 }: Props) => {
   const onReplay = React.useCallback(() => onDeltaSeek(-10), [onDeltaSeek]);
   const onForward = React.useCallback(() => onDeltaSeek(10), [onDeltaSeek]);
+  const togglePause = React.useCallback(() => setPaused(!paused), [
+    paused,
+    setPaused
+  ]);
 
   // Enable media controls
   React.useEffect(() => {
@@ -48,8 +52,8 @@ const Controls = ({
   useMediaControls({
     previousTrack: skipPrevious,
     skipBackward: onReplay,
-    play: togglePause,
-    pause: togglePause,
+    play: () => setPaused(false),
+    pause: () => setPaused(true),
     skipForward: onForward,
     nextTrack: skipNext,
     seek: onSeek

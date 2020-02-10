@@ -2,8 +2,11 @@
 - on header press, close bottom sheet if open
 - on header slide, directly move bottom sheet
   - need two sensors: one of header and one for content
-- set app icon
 - download?
 - be able to close notification while paused
 - nav button wider?
 - reorder notificaton media control buttons
+- volume bar
+- options button on yt-item
+- style playback item
+- can't change playback slider

@@ -21,7 +21,7 @@ interface Props {
     seekableDuration: number;
   };
   onSeek: (seek: number) => void;
-  togglePause: () => void;
+  setPaused: (paused: boolean) => void;
   skipPrevious: () => void;
   skipNext: () => void;
   setShuffle: (shuffle: boolean) => void;
@@ -54,7 +54,7 @@ class Footer extends React.Component<Props> {
       shuffle,
       progress,
       onSeek,
-      togglePause,
+      setPaused,
       skipNext
     } = this.props;
 
@@ -79,7 +79,7 @@ class Footer extends React.Component<Props> {
             paused={paused}
             skipPrevious={this.skipPreviousOrStart}
             skipNext={skipNext}
-            togglePause={togglePause}
+            setPaused={setPaused}
             onDeltaSeek={this.onDeltaSeek}
             onSeek={onSeek}
           />

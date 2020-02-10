@@ -28,6 +28,7 @@ interface State {
     playableDuration: number;
     seekableDuration: number;
   };
+  autoplay: boolean;
 }
 
 class Playback extends React.Component<Props, State> {
@@ -35,6 +36,7 @@ class Playback extends React.Component<Props, State> {
     src: '',
     loading: true,
     paused: true,
+    autoplay: false,
     progress: {
       currentTime: 0,
       playableDuration: 0,
@@ -44,9 +46,9 @@ class Playback extends React.Component<Props, State> {
 
   player = React.createRef<Video>();
 
-  togglePause = () => {
+  setPaused = (paused: boolean) => {
     this.setState({
-      paused: !this.state.paused
+      paused
     });
   };
 
@@ -69,6 +71,7 @@ class Playback extends React.Component<Props, State> {
     }
 
     this.setState({
+      autoplay,
       paused: true,
       loading: true
     });
@@ -90,19 +93,13 @@ class Playback extends React.Component<Props, State> {
       MusicControl.setNowPlaying({
         title: currSong.title,
         artist: currSong.artist,
-        duration: Number(currSong.duration),
+        duration: Number(currSong.duration || 1),
         artwork: currSong.thumbnail.url
         // description: '', // Android Only
         // color: 0xFFFFFF, // Notification Color - Android Only
         // date: '1983-01-02T00:00:00Z', // Release Date (RFC 3339) - Android Only
         // rating: 84, // Android Only (Boolean or Number depending on the type)
         // notificationIcon: 'my_custom_icon' // Android Only (String), Android Drawable resource name for a custom notification icon
-      });
-    }
-
-    if (autoplay) {
-      this.setState({
-        paused: false
       });
     }
   };
@@ -143,8 +140,9 @@ class Playback extends React.Component<Props, State> {
   };
 
   onLoad = () => {
+    console.log('on load ', this.state.autoplay);
     this.setState({
-      paused: false,
+      paused: !this.state.autoplay,
       loading: false
     });
   };
@@ -177,7 +175,7 @@ class Playback extends React.Component<Props, State> {
         loading={loading}
         paused={paused}
         progress={progress}
-        togglePause={this.togglePause}
+        setPaused={this.setPaused}
       />
     );
   };
@@ -194,7 +192,7 @@ class Playback extends React.Component<Props, State> {
         paused={paused}
         progress={progress}
         onSeek={this.onSeek}
-        togglePause={this.togglePause}
+        setPaused={this.setPaused}
       />
     );
   };

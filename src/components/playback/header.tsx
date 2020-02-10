@@ -12,7 +12,7 @@ interface Props {
   currSong: Song;
   loading: boolean;
   paused: boolean;
-  togglePause: () => void;
+  setPaused: (paused: boolean) => void;
   progress: {
     currentTime: number;
     playableDuration: number;
@@ -24,9 +24,14 @@ const PlaybackHeader = ({
   currSong,
   loading,
   paused,
-  togglePause,
+  setPaused,
   progress: { currentTime, seekableDuration }
 }: Props) => {
+  const togglePause = React.useCallback(() => setPaused(!paused), [
+    paused,
+    setPaused
+  ]);
+
   return (
     <View style={styles.root}>
       <View style={styles.progressBar}>
