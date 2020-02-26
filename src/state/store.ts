@@ -1,28 +1,29 @@
-import { createStore, applyMiddleware } from 'redux';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import { applyMiddleware, createStore } from 'redux';
+import { Store, StoreState } from '../types';
+import { checkQueue, logger, queueSong, saveToStorage } from './middleware';
 import reducer from './reducer';
 import { initialState } from './storage';
-import { logger, queueSong, saveToStorage } from './middleware';
-
-import { Store } from '../types';
 
 const store: Store = createStore(
   reducer,
   initialState,
-  applyMiddleware(logger, queueSong, saveToStorage)
+  applyMiddleware(logger, queueSong, saveToStorage, checkQueue)
 );
 
-AsyncStorage.getItem('state').then(state => {
+function safeParse(state: string | null): StoreState {
+  if (!state) return initialState;
   try {
-    state = JSON.parse(state);
-  } finally {
-    if (!state) state = initialState;
+    return JSON.parse(state);
+  } catch {
+    return initialState;
   }
+}
 
+AsyncStorage.getItem('state').then(state => {
   store.dispatch({
     type: 'LOAD_STORAGE',
-    state
+    state: safeParse(state)
   });
 });
 

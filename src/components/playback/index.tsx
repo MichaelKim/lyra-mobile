@@ -1,18 +1,16 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { StyleSheet, View } from 'react-native';
-import Video from 'react-native-video';
 import MusicControl from 'react-native-music-control';
-
-import PlaybackContent from './content';
-import PlaybackHeader from './header';
-import PlaybackFooter from './footer';
-import Slide from './slide';
-import { getStreamURL } from '../../yt-util';
-
-import { BAR_HEIGHT } from '../../constants';
-import { Song, StoreState, Action } from '../../types';
+import Video from 'react-native-video';
+import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { BAR_HEIGHT } from '../../constants';
+import { Action, Song, StoreState } from '../../types';
+import { getStreamURL } from '../../yt-util';
+import PlaybackContent from './content';
+import PlaybackFooter from './footer';
+import PlaybackHeader from './header';
+import Slide from './slide';
 
 interface Props {
   currSong: Song | null;
@@ -101,6 +99,8 @@ class Playback extends React.Component<Props, State> {
         // rating: 84, // Android Only (Boolean or Number depending on the type)
         // notificationIcon: 'my_custom_icon' // Android Only (String), Android Drawable resource name for a custom notification icon
       });
+
+      console.log('src', currSong.id, src);
     }
   };
 

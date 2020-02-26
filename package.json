@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "dev": "adb reverse tcp:8081 tcp:8081 && adb reverse tcp:8087 tcp:8087 && react-native run-android",
+    "dev": "adb reverse tcp:8081 tcp:8081 && adb reverse tcp:8097 tcp:8097 && react-native run-android",
     "devtools": "react-devtools",
     "android": "react-native run-android",
     "ios": "react-native run-ios",

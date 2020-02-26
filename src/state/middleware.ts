@@ -1,8 +1,7 @@
-import { getSongList } from '../util';
-import { save, clear } from './storage';
-import { downloadVideo, getRelatedVideos } from '../yt-util';
-
 import { Middleware, Song } from '../types';
+import { getSongList } from '../util';
+import { downloadVideo, getRelatedVideos } from '../yt-util';
+import { clear, save } from './storage';
 
 export const logger: Middleware = () => next => action => {
   console.log(action);
@@ -140,3 +139,44 @@ export const saveToStorage: Middleware = store => next => action => {
 };
 
 function unreachable(_: never) {}
+
+export const checkQueue: Middleware = store => next_ => action => {
+  const result = next_(action);
+
+  if (process.env.NODE_ENV === 'production') {
+    return result;
+  }
+
+  const {
+    songs,
+    queue: { cache, curr, next, prev }
+  } = store.getState();
+
+  // Sanity checks in queue
+  const ids = [...prev, curr, ...next].filter((id): id is string => id != null);
+  const map = ids.reduce((acc, id) => {
+    if (acc[id] == null) {
+      acc[id] = 1;
+    } else {
+      acc[id]++;
+    }
+    return acc;
+  }, {} as { [id: string]: number });
+
+  Object.keys(map).forEach(id => {
+    if (cache[id] != null) {
+      if (cache[id].count !== map[id]) {
+        console.warn(
+          `Mismatch count in cache for ${id}: got ${cache[id].count}, expected ${map[id]}`
+        );
+        cache[id].count = map[id];
+      }
+    } else {
+      if (songs[id] == null) {
+        console.warn(`Unknown song in queue: ${id}`);
+      }
+    }
+  });
+
+  return result;
+};
