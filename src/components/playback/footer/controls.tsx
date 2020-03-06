@@ -1,10 +1,9 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MusicControl from 'react-native-music-control';
-
-import { useMediaControls } from '../../hooks';
-import { Previous, Replay, Play, Pause, Forward, Next } from '../../icons';
+import { useMediaControls } from '../../../hooks';
+import { Forward, Next, Pause, Play, Previous, Replay } from '../../../icons';
 
 interface Props {
   paused: boolean;
@@ -29,6 +28,8 @@ const Controls = ({
     paused,
     setPaused
   ]);
+  const onPlay = React.useCallback(() => setPaused(false), [setPaused]);
+  const onPause = React.useCallback(() => setPaused(true), [setPaused]);
 
   // Enable media controls
   React.useEffect(() => {
@@ -52,8 +53,8 @@ const Controls = ({
   useMediaControls({
     previousTrack: skipPrevious,
     skipBackward: onReplay,
-    play: () => setPaused(false),
-    pause: () => setPaused(true),
+    play: onPlay,
+    pause: onPause,
     skipForward: onForward,
     nextTrack: skipNext,
     seek: onSeek
@@ -90,4 +91,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Controls;
+export default React.memo(Controls);

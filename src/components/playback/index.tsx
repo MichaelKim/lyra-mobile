@@ -140,7 +140,6 @@ class Playback extends React.Component<Props, State> {
   };
 
   onLoad = () => {
-    console.log('on load ', this.state.autoplay);
     this.setState({
       paused: !this.state.autoplay,
       loading: false
@@ -182,6 +181,11 @@ class Playback extends React.Component<Props, State> {
 
   renderContent = () => {
     const { currSong } = this.props;
+
+    if (currSong == null) {
+      return null;
+    }
+
     return <PlaybackContent currSong={currSong} />;
   };
 

@@ -1,12 +1,11 @@
 import React from 'react';
+import MusicControl from 'react-native-music-control';
 import {
-  useSelector as _useSelector,
-  useDispatch as _useDispatch
+  useDispatch as _useDispatch,
+  useSelector as _useSelector
 } from 'react-redux';
 import { Dispatch } from 'redux';
-import MusicControl from 'react-native-music-control';
-
-import { StoreState, Action } from './types';
+import { Action, StoreState } from './types';
 
 // Type wrappers for built-in hooks
 export function useSelector<Selected>(

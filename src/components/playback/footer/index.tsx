@@ -1,16 +1,14 @@
 import React from 'react';
-import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { Colors } from '../../../constants';
+import { Shuffle } from '../../../icons';
+import { Action, StoreState } from '../../../types';
+import { formatDuration } from '../../../util';
+import Slider from '../../slider';
 import Controls from './controls';
-import Slider from '../slider';
-import { Shuffle } from '../../icons';
-
-import { Colors } from '../../constants';
-import { formatDuration } from '../../util';
-import { StoreState, Action } from '../../types';
 
 interface Props {
   paused: boolean;
