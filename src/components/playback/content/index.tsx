@@ -1,11 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
-import YtItem from '../yt-item';
+import { Colors } from '../../../constants';
+import { Song } from '../../../types';
+import YtItem from '../../yt-item';
 import Related from './related';
-
-import { Colors } from '../../constants';
-import { Song } from '../types';
 
 interface Props {
   currSong: Song;
@@ -20,7 +18,7 @@ const PlaybackContent = ({ currSong }: Props) => {
           <YtItem video={currSong} />
           <View style={styles.divider} />
           <Text style={styles.subtitle}>Related Videos</Text>
-          <Related key={currSong.id} currSong={currSong} />
+          <Related currSong={currSong} />
         </>
       ) : (
         <>
@@ -49,4 +47,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PlaybackContent;
+export default React.memo(PlaybackContent);
