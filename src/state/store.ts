@@ -1,14 +1,22 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { applyMiddleware, createStore } from 'redux';
+import { applyMiddleware, compose, createStore } from 'redux';
 import { Store, StoreState } from '../types';
 import { checkQueue, logger, queueSong, saveToStorage } from './middleware';
 import reducer from './reducer';
 import { initialState } from './storage';
 
+const composeEnhancers =
+  (process.env.NODE_ENV !== 'production' &&
+    // @ts-ignore
+    (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ as typeof compose)) ||
+  compose;
+
 const store: Store = createStore(
   reducer,
   initialState,
-  applyMiddleware(logger, queueSong, saveToStorage, checkQueue)
+  composeEnhancers(
+    applyMiddleware(logger, queueSong, saveToStorage, checkQueue)
+  )
 );
 
 function safeParse(state: string | null): StoreState {
