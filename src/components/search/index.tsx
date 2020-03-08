@@ -1,16 +1,13 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Text, TouchableHighlight } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-
+import { Colors } from '../../constants';
+import { useDispatch } from '../../hooks';
+import { NavigationProps, VideoSong } from '../../types';
+import { ytSearch } from '../../yt-util';
 import Loading from '../loading';
 import Search from '../search-bar';
 import YtItem from '../yt-item';
-
-import { Colors } from '../../constants';
-import { useDispatch } from '../../hooks';
-import { ytSearch } from '../../yt-util';
-
-import { VideoSong, NavigationProps } from '../../types';
 
 interface Props extends NavigationProps {}
 
@@ -44,9 +41,11 @@ const YtSearch = (props: Props) => {
           <Loading />
         ) : (
           videos.map(video => (
-            <TouchableHighlight key={video.id} onPress={() => onSelect(video)}>
-              <YtItem video={video} />
-            </TouchableHighlight>
+            <YtItem
+              key={video.id}
+              video={video}
+              onPress={() => onSelect(video)}
+            />
           ))
         )}
       </ScrollView>

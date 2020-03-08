@@ -1,5 +1,4 @@
 import React from 'react';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 import { useDispatch } from '../../../hooks';
 import { VideoSong } from '../../../types';
 import { getRelatedVideos } from '../../../yt-util';
@@ -48,9 +47,11 @@ const Related = ({ currSong }: Props) => {
   return (
     <>
       {related.map(video => (
-        <TouchableHighlight key={video.id} onPress={() => selectSong(video)}>
-          <YtItem video={video} />
-        </TouchableHighlight>
+        <YtItem
+          key={video.id}
+          video={video}
+          onPress={() => selectSong(video)}
+        />
       ))}
     </>
   );

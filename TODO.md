@@ -7,6 +7,5 @@
 - nav button wider?
 - reorder notificaton media control buttons
 - volume bar
-- options button on yt-item
 - style playback item
 - can't change playback slider
