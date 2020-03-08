@@ -12,6 +12,10 @@ interface PassedProps {
 }
 
 const YtItem = ({ onPress, video }: PassedProps) => {
+  const onOptions = () => {
+    console.log('press');
+  };
+
   return (
     <View style={styles.root}>
       <RectButton onPress={onPress} rippleColor="#111" style={styles.rect}>
@@ -29,8 +33,8 @@ const YtItem = ({ onPress, video }: PassedProps) => {
           </View>
         </View>
       </RectButton>
-      <TouchableOpacity onPress={() => console.log('press')}>
-        <Options width={20} height={20} />
+      <TouchableOpacity onPress={onOptions} style={styles.options}>
+        <Options width={25} height={25} />
       </TouchableOpacity>
     </View>
   );
@@ -68,6 +72,12 @@ const styles = StyleSheet.create({
   details: {
     fontSize: 12,
     color: Colors.text
+  },
+  options: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40
   }
 });
 

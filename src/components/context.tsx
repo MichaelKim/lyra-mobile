@@ -3,27 +3,34 @@ import {
   Modal,
   StyleSheet,
   Text,
+  TouchableNativeFeedback,
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+interface Item {
+  label: string;
+  onPress: () => void;
+}
 
 interface Props {
-  target: React.RefObject<View>;
-  showMenu: boolean;
-  items: Array<{ label: string; onPress: () => void }>;
-  onCloseMenu: () => void;
+  items: Array<Item>;
+  style: object;
+  children: React.ReactNode;
 }
 
 // TODO: add proper positioning (pageX, within screen)
-const Menu = ({ target, showMenu, items, onCloseMenu }: Props) => {
+const Menu = ({ items, style, children }: Props) => {
+  const ref = React.useRef<View>(null);
+  const [showMenu, setMenu] = React.useState(false);
   const [menuPosition, setMenuPosition] = React.useState(0);
 
   React.useEffect(() => {
     let isMounted = true;
 
-    if (showMenu && target.current != null) {
-      target.current.measure(
+    if (showMenu && ref.current != null) {
+      ref.current.measure(
         (
           x: number,
           y: number,
@@ -44,32 +51,52 @@ const Menu = ({ target, showMenu, items, onCloseMenu }: Props) => {
     };
   }, [showMenu]);
 
-  if (!showMenu || menuPosition === 0) {
-    return null;
-  }
-
-  console.log('render menu', menuPosition);
+  const onOpen = React.useCallback(() => setMenu(true), [setMenu]);
+  const onClose = React.useCallback(() => {
+    console.log('close');
+    setMenu(false);
+  }, [setMenu]);
+  const onSelect = React.useCallback(
+    (item: Item) => {
+      console.log('select', item.label);
+      item.onPress();
+      setMenu(false);
+    },
+    [setMenu]
+  );
 
   return (
-    <Modal visible={showMenu} transparent>
-      <TouchableWithoutFeedback onPress={onCloseMenu} accessible={false}>
-        <View style={StyleSheet.absoluteFill} collapsable={false}>
-          <View
-            style={[
-              styles.menu,
-              {
-                top: menuPosition
-              }
-            ]}>
-            {items.map(item => (
-              <RectButton key={item.label} onPress={item.onPress}>
-                <Text style={styles.menuItem}>{item.label}</Text>
-              </RectButton>
-            ))}
+    <>
+      <View ref={ref} collapsable={false}>
+        <TouchableOpacity onPress={onOpen} style={style}>
+          {children}
+        </TouchableOpacity>
+      </View>
+      <Modal visible={showMenu} transparent>
+        <TouchableWithoutFeedback onPress={onClose} accessible={false}>
+          <View style={StyleSheet.absoluteFill} collapsable={false}>
+            {menuPosition > 0 && (
+              <View
+                style={[
+                  styles.menu,
+                  {
+                    top: menuPosition
+                  }
+                ]}>
+                {items.map(item => (
+                  <TouchableNativeFeedback
+                    key={item.label}
+                    background={TouchableNativeFeedback.Ripple('black', false)}
+                    onPress={() => onSelect(item)}>
+                    <Text style={styles.menuItem}>{item.label}</Text>
+                  </TouchableNativeFeedback>
+                ))}
+              </View>
+            )}
           </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+        </TouchableWithoutFeedback>
+      </Modal>
+    </>
   );
 };
 
@@ -77,7 +104,8 @@ const styles = StyleSheet.create({
   menu: {
     position: 'absolute',
     backgroundColor: 'white',
-    right: 0
+    right: 0,
+    zIndex: 1
   },
   menuItem: {
     padding: 10
