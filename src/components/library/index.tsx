@@ -1,15 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-navigation';
-
-import SongItem from '../song-item';
-
+import { FlatList, SafeAreaView } from 'react-navigation';
 import { Colors } from '../../constants';
-import { useSelector, useDispatch } from '../../hooks';
+import { useDispatch, useSelector } from '../../hooks';
+import { NavigationProps, Song } from '../../types';
 import { getSongList } from '../../util';
-
-import { Song, NavigationProps } from '../../types';
+import SongItem from '../song-item';
 
 interface Props extends NavigationProps {}
 
@@ -19,20 +15,24 @@ const Library = (_: Props) => {
   );
   const dispatch = useDispatch();
 
-  const onSelect = (song: Song) => {
-    dispatch({ type: 'SELECT_SONG', song });
-  };
+  const onSelect = React.useCallback(
+    (song: Song) => {
+      dispatch({ type: 'SELECT_SONG', song });
+    },
+    [dispatch]
+  );
 
   return (
     <SafeAreaView style={styles.root}>
-      <ScrollView
+      <FlatList
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.scrollViewContainer}>
-        <Text style={styles.title}>Library</Text>
-        {songs.map(song => (
-          <SongItem key={song.id} song={song} onPress={() => onSelect(song)} />
-        ))}
-      </ScrollView>
+        contentContainerStyle={styles.scrollViewContainer}
+        data={songs}
+        renderItem={({ item }) => (
+          <SongItem key={item.id} song={item} onSelect={onSelect} />
+        )}
+        ListHeaderComponent={() => <Text style={styles.title}>Library</Text>}
+      />
     </SafeAreaView>
   );
 };

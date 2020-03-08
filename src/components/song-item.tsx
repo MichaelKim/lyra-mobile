@@ -4,24 +4,22 @@ import {
   RectButton,
   TouchableWithoutFeedback
 } from 'react-native-gesture-handler';
-
 import { Colors } from '../constants';
 import { useCurrSong, useDispatch } from '../hooks';
 import { Options } from '../icons';
-
 import { Song } from '../types';
 import { formatDuration } from '../util';
+import ContextMenu from './context';
 
 interface Props {
   song: Song;
-  onPress?: () => void;
+  onSelect?: (song: Song) => void;
 }
 
-const SongItem = ({ song, onPress }: Props) => {
+const SongItem = ({ song, onSelect }: Props) => {
   const currSong = useCurrSong();
   const ref = React.useRef<View>(null);
   const [showMenu, setMenu] = React.useState(false);
-  const [menuPosition, setMenuPosition] = React.useState(0);
   const isPlaying = currSong?.id === song.id;
 
   const dispatch = useDispatch();
@@ -31,64 +29,43 @@ const SongItem = ({ song, onPress }: Props) => {
     setMenu(true);
   };
 
-  React.useEffect(() => {
-    if (ref.current) {
-      ref.current.measure(
-        (
-          x: number,
-          y: number,
-          width: number,
-          height: number,
-          pageX: number,
-          pageY: number
-        ) => {
-          // TODO: check for unmount
-          setMenuPosition(pageY);
-        }
-      );
-    }
-  }, []);
+  const onClose = () => {
+    console.log('close');
+    setMenu(false);
+  };
 
   const items = [
     {
       label: 'Add to Playlist',
       onPress: () => {
-        setMenu(false);
+        onClose();
       }
     },
     {
       label: 'Add to Queue',
       onPress: () => {
         queueSong(song);
-        setMenu(false);
+        onClose();
       }
     }
   ];
 
+  const onItemPress = React.useCallback(() => onSelect && onSelect(song), [
+    onSelect,
+    song
+  ]);
+
+  console.log('render item');
+
   return (
     <>
-      {showMenu && (
-        <>
-          <RectButton style={styles.menuCover} onPress={() => setMenu(false)} />
-          <View
-            style={[
-              styles.menu,
-              {
-                top: menuPosition
-              }
-            ]}>
-            {items.map(item => (
-              <RectButton key={item.label} onPress={item.onPress}>
-                <Text style={styles.menuItem}>{item.label}</Text>
-              </RectButton>
-            ))}
-          </View>
-        </>
-      )}
-      <RectButton
-        rippleColor="#111"
-        onPress={() => onPress && onPress()}
-        style={styles.root}>
+      <ContextMenu
+        target={ref}
+        showMenu={showMenu}
+        items={items}
+        onCloseMenu={onClose}
+      />
+      <RectButton rippleColor="#111" onPress={onItemPress} style={styles.root}>
         <View ref={ref} collapsable={false} style={styles.left}>
           <Text style={styles.songTitle}>{song.title}</Text>
           <Text style={styles.songArtist}>
@@ -135,25 +112,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: 40
-  },
-  menu: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    right: 0,
-    zIndex: 2
-  },
-  menuCover: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    // backgroundColor: 'rgba(1, 1, 1, 0.5)',
-    zIndex: 1
-  },
-  menuItem: {
-    padding: 10
   }
 });
 
-export default SongItem;
+export default React.memo(SongItem);
