@@ -1,10 +1,12 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
 import { Colors } from '../constants';
+import { useDispatch } from '../hooks';
 import { Options } from '../icons';
 import { VideoSong } from '../types';
 import { formatDuration } from '../util';
+import ContextMenu from './context';
 
 interface PassedProps {
   onPress?: () => void;
@@ -12,9 +14,25 @@ interface PassedProps {
 }
 
 const YtItem = ({ onPress, video }: PassedProps) => {
-  const onOptions = () => {
-    console.log('press');
-  };
+  const dispatch = useDispatch();
+  const addSong = (song: VideoSong) =>
+    dispatch({ type: 'ADD_SONGS', songs: [song] });
+  const queueSong = (song: VideoSong) => dispatch({ type: 'QUEUE_SONG', song });
+
+  const items = [
+    {
+      label: 'Add to Library',
+      onPress: () => {
+        addSong(video);
+      }
+    },
+    {
+      label: 'Add to Queue',
+      onPress: () => {
+        queueSong(video);
+      }
+    }
+  ];
 
   return (
     <View style={styles.root}>
@@ -33,9 +51,10 @@ const YtItem = ({ onPress, video }: PassedProps) => {
           </View>
         </View>
       </RectButton>
-      <TouchableOpacity onPress={onOptions} style={styles.options}>
+
+      <ContextMenu items={items} style={styles.options}>
         <Options width={25} height={25} />
-      </TouchableOpacity>
+      </ContextMenu>
     </View>
   );
 };

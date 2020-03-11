@@ -1,9 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {
-  RectButton,
-  TouchableWithoutFeedback
-} from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
 import { Colors } from '../constants';
 import { useCurrSong, useDispatch } from '../hooks';
 import { Options } from '../icons';
@@ -18,34 +15,20 @@ interface Props {
 
 const SongItem = ({ song, onSelect }: Props) => {
   const currSong = useCurrSong();
-  const ref = React.useRef<View>(null);
-  const [showMenu, setMenu] = React.useState(false);
   const isPlaying = currSong?.id === song.id;
 
   const dispatch = useDispatch();
   const queueSong = (song: Song) => dispatch({ type: 'QUEUE_SONG', song });
 
-  const onOptions = () => {
-    setMenu(true);
-  };
-
-  const onClose = () => {
-    console.log('close');
-    setMenu(false);
-  };
-
   const items = [
     {
       label: 'Add to Playlist',
-      onPress: () => {
-        onClose();
-      }
+      onPress: () => {}
     },
     {
       label: 'Add to Queue',
       onPress: () => {
         queueSong(song);
-        onClose();
       }
     }
   ];
@@ -58,31 +41,19 @@ const SongItem = ({ song, onSelect }: Props) => {
   console.log('render item');
 
   return (
-    <>
-      <ContextMenu
-        target={ref}
-        showMenu={showMenu}
-        items={items}
-        onCloseMenu={onClose}
-      />
-      <RectButton rippleColor="#111" onPress={onItemPress} style={styles.root}>
-        <View ref={ref} collapsable={false} style={styles.left}>
-          <Text style={styles.songTitle}>{song.title}</Text>
-          <Text style={styles.songArtist}>
-            {song.artist || 'Unknown Artist'} • {formatDuration(song.duration)}
-          </Text>
-          {/* {isPlaying && <Text style={styles.songArtist}>Playing</Text>} */}
-        </View>
-        <TouchableWithoutFeedback
-          onPress={onOptions}
-          // @ts-ignore
-          rippleColor="#000"
-          borderless
-          style={styles.button}>
-          <Options width={25} height={25} />
-        </TouchableWithoutFeedback>
-      </RectButton>
-    </>
+    <RectButton rippleColor="#111" onPress={onItemPress} style={styles.root}>
+      <View style={styles.left}>
+        <Text style={styles.songTitle}>{song.title}</Text>
+        <Text style={styles.songArtist}>
+          {song.artist || 'Unknown Artist'} • {formatDuration(song.duration)}
+        </Text>
+        {/* {isPlaying && <Text style={styles.songArtist}>Playing</Text>} */}
+      </View>
+
+      <ContextMenu items={items} style={styles.options}>
+        <Options width={25} height={25} />
+      </ContextMenu>
+    </RectButton>
   );
 };
 
@@ -107,7 +78,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.subtext
   },
-  button: {
+  options: {
     alignSelf: 'stretch',
     alignItems: 'center',
     justifyContent: 'center',

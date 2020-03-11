@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "dev": "adb reverse tcp:8081 tcp:8081 && adb reverse tcp:8097 tcp:8097 && react-native run-android",
-    "devtools": "react-devtools",
+    "dev": "adb reverse tcp:8081 tcp:8081 && react-native run-android",
+    "devtools": "adb reverse tcp:8097 tcp:8097 && react-devtools",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "clean": "cd android && ./gradlew clean",

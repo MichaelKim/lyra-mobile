@@ -5,12 +5,11 @@
 To run locally,
 
 ```
-react-native start
 adb reverse tcp:8081 tcp:8081
-adb reverse tcp:8097 tcp:8097
 react-native run-android
-npm run devtools
 ```
+
+For debugging, run `yarn devtools` or install the [React Native Debugger](https://github.com/jhen0409/react-native-debugger).
 
 ## TODO
 
