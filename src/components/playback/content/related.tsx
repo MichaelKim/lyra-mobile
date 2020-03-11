@@ -9,15 +9,15 @@ interface Props {
   currSong: VideoSong;
 }
 
-const useRelated = (currSong: VideoSong) => {
+const useRelated = ({ source, id }: VideoSong) => {
   const [related, setRelated] = React.useState<Array<VideoSong>>([]);
 
   React.useEffect(() => {
     let isMounted = true;
     setRelated([]);
 
-    if (currSong.source === 'YOUTUBE') {
-      getRelatedVideos(currSong.id).then(relatedVideos => {
+    if (source === 'YOUTUBE') {
+      getRelatedVideos(id).then(relatedVideos => {
         if (isMounted) {
           setRelated(relatedVideos);
         }
@@ -27,7 +27,7 @@ const useRelated = (currSong: VideoSong) => {
     return () => {
       isMounted = false;
     };
-  }, [currSong]);
+  }, [source, id]);
 
   return related;
 };

@@ -37,18 +37,13 @@ const YtItem = ({ onPress, video }: PassedProps) => {
   return (
     <View style={styles.root}>
       <RectButton onPress={onPress} rippleColor="#111" style={styles.rect}>
-        <View style={styles.item} collapsable={false}>
-          <Image
-            style={styles.thumbnail}
-            source={{ uri: video.thumbnail.url }}
-          />
-          <View style={styles.text}>
-            <Text style={styles.title}>{video.title}</Text>
-            <Text style={styles.details}>
-              {video.artist} • {formatDuration(video.duration)}
-              {video.views && ` • ${video.views} views`}
-            </Text>
-          </View>
+        <Image style={styles.thumbnail} source={{ uri: video.thumbnail.url }} />
+        <View style={styles.text}>
+          <Text style={styles.title}>{video.title}</Text>
+          <Text style={styles.details}>
+            {video.artist} • {formatDuration(video.duration)}
+            {video.views && ` • ${video.views} views`}
+          </Text>
         </View>
       </RectButton>
 
@@ -62,15 +57,13 @@ const YtItem = ({ onPress, video }: PassedProps) => {
 const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
-    alignItems: 'center',
-    height: 100
+    alignItems: 'center'
   },
   rect: {
-    flex: 1
-  },
-  item: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingTop: 5,
+    paddingBottom: 5,
     flex: 1
   },
   thumbnail: {
@@ -79,13 +72,12 @@ const styles = StyleSheet.create({
     margin: 5
   },
   text: {
-    height: 100,
     flexDirection: 'column',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    flex: 1
   },
   title: {
-    fontSize: 15,
-    fontWeight: 'bold',
+    fontSize: 16,
     color: Colors.text
   },
   details: {
@@ -100,4 +92,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default YtItem;
+export default React.memo(YtItem);

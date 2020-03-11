@@ -4,7 +4,6 @@
   - need two sensors: one of header and one for content
 - download?
 - be able to close notification while paused
-- nav button wider?
 - reorder notificaton media control buttons
 - volume bar
 - style playback item

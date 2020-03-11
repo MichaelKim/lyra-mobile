@@ -19,6 +19,8 @@ const SongItem = ({ song, onSelect }: Props) => {
 
   const dispatch = useDispatch();
   const queueSong = (song: Song) => dispatch({ type: 'QUEUE_SONG', song });
+  const removeSong = (song: Song) =>
+    dispatch({ type: 'REMOVE_SONG', id: song.id });
 
   const items = [
     {
@@ -29,6 +31,12 @@ const SongItem = ({ song, onSelect }: Props) => {
       label: 'Add to Queue',
       onPress: () => {
         queueSong(song);
+      }
+    },
+    {
+      label: 'Remove Song',
+      onPress: () => {
+        removeSong(song);
       }
     }
   ];
@@ -41,33 +49,33 @@ const SongItem = ({ song, onSelect }: Props) => {
   console.log('render item');
 
   return (
-    <RectButton rippleColor="#111" onPress={onItemPress} style={styles.root}>
-      <View style={styles.left}>
+    <View style={styles.root}>
+      <RectButton rippleColor="#111" onPress={onItemPress} style={styles.rect}>
         <Text style={styles.songTitle}>{song.title}</Text>
         <Text style={styles.songArtist}>
           {song.artist || 'Unknown Artist'} • {formatDuration(song.duration)}
         </Text>
         {/* {isPlaying && <Text style={styles.songArtist}>Playing</Text>} */}
-      </View>
+      </RectButton>
 
       <ContextMenu items={items} style={styles.options}>
         <Options width={25} height={25} />
       </ContextMenu>
-    </RectButton>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 10
+    alignItems: 'center'
   },
-  left: {
+  rect: {
     flexDirection: 'column',
     alignSelf: 'stretch',
     justifyContent: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
     flex: 1
   },
   songTitle: {
