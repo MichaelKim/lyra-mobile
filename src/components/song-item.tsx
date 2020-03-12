@@ -46,8 +46,6 @@ const SongItem = ({ song, onSelect }: Props) => {
     song
   ]);
 
-  console.log('render item');
-
   return (
     <View style={styles.root}>
       <RectButton rippleColor="#111" onPress={onItemPress} style={styles.rect}>

@@ -1,35 +1,32 @@
 import React from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Dimensions, StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
   State,
   TapGestureHandler
 } from 'react-native-gesture-handler';
-
-import { BAR_HEIGHT } from '../../constants';
-
-const {
-  set,
-  cond,
+import Animated, {
+  add,
   block,
-  event,
+  Clock,
+  clockRunning,
+  cond,
+  decay,
   eq,
+  event,
+  greaterOrEq,
+  lessOrEq,
+  multiply,
   neq,
   not,
-  add,
-  sub,
-  multiply,
-  lessOrEq,
-  greaterOrEq,
-  Value,
-  Clock,
+  set,
+  spring,
   startClock,
   stopClock,
-  clockRunning,
-  spring,
-  decay
-} = Animated;
+  sub,
+  Value
+} from 'react-native-reanimated';
+import { BAR_HEIGHT } from '../../constants';
 
 interface Props {
   renderHeader: () => React.ReactNode;
