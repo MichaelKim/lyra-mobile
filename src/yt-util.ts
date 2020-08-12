@@ -1,12 +1,12 @@
 import { SongID, VideoSong } from './types';
 
-// const LYRA_URL = 'http://192.168.1.115:5000';
-const LYRA_URL = 'https://lyra.michael.kim';
+const LYRA_URL = 'http://192.168.2.19:5000';
+// const LYRA_URL = 'https://lyra.michael.kim';
 const USE_API = '';
 
 export async function getStreamURL(id: SongID): Promise<string> {
   const res = await fetch(`${LYRA_URL}/yt/url?id=${id}&api=${USE_API}`);
-  const url = res.text();
+  const url = await res.text();
   return url;
 }
 

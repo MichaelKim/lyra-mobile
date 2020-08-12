@@ -97,7 +97,6 @@ class Playback extends React.Component<Props, State> {
         // color: 0xFFFFFF, // Notification Color - Android Only
         // date: '1983-01-02T00:00:00Z', // Release Date (RFC 3339) - Android Only
         // rating: 84, // Android Only (Boolean or Number depending on the type)
-        // notificationIcon: 'my_custom_icon' // Android Only (String), Android Drawable resource name for a custom notification icon
       });
 
       console.log('src', currSong.id, src);
