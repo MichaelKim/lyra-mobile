@@ -35,8 +35,8 @@ export default function rootReducer(
   switch (action.type) {
     case 'LOAD_STORAGE':
       return {
-        loaded: true,
-        ...action.state
+        ...action.state,
+        loaded: true
       };
 
     case 'SELECT_SONG': {

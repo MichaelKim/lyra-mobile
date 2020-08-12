@@ -77,8 +77,7 @@ export function getSongList(
   return sorted;
 }
 
-// @ts-ignore
-function spaceship(a, b) {
+function spaceship<T>(a: T, b: T) {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
@@ -100,8 +99,4 @@ export function parseDuration(iso: string) {
     Number(matches[2] || 0) * 60 +
     Number(matches[3] || 0)
   );
-}
-
-export function selectLocalDir(): Array<string> | null {
-  return null;
 }

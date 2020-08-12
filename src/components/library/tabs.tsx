@@ -174,6 +174,7 @@ export default class Tabs extends React.Component<Props> {
               <Animated.Text
                 style={[
                   styles.title,
+                  // @ts-ignore
                   {
                     color: cond(
                       eq(-i, this.idx),

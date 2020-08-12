@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MusicControl from 'react-native-music-control';
-import { useMediaControls } from '../../../hooks';
 import { Forward, Next, Pause, Play, Previous, Replay } from '../../../icons';
+import { Command } from 'react-native-music-control/lib/types';
 
 interface Props {
   paused: boolean;
@@ -12,6 +12,13 @@ interface Props {
   setPaused: (paused: boolean) => void;
   onDeltaSeek: (delta: number) => void;
   onSeek: (amount: number) => void;
+}
+
+function useMediaControl(event: Command, handler: (value: any) => void) {
+  React.useEffect(() => {
+    MusicControl.on(event, handler);
+    return () => MusicControl.off(event);
+  }, [event, handler]);
 }
 
 const Controls = ({
@@ -50,15 +57,13 @@ const Controls = ({
   }, []);
 
   // Register media control listeners
-  useMediaControls({
-    previousTrack: skipPrevious,
-    skipBackward: onReplay,
-    play: onPlay,
-    pause: onPause,
-    skipForward: onForward,
-    nextTrack: skipNext,
-    seek: onSeek
-  });
+  useMediaControl(Command.previousTrack, skipPrevious);
+  useMediaControl(Command.skipBackward, onReplay);
+  useMediaControl(Command.play, onPlay);
+  useMediaControl(Command.pause, onPause);
+  useMediaControl(Command.skipForward, onForward);
+  useMediaControl(Command.nextTrack, skipNext);
+  useMediaControl(Command.seek, onSeek);
 
   return (
     <View style={styles.root}>

@@ -1,5 +1,8 @@
 {
   "bracketSpacing": true,
   "jsxBracketSameLine": true,
-  "singleQuote": true
+  "singleQuote": true,
+  "trailingComma": "none",
+  "endOfLine": "auto",
+  "arrowParens": "avoid"
 }

@@ -1,18 +1,4 @@
-/*
-  YouTube related utility methods
-
-  Some of the packages that are used for YouTube integration
-  require some setup before running (e.g. ffmpeg, googleapis).
-  Moving all of them to this file helps centralize the setup
-  code, and avoid duplication across the codebase.
-*/
-
 import { SongID, VideoSong } from './types';
-
-// if (!process.env.LYRA_URL) throw 'LYRA_URL missing!';
-// const LYRA_URL = process.env.LYRA_URL;
-
-// const USE_API = process.env.LYRA_USE_API ? '1' : '';
 
 // const LYRA_URL = 'http://192.168.1.115:5000';
 const LYRA_URL = 'https://lyra.michael.kim';

@@ -18,9 +18,8 @@ const SongItem = ({ song, onSelect }: Props) => {
   const isPlaying = currSong?.id === song.id;
 
   const dispatch = useDispatch();
-  const queueSong = (song: Song) => dispatch({ type: 'QUEUE_SONG', song });
-  const removeSong = (song: Song) =>
-    dispatch({ type: 'REMOVE_SONG', id: song.id });
+  const queueSong = (s: Song) => dispatch({ type: 'QUEUE_SONG', song: s });
+  const removeSong = (s: Song) => dispatch({ type: 'REMOVE_SONG', id: s.id });
 
   const items = [
     {
@@ -53,7 +52,7 @@ const SongItem = ({ song, onSelect }: Props) => {
         <Text style={styles.songArtist}>
           {song.artist || 'Unknown Artist'} • {formatDuration(song.duration)}
         </Text>
-        {/* {isPlaying && <Text style={styles.songArtist}>Playing</Text>} */}
+        {isPlaying && <Text style={styles.songArtist}>Playing</Text>}
       </RectButton>
 
       <ContextMenu items={items} style={styles.options}>

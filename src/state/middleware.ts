@@ -55,7 +55,7 @@ export const queueSong: Middleware = store => next => action => {
     const songs = getSongList(newState.songs, newState.currScreen).filter(
       song => song.id !== currSong.id
     );
-    const nextSong = songs[0 | (Math.random() * songs.length)];
+    const nextSong = songs[Math.floor(Math.random() * songs.length)];
 
     store.dispatch({ type: 'QUEUE_SONG', song: nextSong });
     return result;

@@ -132,5 +132,4 @@ const styles = StyleSheet.create({
   }
 });
 
-// eslint-disable-next-line prettier/prettier
 export default connect(mapState, mapDispatch)(Footer);
