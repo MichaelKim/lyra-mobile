@@ -8,6 +8,7 @@ import {
 import Animated, {
   add,
   block,
+  call,
   Clock,
   clockRunning,
   color,
@@ -35,10 +36,9 @@ interface Props {
   children: Array<React.ReactElement>;
 }
 
-// TODO: make this dynamic
-const WIDTH = Dimensions.get('window').width;
-
 export default class Tabs extends React.Component<Props> {
+  WIDTH = new Value(Dimensions.get('window').width); // Item width
+
   clock = new Clock(); // Clock for spring
 
   // Clock state
@@ -91,28 +91,31 @@ export default class Tabs extends React.Component<Props> {
   };
 
   // Current screen index
-  idx = round(divide(this.prev, WIDTH));
+  idx = round(divide(this.prev, this.WIDTH));
 
   // Next position
   next = add(this.prev, sub(this.delta, this.prevDelta));
 
   // Expected position, if let go
-  slide = add(this.next, multiply(0.5, this.velocity));
+  slide = add(this.next, multiply(0.1, this.velocity));
 
   // Expected screen index, without restriction
   nextIdx = this.clamp(
-    round(divide(this.slide, WIDTH)),
+    round(divide(this.slide, this.WIDTH)),
     -(this.props.children.length - 1),
     0
   );
 
   // Snapping point, if let go
-  snap = multiply(this.nextIdx, WIDTH);
+  snap = multiply(this.nextIdx, this.WIDTH);
 
   // Velocity, clamped
   newVelocity = cond(
     or(
-      lessOrEq(this.next, -(this.props.children.length - 1) * WIDTH),
+      lessOrEq(
+        this.next,
+        multiply(-(this.props.children.length - 1), this.WIDTH)
+      ),
       greaterOrEq(this.next, 0)
     ),
     0,
@@ -127,7 +130,11 @@ export default class Tabs extends React.Component<Props> {
         cond(clockRunning(this.clock), stopClock(this.clock)),
         set(
           this.prev,
-          this.clamp(this.next, -(this.props.children.length - 1) * WIDTH, 0)
+          this.clamp(
+            this.next,
+            multiply(-(this.props.children.length - 1), this.WIDTH),
+            0
+          )
         ),
         set(this.prevDelta, this.delta)
       ],
@@ -161,16 +168,50 @@ export default class Tabs extends React.Component<Props> {
     this.prev
   ]);
 
+  rotate = new Value<number>(0);
+
+  onRotate = () => {
+    // Call native callback
+    this.rotate.setValue(1);
+  };
+
+  componentDidMount() {
+    Dimensions.addEventListener('change', this.onRotate);
+  }
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener('change', this.onRotate);
+  }
+
   render() {
     const { headers, children } = this.props;
+    const { width } = Dimensions.get('window');
 
     return (
       <>
+        <Animated.Code>
+          {() =>
+            // Native callback on rotate
+            cond(eq(this.rotate, 1), [
+              call(
+                [this.rotate, this.prev, this.WIDTH],
+                ([_, prev, oldWidth]) => {
+                  const newWidth = Dimensions.get('window').width;
+                  this.prev.setValue((prev / oldWidth) * newWidth);
+                  this.WIDTH.setValue(newWidth);
+                  // Setting width doesn't update layout
+                  this.forceUpdate();
+                }
+              ),
+              set(this.rotate, 0)
+            ])
+          }
+        </Animated.Code>
         <View style={styles.titles}>
           {headers.map((h, i) => (
             <BorderlessButton
               key={h}
-              onPress={() => this.manualSnap.setValue(-i * WIDTH)}>
+              onPress={() => this.manualSnap.setValue(-i * width)}>
               <Animated.Text
                 style={[
                   styles.title,
@@ -195,7 +236,7 @@ export default class Tabs extends React.Component<Props> {
             style={[
               styles.slider,
               {
-                width: children.length * WIDTH,
+                width: children.length * width,
                 transform: [
                   {
                     translateX: this.pos
@@ -224,6 +265,7 @@ const styles = StyleSheet.create({
     paddingRight: 10
   },
   slider: {
+    flex: 1,
     flexDirection: 'row'
   }
 });
