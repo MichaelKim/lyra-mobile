@@ -50,7 +50,7 @@ class Playback extends React.Component<Props, State> {
     });
   };
 
-  loadSong = async (autoplay: boolean, prevSongID?: string) => {
+  loadSong = async (prevSongID?: string) => {
     const { currSong } = this.props;
 
     if (currSong == null) {
@@ -69,7 +69,7 @@ class Playback extends React.Component<Props, State> {
     }
 
     this.setState({
-      autoplay,
+      autoplay: prevSongID != null,
       paused: true,
       loading: true
     });
@@ -104,11 +104,11 @@ class Playback extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    this.loadSong(false);
+    this.loadSong();
   }
 
   componentDidUpdate(prevProps: Props) {
-    this.loadSong(true, prevProps.currSong?.id);
+    this.loadSong(prevProps.currSong?.id);
 
     MusicControl.updatePlayback({
       elapsedTime: this.state.progress.currentTime,
