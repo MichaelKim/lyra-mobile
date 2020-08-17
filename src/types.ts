@@ -70,6 +70,10 @@ export interface QueueType {
 
 export interface StoreState {
   loaded: boolean;
+  yt: {
+    url: string;
+    api: boolean;
+  };
   currScreen?: string | null;
   songs: { [ID in SongID]: Song };
   playlists: { [ID in PlaylistID]: Playlist };
@@ -171,4 +175,9 @@ export type Action =
       type: 'DOWNLOAD_FINISH';
       song: Song | null;
     }
+  | {
+      type: 'SET_LYRA_URL';
+      url: string;
+    }
+  | { type: 'SET_LYRA_API'; api: boolean }
   | { type: 'CLEAR_DATA' };

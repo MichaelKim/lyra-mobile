@@ -4,6 +4,10 @@ import { StoreState } from '../types';
 
 export const initialState: StoreState = {
   loaded: false,
+  yt: {
+    url: 'https://lyra.michael.kim',
+    api: true
+  },
   songs: {},
   playlists: {},
   volume: {

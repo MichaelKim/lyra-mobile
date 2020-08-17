@@ -1,11 +1,9 @@
 import { SongID, VideoSong } from './types';
 
-const LYRA_URL = 'http://192.168.2.19:5000';
-// const LYRA_URL = 'https://lyra.michael.kim';
-const USE_API = '';
+import { f } from './state/store';
 
 export async function getStreamURL(id: SongID): Promise<string> {
-  const res = await fetch(`${LYRA_URL}/yt/url?id=${id}&api=${USE_API}`);
+  const res = await f(`/yt/url?id=${id}`);
   const url = await res.text();
   return url;
 }
@@ -24,15 +22,13 @@ export function downloadVideo(_: string) {
 }
 
 export async function ytSearch(keyword: string): Promise<VideoSong[]> {
-  const res = await fetch(
-    `${LYRA_URL}/yt/search?query=${keyword}&api=${USE_API}`
-  );
+  const res = await f(`/yt/search?query=${keyword}`);
   const json = res.json();
   return json;
 }
 
 export async function getRelatedVideos(id: SongID): Promise<VideoSong[]> {
-  const res = await fetch(`${LYRA_URL}/yt/related?id=${id}&api=${USE_API}`);
+  const res = await f(`/yt/related?id=${id}`);
   const videos = res.json();
   return videos;
 }
@@ -40,9 +36,7 @@ export async function getRelatedVideos(id: SongID): Promise<VideoSong[]> {
 export async function ytSuggest(keyword: string) {
   if (!keyword) return [];
 
-  const res = await fetch(
-    `${LYRA_URL}/yt/suggest?query=${keyword}&api=${USE_API}`
-  );
+  const res = await f(`/yt/suggest?query=${keyword}`);
   const json = res.json();
   return json;
 }

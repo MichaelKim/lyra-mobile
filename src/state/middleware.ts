@@ -93,6 +93,8 @@ export const saveToStorage: Middleware = store => next => action => {
     case 'QUEUE_SONG':
     case 'ADD_TO_HISTORY':
     case 'REMOVE_FROM_HISTORY':
+    case 'SET_LYRA_URL':
+    case 'SET_LYRA_API':
       save(newState);
       break;
 

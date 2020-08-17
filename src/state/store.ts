@@ -35,4 +35,10 @@ AsyncStorage.getItem('state').then(state => {
   });
 });
 
+// Placed here to avoid circular deps
+export function f(url: string) {
+  const { yt } = store.getState();
+  return fetch(`${yt.url}${url}&api=${yt.api ? '1' : ''}`);
+}
+
 export default store;

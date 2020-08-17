@@ -452,6 +452,28 @@ export default function rootReducer(
       ) as StoreState;
     }
 
+    case 'SET_LYRA_URL': {
+      return u(
+        {
+          yt: {
+            url: action.url
+          }
+        },
+        state
+      ) as StoreState;
+    }
+
+    case 'SET_LYRA_API': {
+      return u(
+        {
+          yt: {
+            api: action.api
+          }
+        },
+        state
+      ) as StoreState;
+    }
+
     case 'CLEAR_DATA':
       return u(
         {
