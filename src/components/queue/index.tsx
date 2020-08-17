@@ -8,6 +8,7 @@ import { Colors } from '../../constants';
 import { useCurrSong, useSelector } from '../../hooks';
 
 import { NavigationProps } from '../../types';
+import { h1, h2 } from '../../styles';
 
 interface Props extends NavigationProps {}
 
@@ -52,14 +53,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     flexGrow: 1
   },
-  title: {
-    fontSize: 30,
-    color: Colors.text
-  },
-  subtitle: {
-    fontSize: 20,
-    color: Colors.text
-  },
+  title: h1,
+  subtitle: h2,
   divider: {
     height: 1,
     borderTopWidth: 1,

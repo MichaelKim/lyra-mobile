@@ -8,6 +8,7 @@ import { ytSearch } from '../../yt-util';
 import Loading from '../loading';
 import Search from '../search-bar';
 import YtItem from '../yt-item';
+import { h1 } from '../../styles';
 
 interface Props extends NavigationProps {}
 
@@ -63,10 +64,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     flexGrow: 1
   },
-  title: {
-    fontSize: 30,
-    color: Colors.text
-  }
+  title: h1
 });
 
 export default YtSearch;

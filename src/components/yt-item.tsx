@@ -1,12 +1,12 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-import { Colors } from '../constants';
 import { useDispatch } from '../hooks';
 import { Options } from '../icons';
 import { VideoSong } from '../types';
 import { formatDuration } from '../util';
 import ContextMenu from './context';
+import { h3, h4 } from '../styles';
 
 interface PassedProps {
   onPress?: () => void;
@@ -76,14 +76,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1
   },
-  title: {
-    fontSize: 16,
-    color: Colors.text
-  },
-  details: {
-    fontSize: 12,
-    color: Colors.text
-  },
+  title: h3,
+  details: h4,
   options: {
     alignSelf: 'stretch',
     alignItems: 'center',

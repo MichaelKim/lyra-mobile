@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../../../constants';
 import { Song } from '../../../types';
 import YtItem from '../../yt-item';
 import Related from './related';
+
+import { h2 } from '../../../styles';
+import { Colors } from '../../../constants';
 
 interface Props {
   currSong: Song;
@@ -32,14 +34,11 @@ const PlaybackContent = ({ currSong }: Props) => {
 
 const styles = StyleSheet.create({
   root: {
-    backgroundColor: '#282828',
+    backgroundColor: Colors.playbackBg,
     flex: 1,
     padding: 24
   },
-  subtitle: {
-    fontSize: 20,
-    color: Colors.text
-  },
+  subtitle: h2,
   divider: {
     height: 1,
     borderTopWidth: 1,

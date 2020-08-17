@@ -4,6 +4,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import { Search as SearchIcon } from '../icons';
 
 import { Colors } from '../constants';
+import { h3 } from '../styles';
 
 interface Props {
   initialValue?: string;
@@ -44,11 +45,10 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   textInput: {
-    color: Colors.text,
+    ...h3,
     padding: 0,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-    fontSize: 16,
     height: 32,
     paddingLeft: 4,
     flex: 1

@@ -7,6 +7,7 @@ import { Options } from '../icons';
 import { Song } from '../types';
 import { formatDuration } from '../util';
 import ContextMenu from './context';
+import { h3 } from '../styles';
 
 interface Props {
   song: Song;
@@ -75,10 +76,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     flex: 1
   },
-  songTitle: {
-    fontSize: 16,
-    color: Colors.text
-  },
+  songTitle: h3,
   songArtist: {
     fontSize: 12,
     color: Colors.subtext

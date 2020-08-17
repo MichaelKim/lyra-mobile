@@ -14,6 +14,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
 
 import { Colors } from '../../constants';
+import { h1, h2 } from '../../styles';
 import { getSongs } from '../../util';
 import { useSelector, useDispatch } from '../../hooks';
 
@@ -110,15 +111,8 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     marginHorizontal: 24
   },
-  title: {
-    fontSize: 30,
-    color: Colors.text,
-    marginBottom: 10
-  },
-  subtitle: {
-    fontSize: 20,
-    color: Colors.text
-  },
+  title: h1,
+  subtitle: h2,
   row: {
     flexDirection: 'row',
     alignItems: 'center'

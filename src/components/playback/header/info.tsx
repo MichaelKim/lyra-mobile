@@ -5,6 +5,7 @@ import { BAR_HEIGHT, Colors } from '../../../constants';
 import { Pause, Play } from '../../../icons';
 import { Song } from '../../../types';
 import Loading from '../../loading';
+import { h3, h4 } from '../../../styles';
 
 export interface HeaderInfoProps {
   currSong: Song;
@@ -57,14 +58,8 @@ const styles = StyleSheet.create({
   song: {
     flex: 1
   },
-  songTitle: {
-    fontSize: 15,
-    color: Colors.text
-  },
-  songArtist: {
-    fontSize: 12,
-    color: Colors.text
-  },
+  songTitle: h3,
+  songArtist: h4,
   icon: {
     width: 25,
     height: 25

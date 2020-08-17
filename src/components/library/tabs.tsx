@@ -29,7 +29,7 @@ import Animated, {
   sub,
   Value
 } from 'react-native-reanimated';
-import { Colors } from '../../constants';
+import { h1 } from '../../styles';
 
 interface Props {
   headers: Array<string>;
@@ -259,9 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   title: {
-    fontSize: 30,
-    color: Colors.text,
-    marginBottom: 10,
+    ...h1,
     paddingRight: 10
   },
   slider: {
