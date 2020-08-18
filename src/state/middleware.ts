@@ -1,14 +1,16 @@
+import { applyMiddleware } from 'redux';
 import { Middleware, Song } from '../types';
 import { getSongList } from '../util';
 import { downloadVideo, getRelatedVideos } from '../yt-util';
 import { clear, save } from './storage';
+import { setServer } from '../yt-util';
 
-export const logger: Middleware = () => next => action => {
+const logger: Middleware = () => next => action => {
   console.log(action);
   return next(action);
 };
 
-export const queueSong: Middleware = store => next => action => {
+const queueSong: Middleware = store => next => action => {
   const result = next(action);
   const newState = store.getState();
 
@@ -71,7 +73,7 @@ export const queueSong: Middleware = store => next => action => {
   return result;
 };
 
-export const saveToStorage: Middleware = store => next => action => {
+const saveToStorage: Middleware = store => next => action => {
   const result = next(action);
   const newState = store.getState();
 
@@ -142,7 +144,7 @@ export const saveToStorage: Middleware = store => next => action => {
 
 function unreachable(_: never) {}
 
-export const checkQueue: Middleware = store => next_ => action => {
+const checkQueue: Middleware = store => next_ => action => {
   const result = next_(action);
 
   if (process.env.NODE_ENV === 'production') {
@@ -182,3 +184,26 @@ export const checkQueue: Middleware = store => next_ => action => {
 
   return result;
 };
+
+const changeServer: Middleware = store => next => action => {
+  const result = next(action);
+
+  if (
+    action.type === 'LOAD_STORAGE' ||
+    action.type === 'SET_LYRA_URL' ||
+    action.type === 'SET_LYRA_API'
+  ) {
+    const { yt } = store.getState();
+    setServer(yt);
+  }
+
+  return result;
+};
+
+export default applyMiddleware(
+  logger,
+  queueSong,
+  saveToStorage,
+  checkQueue,
+  changeServer
+);

@@ -1,46 +1,23 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  Button,
-  TextInput,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
-  TextInputEndEditingEventData,
-  Switch,
-  View
-} from 'react-native';
+import { Button, SafeAreaView, StyleSheet, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-navigation';
-
 import { Colors } from '../../constants';
-import { h1, h2 } from '../../styles';
-import { getSongs } from '../../util';
-import { useSelector, useDispatch } from '../../hooks';
-
+import { useDispatch } from '../../hooks';
+import { h1 } from '../../styles';
 import { NavigationProps, Song } from '../../types';
+import { getSongs } from '../../util';
 import Loading from '../loading';
+import ServerSettings from './server';
 
 interface Props extends NavigationProps {}
 
 const Settings = (_: Props) => {
   const [loading, setLoading] = React.useState(false);
 
-  const server = useSelector(state => state.yt);
-  const [lyraUrl, setLyraUrl] = React.useState(server.url);
-
   const dispatch = useDispatch();
   const clearData = () => dispatch({ type: 'CLEAR_DATA' });
   const addSongs = (songs: Array<Song>) =>
     dispatch({ type: 'ADD_SONGS', songs });
-  const setServerUrl = React.useCallback(
-    (url: string) => dispatch({ type: 'SET_LYRA_URL', url }),
-    [dispatch]
-  );
-  const setServerApi = React.useCallback(
-    (api: boolean) => dispatch({ type: 'SET_LYRA_API', api }),
-    [dispatch]
-  );
 
   const getLocalSongs = async () => {
     setLoading(true);
@@ -49,30 +26,6 @@ const Settings = (_: Props) => {
     setLoading(false);
   };
 
-  const onChange = React.useCallback(
-    (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
-      setLyraUrl(e.nativeEvent.text);
-    },
-    [setLyraUrl]
-  );
-
-  const onEndEditing = React.useCallback(
-    (e: NativeSyntheticEvent<TextInputEndEditingEventData>) => {
-      const { text } = e.nativeEvent;
-      if (text !== lyraUrl) {
-        setServerUrl(e.nativeEvent.text);
-      }
-    },
-    [lyraUrl, setServerUrl]
-  );
-
-  const onToggle = React.useCallback(
-    (value: boolean) => {
-      setServerApi(value);
-    },
-    [setServerApi]
-  );
-
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView
@@ -80,21 +33,7 @@ const Settings = (_: Props) => {
         contentContainerStyle={styles.scrollViewContainer}>
         <Text style={styles.title}>Settings</Text>
         <Button title="Clear All Data" color="#222" onPress={clearData} />
-        <Text style={styles.subtitle}>Server</Text>
-        <View style={styles.row}>
-          <Text style={styles.rowText}>URL</Text>
-          <TextInput
-            style={styles.urlInput}
-            autoCapitalize={'none'}
-            onChange={onChange}
-            onEndEditing={onEndEditing}
-            value={lyraUrl}
-          />
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.rowText}>Use API?</Text>
-          <Switch onValueChange={onToggle} value={server.api} />
-        </View>
+        <ServerSettings />
         <Button title="Get Local Songs" color="#222" onPress={getLocalSongs} />
         {loading && <Loading />}
       </ScrollView>
@@ -111,19 +50,7 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     marginHorizontal: 24
   },
-  title: h1,
-  subtitle: h2,
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  rowText: {
-    fontSize: 16,
-    color: Colors.text
-  },
-  urlInput: {
-    color: Colors.text
-  }
+  title: h1
 });
 
 export default Settings;

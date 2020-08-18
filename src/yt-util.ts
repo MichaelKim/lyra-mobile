@@ -1,6 +1,18 @@
 import { SongID, VideoSong } from './types';
 
-import { f } from './state/store';
+let yt = {
+  url: 'https://lyra.michael.kim',
+  api: true
+};
+
+// Alternative to avoid require cycle
+export function setServer(server: { url: string; api: boolean }) {
+  yt = server;
+}
+
+function f(url: string) {
+  return fetch(`${yt.url}${url}&api=${yt.api ? '1' : ''}`);
+}
 
 export async function getStreamURL(id: SongID): Promise<string> {
   const res = await f(`/yt/url?id=${id}`);

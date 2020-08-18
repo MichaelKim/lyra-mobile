@@ -1,23 +1,26 @@
+import {
+  BottomTabBar,
+  createBottomTabNavigator
+} from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { Provider } from 'react-redux';
 import { StatusBar } from 'react-native';
-import { createAppContainer } from 'react-navigation';
-import { createBottomTabNavigator, BottomTabBar } from 'react-navigation-tabs';
-
+import { Provider } from 'react-redux';
 import Library from './components/library';
-import Search from './components/search';
-import Queue from './components/queue';
-import Settings from './components/settings';
 import Playback from './components/playback';
+import Queue from './components/queue';
+import Search from './components/search';
+import Settings from './components/settings';
+import { Colors } from './constants';
 import {
   Library as LibraryIcon,
-  Search as SearchIcon,
   Queue as QueueIcon,
+  Search as SearchIcon,
   Settings as SettingsIcon
 } from './icons';
-
 import store from './state/store';
-import { Colors } from './constants';
+
+const Tab = createBottomTabNavigator();
 
 const TabBarComponent = (props: React.ComponentProps<typeof BottomTabBar>) => {
   return (
@@ -35,45 +38,40 @@ const Icons = {
   Settings: SettingsIcon
 };
 
-const Navigator = createBottomTabNavigator(
-  {
-    Library,
-    Search,
-    Queue,
-    Settings
-  },
-  {
-    initialRouteName: 'Library',
-    tabBarOptions: {
-      activeTintColor: Colors.text,
-      style: {
-        backgroundColor: Colors.playback,
-        borderTopWidth: 0,
-        zIndex: 10
-      }
-    },
-    defaultNavigationOptions: ({ navigation }) => ({
-      tabBarIcon: ({ focused }) => {
-        const { routeName } = navigation.state;
-        const Icon = Icons[routeName as keyof typeof Icons];
-        if (Icon == null) {
-          return null;
-        }
-        return <Icon width={25} height={25} fillOpacity={focused ? 1 : 0.5} />;
-      }
-    }),
-    tabBarComponent: props => <TabBarComponent {...props} />
-  }
-);
-
-const Root = createAppContainer(Navigator);
-
 const App = () => {
   return (
-    <Provider store={store}>
-      <StatusBar barStyle="default" />
-      <Root />
-    </Provider>
+    <NavigationContainer>
+      <Provider store={store}>
+        <StatusBar barStyle="default" />
+        <Tab.Navigator
+          initialRouteName="Library"
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused }) => {
+              const Icon = Icons[route.name as keyof typeof Icons];
+              if (Icon == null) {
+                return null;
+              }
+              return (
+                <Icon width={25} height={25} fillOpacity={focused ? 1 : 0.5} />
+              );
+            }
+          })}
+          tabBarOptions={{
+            activeTintColor: Colors.text,
+            style: {
+              backgroundColor: Colors.playback,
+              borderTopWidth: 0,
+              zIndex: 10
+            }
+          }}
+          tabBar={TabBarComponent}>
+          <Tab.Screen name="Library" component={Library} />
+          <Tab.Screen name="Search" component={Search} />
+          <Tab.Screen name="Queue" component={Queue} />
+          <Tab.Screen name="Settings" component={Settings} />
+        </Tab.Navigator>
+      </Provider>
+    </NavigationContainer>
   );
 };
 

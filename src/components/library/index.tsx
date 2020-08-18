@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-navigation';
 import { Colors } from '../../constants';
 import { useDispatch, useSelector } from '../../hooks';
 import { NavigationProps, Song } from '../../types';

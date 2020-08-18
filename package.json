@@ -14,6 +14,8 @@
   "dependencies": {
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/slider": "^3.0.3",
+    "@react-navigation/bottom-tabs": "^5.8.0",
+    "@react-navigation/native": "^5.7.3",
     "@types/react-redux": "^7.1.9",
     "crypto-js": "^3.3.0",
     "react": "16.13.1",
@@ -28,8 +30,6 @@
     "react-native-snap-carousel": "^4.0.0-beta.5",
     "react-native-svg": "^12.1.0",
     "react-native-video": "^5.0.2",
-    "react-navigation": "^4.4.0",
-    "react-navigation-tabs": "^2.9.0",
     "react-redux": "^7.2.1",
     "redux": "^4.0.5",
     "updeep": "^1.2.0"

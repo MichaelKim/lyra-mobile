@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { applyMiddleware, compose, createStore } from 'redux';
+import { compose, createStore } from 'redux';
 import { Store, StoreState } from '../types';
-import { checkQueue, logger, queueSong, saveToStorage } from './middleware';
+import middlewares from './middleware';
 import reducer from './reducer';
 import { initialState } from './storage';
 
@@ -14,9 +14,7 @@ const composeEnhancers =
 const store: Store = createStore(
   reducer,
   initialState,
-  composeEnhancers(
-    applyMiddleware(logger, queueSong, saveToStorage, checkQueue)
-  )
+  composeEnhancers(middlewares)
 );
 
 function safeParse(state: string | null): StoreState {
@@ -34,11 +32,5 @@ AsyncStorage.getItem('state').then(state => {
     state: safeParse(state)
   });
 });
-
-// Placed here to avoid circular deps
-export function f(url: string) {
-  const { yt } = store.getState();
-  return fetch(`${yt.url}${url}&api=${yt.api ? '1' : ''}`);
-}
 
 export default store;

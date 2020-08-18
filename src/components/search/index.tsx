@@ -1,6 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 import { Colors } from '../../constants';
 import { useDispatch } from '../../hooks';
 import { NavigationProps, VideoSong } from '../../types';

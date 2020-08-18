@@ -1,14 +1,10 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-
-import SongItem from '../song-item';
-
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../constants';
 import { useCurrSong, useSelector } from '../../hooks';
-
-import { NavigationProps } from '../../types';
 import { h1, h2 } from '../../styles';
+import { NavigationProps } from '../../types';
+import SongItem from '../song-item';
 
 interface Props extends NavigationProps {}
 

@@ -52,9 +52,13 @@ export interface SortType {
 }
 
 export interface NavigationProps {
+  route: {
+    params: {
+      paramName?: any;
+    };
+  };
   navigation: {
     navigate: (screenName: string) => void;
-    getParam: <T>(paramName: string, defaultValue: T) => T;
   };
 }
 
