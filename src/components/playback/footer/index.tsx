@@ -9,6 +9,7 @@ import { Action, StoreState } from '../../../types';
 import { formatDuration } from '../../../util';
 import Slider from '../../slider';
 import Controls from './controls';
+import { h4 } from '../../../styles';
 
 interface Props {
   paused: boolean;
@@ -106,7 +107,7 @@ const mapDispatch = (dispatch: Dispatch<Action>) => ({
 
 const styles = StyleSheet.create({
   playback: {
-    backgroundColor: '#555',
+    backgroundColor: Colors.controls,
     height: 70,
     flexDirection: 'column'
   },
@@ -115,10 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: 10
   },
-  time: {
-    fontSize: 12,
-    color: Colors.text
-  },
+  time: h4,
   controls: {
     flexDirection: 'row'
   },

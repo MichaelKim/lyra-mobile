@@ -1,4 +1,6 @@
+- make bottom sheet width dynamic
 - on nav tab press, close the bottom sheet if open
+
 - on header press, close bottom sheet if open
 - on header slide, directly move bottom sheet
   - need two sensors: one of header and one for content

@@ -8,15 +8,15 @@ export interface ProgressBarProps {
 }
 
 const ProgressBar = ({ currentTime, seekableDuration }: ProgressBarProps) => {
+  const left = seekableDuration === 0 ? 1 : currentTime;
+
   return (
     <View style={styles.progressBar}>
-      <View
-        style={{ flex: currentTime, backgroundColor: Colors.placeholder }}
-      />
+      <View style={{ flex: left, backgroundColor: Colors.placeholder }} />
       <View
         style={{
           flex: seekableDuration - currentTime,
-          backgroundColor: Colors.screen
+          backgroundColor: Colors.sheet
         }}
       />
     </View>

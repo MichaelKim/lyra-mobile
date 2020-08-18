@@ -49,7 +49,7 @@ const HeaderInfo = ({
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: Colors.playback,
+    backgroundColor: Colors.sheet,
     height: BAR_HEIGHT,
     paddingHorizontal: 24,
     flexDirection: 'row',
