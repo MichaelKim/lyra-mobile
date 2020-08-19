@@ -13,3 +13,6 @@ export const Colors = {
 
 // Height of playback bottom sheet header
 export const BAR_HEIGHT = 60;
+
+// Height of navigation bar
+export const NAVIGATION_HEIGHT = 50;

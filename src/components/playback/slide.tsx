@@ -12,10 +12,12 @@ import Animated, {
   clockRunning,
   cond,
   decay,
+  divide,
   eq,
   event,
   greaterOrEq,
   lessOrEq,
+  lessThan,
   multiply,
   neq,
   not,
@@ -26,7 +28,7 @@ import Animated, {
   sub,
   Value
 } from 'react-native-reanimated';
-import { BAR_HEIGHT } from '../../constants';
+import { BAR_HEIGHT, NAVIGATION_HEIGHT } from '../../constants';
 
 interface Props {
   renderHeader: () => React.ReactNode;
@@ -34,12 +36,12 @@ interface Props {
   renderFooter: () => React.ReactNode;
 }
 
-const NAVIGATION_HEIGHT = 50;
-// TODO: make this dynamic
-const windowHeight = Dimensions.get('window').height;
-const TOP = -windowHeight + NAVIGATION_HEIGHT + BAR_HEIGHT;
-
 export class BottomSheet extends React.Component<Props> {
+  HEIGHT = new Value(Dimensions.get('window').height);
+
+  // 50: navigation tabs height, 60: bottom sheet header height
+  TOP = multiply(sub(this.HEIGHT, NAVIGATION_HEIGHT + BAR_HEIGHT), -1);
+
   headerHeight = new Value(60);
   contentHeight = new Value(646);
   footerHeight = new Value(70);
@@ -123,7 +125,7 @@ export class BottomSheet extends React.Component<Props> {
   slide = add(this.next, multiply(0.5, this.velocity));
 
   // Snapping point, if let go
-  snap = cond(lessOrEq(this.slide, TOP / 2), TOP, 0);
+  snap = cond(lessOrEq(this.slide, divide(this.TOP, 2)), this.TOP, 0);
 
   // Velocity, clamped
   newVelocity = cond(greaterOrEq(this.next, 0), 0, this.velocity);
@@ -158,7 +160,7 @@ export class BottomSheet extends React.Component<Props> {
         set(this.delta, 0),
         set(this.prevDelta, 0),
         cond(
-          lessOrEq(this.prev, TOP),
+          lessOrEq(this.prev, this.TOP),
           [
             // Content higher than TOP: scroll
             cond(not(clockRunning(this.clock)), [
@@ -182,9 +184,9 @@ export class BottomSheet extends React.Component<Props> {
             ),
             // If prev is moved below TOP, then it has slid past TOP: clamp to TOP and end sliding
             cond(
-              greaterOrEq(this.prev, TOP),
+              greaterOrEq(this.prev, this.TOP),
               [
-                set(this.prev, TOP),
+                set(this.prev, this.TOP),
                 stopClock(this.clock),
                 set(this.clockState.finished, 1),
                 set(this.velocity, 0)
@@ -217,10 +219,22 @@ export class BottomSheet extends React.Component<Props> {
   ]);
 
   // Sensor position: clamped to TOP
-  fixed = cond(lessOrEq(this.pos, TOP), TOP - 1, this.pos);
+  fixed = cond(lessThan(this.pos, this.TOP), this.TOP, this.pos);
 
   // Content position: additional delta
-  diff = cond(lessOrEq(this.pos, TOP), sub(this.pos, TOP), 0);
+  diff = cond(lessThan(this.pos, this.TOP), sub(this.pos, this.TOP), 0);
+
+  onRotate = () => {
+    this.HEIGHT.setValue(Dimensions.get('window').height);
+  };
+
+  componentDidMount() {
+    Dimensions.addEventListener('change', this.onRotate);
+  }
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener('change', this.onRotate);
+  }
 
   render() {
     return (
@@ -228,12 +242,10 @@ export class BottomSheet extends React.Component<Props> {
         onGestureEvent={this.handlePan}
         onHandlerStateChange={this.handlePan}>
         <Animated.View
-          style={[
-            styles.sensor,
-            {
-              transform: [{ translateY: this.fixed }]
-            }
-          ]}>
+          style={{
+            height: multiply(this.TOP, -1),
+            transform: [{ translateY: this.fixed }]
+          }}>
           <TapGestureHandler>
             <Animated.View>
               <Animated.View
@@ -247,7 +259,7 @@ export class BottomSheet extends React.Component<Props> {
                   {
                     transform: [{ translateY: this.diff }],
                     top: this.headerHeight,
-                    minHeight: sub(sub(0, TOP), this.footerHeight)
+                    minHeight: sub(sub(0, this.TOP), this.footerHeight)
                   }
                 ]}
                 onLayout={this.onContentLayout}>
@@ -257,7 +269,7 @@ export class BottomSheet extends React.Component<Props> {
                 style={[
                   styles.footer,
                   {
-                    bottom: add(TOP, this.footerHeight)
+                    bottom: add(this.TOP, this.footerHeight)
                   }
                 ]}
                 onLayout={this.onFooterLayout}>
@@ -272,9 +284,6 @@ export class BottomSheet extends React.Component<Props> {
 }
 
 const styles = StyleSheet.create({
-  sensor: {
-    height: -TOP
-  },
   header: {
     zIndex: 1
   },
