@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
   State,
@@ -28,19 +28,25 @@ import Animated, {
   sub,
   Value
 } from 'react-native-reanimated';
-import { BAR_HEIGHT, NAVIGATION_HEIGHT } from '../../constants';
+import { useSafeAreaFrame } from 'react-native-safe-area-context';
+import { BAR_HEIGHT, Colors, NAVIGATION_HEIGHT } from '../../constants';
 
-interface Props {
+interface PassedProps {
   renderHeader: () => React.ReactNode;
   renderContent: () => React.ReactNode;
   renderFooter: () => React.ReactNode;
 }
 
+type Props = PassedProps & {
+  height: number;
+};
+
 export class BottomSheet extends React.Component<Props> {
-  HEIGHT = new Value(Dimensions.get('window').height);
+  // Proper height (Dimensions height is bugged on Android?)
+  HEIGHT = new Value(this.props.height);
 
   // 50: navigation tabs height, 60: bottom sheet header height
-  TOP = multiply(sub(this.HEIGHT, NAVIGATION_HEIGHT + BAR_HEIGHT), -1);
+  TOP = multiply(sub(this.HEIGHT, NAVIGATION_HEIGHT + BAR_HEIGHT - 1), -1);
 
   headerHeight = new Value(60);
   contentHeight = new Value(646);
@@ -224,16 +230,10 @@ export class BottomSheet extends React.Component<Props> {
   // Content position: additional delta
   diff = cond(lessThan(this.pos, this.TOP), sub(this.pos, this.TOP), 0);
 
-  onRotate = () => {
-    this.HEIGHT.setValue(Dimensions.get('window').height);
-  };
-
-  componentDidMount() {
-    Dimensions.addEventListener('change', this.onRotate);
-  }
-
-  componentWillUnmount() {
-    Dimensions.removeEventListener('change', this.onRotate);
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.height !== this.props.height) {
+      this.HEIGHT.setValue(this.props.height);
+    }
   }
 
   render() {
@@ -242,10 +242,13 @@ export class BottomSheet extends React.Component<Props> {
         onGestureEvent={this.handlePan}
         onHandlerStateChange={this.handlePan}>
         <Animated.View
-          style={{
-            height: multiply(this.TOP, -1),
-            transform: [{ translateY: this.fixed }]
-          }}>
+          style={[
+            styles.sheet,
+            {
+              height: multiply(this.TOP, -1),
+              transform: [{ translateY: this.fixed }]
+            }
+          ]}>
           <TapGestureHandler>
             <Animated.View>
               <Animated.View
@@ -284,6 +287,9 @@ export class BottomSheet extends React.Component<Props> {
 }
 
 const styles = StyleSheet.create({
+  sheet: {
+    backgroundColor: Colors.playback
+  },
   header: {
     zIndex: 1
   },
@@ -299,4 +305,9 @@ const styles = StyleSheet.create({
   }
 });
 
-export default BottomSheet;
+const Frame = (props: PassedProps) => {
+  const frame = useSafeAreaFrame();
+  return <BottomSheet {...props} height={Math.ceil(frame.height)} />;
+};
+
+export default Frame;

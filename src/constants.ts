@@ -1,4 +1,5 @@
 export const Colors = {
+  gradient: '#364763', // screen gradient
   screen: '#161d28', // #121212
   sheet: '#2f3540', // #2d2d2d
   playback: '#252c37', // #555
