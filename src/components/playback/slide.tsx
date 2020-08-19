@@ -6,6 +6,7 @@ import {
   TapGestureHandler
 } from 'react-native-gesture-handler';
 import Animated, {
+  and,
   add,
   block,
   Clock,
@@ -32,6 +33,7 @@ import { useSafeAreaFrame } from 'react-native-safe-area-context';
 import { BAR_HEIGHT, Colors, NAVIGATION_HEIGHT } from '../../constants';
 
 interface PassedProps {
+  tab: number;
   renderHeader: () => React.ReactNode;
   renderContent: () => React.ReactNode;
   renderFooter: () => React.ReactNode;
@@ -114,6 +116,8 @@ export class BottomSheet extends React.Component<Props> {
   panState = new Value(-1); // State of panning
   prev = new Value<number>(0); // Position before moving
 
+  close = new Value<number>(0);
+
   handlePan = event([
     {
       nativeEvent: {
@@ -131,7 +135,11 @@ export class BottomSheet extends React.Component<Props> {
   slide = add(this.next, multiply(0.5, this.velocity));
 
   // Snapping point, if let go
-  snap = cond(lessOrEq(this.slide, divide(this.TOP, 2)), this.TOP, 0);
+  snap = cond(
+    this.close,
+    0,
+    cond(lessOrEq(this.slide, divide(this.TOP, 2)), this.TOP, 0)
+  );
 
   // Velocity, clamped
   newVelocity = cond(greaterOrEq(this.next, 0), 0, this.velocity);
@@ -158,7 +166,8 @@ export class BottomSheet extends React.Component<Props> {
         cond(clockRunning(this.clock), stopClock(this.clock)),
         // Clamp prev to [TOP, 0]
         set(this.prev, this.clamp(this.next, this.contentLimit, 0)),
-        set(this.prevDelta, this.delta)
+        set(this.prevDelta, this.delta),
+        set(this.close, 0)
       ],
       cond(neq(this.panState, -1), [
         // Start of animation, reset values
@@ -166,7 +175,7 @@ export class BottomSheet extends React.Component<Props> {
         set(this.delta, 0),
         set(this.prevDelta, 0),
         cond(
-          lessOrEq(this.prev, this.TOP),
+          and(not(this.close), lessThan(this.prev, this.TOP)),
           [
             // Content higher than TOP: scroll
             cond(not(clockRunning(this.clock)), [
@@ -202,6 +211,11 @@ export class BottomSheet extends React.Component<Props> {
           ],
           [
             // Snap
+            cond(and(this.close, lessThan(this.prev, this.TOP)), [
+              // If still scrolling when tab pressed, the clock is still running
+              // Set to value manually
+              set(this.config.toValue, 0)
+            ]),
             cond(clockRunning(this.clock), 0, [
               // Start clock
               set(this.clockState.finished, 0),
@@ -213,7 +227,8 @@ export class BottomSheet extends React.Component<Props> {
             spring(this.clock, this.clockState, this.config),
             cond(this.clockState.finished, [
               stopClock(this.clock),
-              set(this.velocity, 0)
+              set(this.velocity, 0),
+              set(this.close, 0)
             ]),
             set(this.prev, this.clockState.position),
             set(this.velocity, this.clockState.velocity)
@@ -233,6 +248,10 @@ export class BottomSheet extends React.Component<Props> {
   componentDidUpdate(prevProps: Props) {
     if (prevProps.height !== this.props.height) {
       this.HEIGHT.setValue(this.props.height);
+    }
+
+    if (prevProps.tab !== this.props.tab) {
+      this.close.setValue(1);
     }
   }
 

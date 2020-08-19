@@ -23,15 +23,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
-const TabBarComponent = (props: React.ComponentProps<typeof BottomTabBar>) => {
-  return (
-    <>
-      <Playback />
-      <BottomTabBar {...props} />
-    </>
-  );
-};
-
 const Icons = {
   Library: LibraryIcon,
   Search: SearchIcon,
@@ -40,9 +31,14 @@ const Icons = {
 };
 
 const App = () => {
+  const [tab, setTab] = React.useState(0);
+  const onChange = React.useCallback(({ index }) => {
+    setTab(index);
+  }, []);
+
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
+      <NavigationContainer onStateChange={onChange}>
         <Provider store={store}>
           <StatusBar barStyle="default" />
           <Tab.Navigator
@@ -70,7 +66,12 @@ const App = () => {
                 zIndex: 10
               }
             }}
-            tabBar={TabBarComponent}>
+            tabBar={props => (
+              <>
+                <Playback tab={tab} />
+                <BottomTabBar {...props} />
+              </>
+            )}>
             <Tab.Screen name="Library" component={Library} />
             <Tab.Screen name="Search" component={Search} />
             <Tab.Screen name="Queue" component={Queue} />

@@ -1,9 +1,9 @@
-- make bottom sheet width dynamic
-- on nav tab press, close the bottom sheet if open
+- thumbnail on songlist
+- better playing icon for songlist
+- reorder queue
 
-- on header press, close bottom sheet if open
-- on header slide, directly move bottom sheet
-  - need two sensors: one of header and one for content
+- on header press, open/close bottom sheet
+
 - download?
 - be able to close notification while paused
 - reorder notificaton media control buttons

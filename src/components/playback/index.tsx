@@ -12,10 +12,14 @@ import PlaybackFooter from './footer';
 import PlaybackHeader from './header';
 import Slide from './slide';
 
-interface Props {
+interface PassedProps {
+  tab: number;
+}
+
+type Props = PassedProps & {
   currSong: Song | null;
   skipNext: () => void;
-}
+};
 
 interface State {
   src: string;
@@ -201,7 +205,7 @@ class Playback extends React.Component<Props, State> {
   };
 
   render() {
-    const { currSong } = this.props;
+    const { currSong, tab } = this.props;
     const { src, paused } = this.state;
 
     if (currSong == null) {
@@ -223,6 +227,7 @@ class Playback extends React.Component<Props, State> {
           />
         )}
         <Slide
+          tab={tab}
           renderHeader={this.renderHeader}
           renderContent={this.renderContent}
           renderFooter={this.renderFooter}
