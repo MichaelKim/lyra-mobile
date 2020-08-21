@@ -8,6 +8,7 @@ import { Playlist } from '../../../types';
 import Create from './create';
 import PlaylistItem from './item';
 import PlaylistScreen from './screen';
+import { Add } from '../../../icons';
 
 interface Props {}
 
@@ -67,8 +68,11 @@ const Playlists = (_: Props) => {
 
   return (
     <>
-      <RectButton onPress={onNewPlaylist} style={styles.button}>
-        <Text style={styles.text}>Create New Playlist</Text>
+      <RectButton onPress={onNewPlaylist} style={styles.rect}>
+        <View style={styles.add}>
+          <Add width={25} height={25} />
+        </View>
+        <Text style={h2}>Create New Playlist</Text>
       </RectButton>
       <Create visible={showModal} onEnter={onEnter} onCancel={onCancel} />
       <FlatList
@@ -90,6 +94,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1
+  },
+  rect: {
+    flexDirection: 'row',
+    marginHorizontal: 24,
+    paddingVertical: 10
+  },
+  add: {
+    paddingRight: 4
   },
   text: h2,
   button: {

@@ -2,8 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { Colors } from '../../../constants';
-import { h3 } from '../../../styles';
+import { h2 } from '../../../styles';
 import { Playlist } from '../../../types';
+import { useSelector } from '../../../hooks';
 
 interface Props {
   playlist: Playlist;
@@ -16,7 +17,13 @@ const PlaylistItem = ({ playlist, onSelect }: Props) => {
     playlist
   ]);
 
-  const numSongs = playlist.songs.length;
+  // TODO: fix playlist.songs
+  const numSongs = useSelector(state =>
+    Object.values(state.songs).reduce(
+      (acc, song) => (song.playlists.includes(playlist.id) ? acc + 1 : acc),
+      0
+    )
+  );
 
   return (
     <View style={styles.root}>
@@ -39,11 +46,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignSelf: 'stretch',
     justifyContent: 'center',
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingVertical: 10,
     flex: 1
   },
-  name: h3,
+  name: h2,
   numSongs: {
     fontSize: 12,
     color: Colors.subtext

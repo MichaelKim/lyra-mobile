@@ -17,7 +17,7 @@ const Playlists = ({ visible, onEnter, onCancel }: Props) => {
     setName
   ]);
 
-  const _onEnter = React.useCallback(() => onEnter(newName), [
+  const _onEnter = React.useCallback(() => onEnter(newName || 'My Playlist'), [
     onEnter,
     newName
   ]);
