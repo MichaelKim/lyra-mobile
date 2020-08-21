@@ -1,4 +1,5 @@
 export { default as Add } from './add.svg';
+export { default as Back } from './back.svg';
 export { default as Clear } from './clear.svg';
 export { default as Download } from './download.svg';
 export { default as Forward } from './forward-10.svg';

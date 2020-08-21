@@ -97,7 +97,8 @@ export default class Tabs extends React.Component<Props> {
   next = add(this.prev, sub(this.delta, this.prevDelta));
 
   // Expected position, if let go
-  slide = add(this.next, multiply(0.1, this.velocity));
+  // TODO: make the multiplier based on width (~0.05 on portrait)
+  slide = add(this.next, multiply(0.05, this.velocity));
 
   // Expected screen index, without restriction
   nextIdx = this.clamp(
@@ -244,7 +245,9 @@ export default class Tabs extends React.Component<Props> {
                 ]
               }
             ]}>
-            {children}
+            {React.Children.map(children, child => (
+              <Animated.View style={{ width: width }}>{child}</Animated.View>
+            ))}
           </Animated.View>
         </PanGestureHandler>
       </>
