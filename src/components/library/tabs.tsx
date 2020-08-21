@@ -97,8 +97,8 @@ export default class Tabs extends React.Component<Props> {
   next = add(this.prev, sub(this.delta, this.prevDelta));
 
   // Expected position, if let go
-  // TODO: make the multiplier based on width (~0.05 on portrait)
-  slide = add(this.next, multiply(0.05, this.velocity));
+  // TODO: make the multiplier based on width (~0.07 on portrait)
+  slide = add(this.next, multiply(0.07, this.velocity));
 
   // Expected screen index, without restriction
   nextIdx = this.clamp(

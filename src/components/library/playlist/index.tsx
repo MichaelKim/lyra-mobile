@@ -101,7 +101,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10
   },
   add: {
-    paddingRight: 4
+    paddingRight: 4,
+    justifyContent: 'center'
   },
   text: h2,
   button: {

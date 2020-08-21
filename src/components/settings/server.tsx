@@ -6,7 +6,6 @@ import {
   Text,
   TextInput,
   TextInputChangeEventData,
-  TextInputEndEditingEventData,
   View
 } from 'react-native';
 import { Colors } from '../../constants';
@@ -16,6 +15,8 @@ import { h1, h2 } from '../../styles';
 const ServerSettings = () => {
   const server = useSelector(state => state.yt);
   const [lyraUrl, setLyraUrl] = React.useState(server.url);
+
+  React.useEffect(() => setLyraUrl(server.url), [server]);
 
   const dispatch = useDispatch();
   const setServerUrl = React.useCallback(
@@ -34,15 +35,11 @@ const ServerSettings = () => {
     [setLyraUrl]
   );
 
-  const onEndEditing = React.useCallback(
-    (e: NativeSyntheticEvent<TextInputEndEditingEventData>) => {
-      const { text } = e.nativeEvent;
-      if (text !== lyraUrl) {
-        setServerUrl(e.nativeEvent.text);
-      }
-    },
-    [lyraUrl, setServerUrl]
-  );
+  const onEndEditing = React.useCallback(() => {
+    if (lyraUrl !== server.url) {
+      setServerUrl(lyraUrl);
+    }
+  }, [lyraUrl, server.url, setServerUrl]);
 
   const onToggle = React.useCallback(
     (value: boolean) => {
@@ -84,7 +81,8 @@ const styles = StyleSheet.create({
     color: Colors.text
   },
   urlInput: {
-    color: Colors.text
+    color: Colors.text,
+    flex: 1
   }
 });
 
