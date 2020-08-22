@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import MusicControl from 'react-native-music-control';
-import Video from 'react-native-video';
+import Video, { OnProgressData } from 'react-native-video';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { BAR_HEIGHT } from '../../constants';
@@ -25,11 +25,7 @@ interface State {
   src: string;
   loading: boolean;
   paused: boolean;
-  progress: {
-    currentTime: number;
-    playableDuration: number;
-    seekableDuration: number;
-  };
+  progress: OnProgressData;
   autoplay: boolean;
 }
 
@@ -102,9 +98,16 @@ class Playback extends React.Component<Props, State> {
         // date: '1983-01-02T00:00:00Z', // Release Date (RFC 3339) - Android Only
         // rating: 84, // Android Only (Boolean or Number depending on the type)
       });
-
-      console.log('src', currSong.id, src);
     }
+
+    // Update progress once loaded
+    this.setState({
+      progress: {
+        currentTime: 0,
+        playableDuration: 0,
+        seekableDuration: Number(currSong.duration || 1)
+      }
+    });
   };
 
   componentDidMount() {
@@ -129,14 +132,19 @@ class Playback extends React.Component<Props, State> {
 
   onSeek = (seek: number) => {
     if (this.player.current) {
-      this.setState({
-        loading: true
-      });
+      this.setState(s => ({
+        loading: true,
+        progress: {
+          ...s.progress,
+          // Eagerly set new position to immediately update slider
+          currentTime: seek
+        }
+      }));
       this.player.current.seek(seek);
     }
   };
 
-  onProgress = (progress: State['progress']) => {
+  onProgress = (progress: OnProgressData) => {
     this.setState({
       progress
     });

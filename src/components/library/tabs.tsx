@@ -30,6 +30,7 @@ import Animated, {
   Value
 } from 'react-native-reanimated';
 import { h1 } from '../../styles';
+import { clamp } from '../../util';
 
 interface Props {
   headers: Array<string>;
@@ -78,18 +79,6 @@ export default class Tabs extends React.Component<Props> {
     }
   ]);
 
-  clamp = (
-    value: Animated.Adaptable<number>,
-    min: Animated.Adaptable<number>,
-    max: Animated.Adaptable<number>
-  ) => {
-    return cond(
-      lessOrEq(value, min),
-      min,
-      cond(greaterOrEq(value, max), max, value)
-    );
-  };
-
   // Current screen index
   idx = round(divide(this.prev, this.WIDTH));
 
@@ -101,7 +90,7 @@ export default class Tabs extends React.Component<Props> {
   slide = add(this.next, multiply(0.07, this.velocity));
 
   // Expected screen index, without restriction
-  nextIdx = this.clamp(
+  nextIdx = clamp(
     round(divide(this.slide, this.WIDTH)),
     -(this.props.children.length - 1),
     0
@@ -131,7 +120,7 @@ export default class Tabs extends React.Component<Props> {
         cond(clockRunning(this.clock), stopClock(this.clock)),
         set(
           this.prev,
-          this.clamp(
+          clamp(
             this.next,
             multiply(-(this.props.children.length - 1), this.WIDTH),
             0

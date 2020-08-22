@@ -31,6 +31,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
 import { BAR_HEIGHT, Colors, NAVIGATION_HEIGHT } from '../../constants';
+import { clamp } from '../../util';
 
 interface PassedProps {
   tab: number;
@@ -147,25 +148,13 @@ export class BottomSheet extends React.Component<Props> {
   // Content height + footer height: the highest the content can go (negative value)
   contentLimit = sub(sub(0, this.contentHeight), this.footerHeight);
 
-  clamp = (
-    value: Animated.Adaptable<number>,
-    min: Animated.Adaptable<number>,
-    max: Animated.Adaptable<number>
-  ) => {
-    return cond(
-      lessOrEq(value, min),
-      min,
-      cond(greaterOrEq(value, max), max, value)
-    );
-  };
-
   pos = block([
     cond(
       eq(this.panState, State.ACTIVE),
       [
         cond(clockRunning(this.clock), stopClock(this.clock)),
         // Clamp prev to [TOP, 0]
-        set(this.prev, this.clamp(this.next, this.contentLimit, 0)),
+        set(this.prev, clamp(this.next, this.contentLimit, 0)),
         set(this.prevDelta, this.delta),
         set(this.close, 0)
       ],
@@ -195,7 +184,7 @@ export class BottomSheet extends React.Component<Props> {
             // Move prev, clamped to bottom of content
             set(
               this.prev,
-              this.clamp(this.clockState.position, this.contentLimit, 0)
+              clamp(this.clockState.position, this.contentLimit, 0)
             ),
             // If prev is moved below TOP, then it has slid past TOP: clamp to TOP and end sliding
             cond(

@@ -1,9 +1,13 @@
 import { Platform } from 'react-native';
 import MusicFiles from 'react-native-get-music-files';
 import Permissions from 'react-native-permissions';
-
+import Animated, {
+  cond,
+  greaterThan,
+  lessThan,
+  proc
+} from 'react-native-reanimated';
 import { createID, getFileName } from './node';
-
 import { Song, SongID, SortType } from './types';
 
 export function fileExists(_: string) {
@@ -100,3 +104,12 @@ export function parseDuration(iso: string) {
     Number(matches[3] || 0)
   );
 }
+
+export const clamp = proc(
+  (
+    value: Animated.Adaptable<number>,
+    min: Animated.Adaptable<number>,
+    max: Animated.Adaptable<number>
+  ) =>
+    cond(lessThan(value, min), min, cond(greaterThan(value, max), max, value))
+);

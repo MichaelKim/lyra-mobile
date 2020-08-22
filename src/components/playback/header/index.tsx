@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { OnProgressData } from 'react-native-video';
 import HeaderInfo, { HeaderInfoProps } from './info';
-import ProgressBar, { ProgressBarProps } from './progress-bar';
+import ProgressBar from './progress-bar';
 
 interface Props extends HeaderInfoProps {
-  progress: ProgressBarProps;
+  progress: OnProgressData;
 }
 
 const PlaybackHeader = ({

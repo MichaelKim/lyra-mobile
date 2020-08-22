@@ -1,10 +1,11 @@
-import RNSlider from '@react-native-community/slider';
+import RNSlider from './slider';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Colors } from '../constants';
+import { Colors } from '../../constants';
 
 interface Props {
   value: number;
+  loaded?: number;
   min?: number;
   max: number;
   onChange?: (value: number) => void;
@@ -16,18 +17,19 @@ const Slider = (props: Props) => {
       style={styles.slider}
       minimumValue={props.min || 0}
       maximumValue={props.max}
-      step={0.01}
-      value={props.value}
-      onValueChange={value => props.onChange && props.onChange(value)}
+      progress={props.value}
+      seekable={props.loaded ?? props.value}
+      onSlidingComplete={value => props.onChange && props.onChange(value)}
       minimumTrackTintColor={Colors.accent}
       maximumTrackTintColor={Colors.border}
+      seekableTrackTintColor={Colors.lightborder}
     />
   );
 };
 
 const styles = StyleSheet.create({
   slider: {
-    height: 10
+    marginHorizontal: 16
   }
 });
 

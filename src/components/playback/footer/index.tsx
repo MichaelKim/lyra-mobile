@@ -10,15 +10,12 @@ import { formatDuration } from '../../../util';
 import Slider from '../../slider';
 import Controls from './controls';
 import { h4 } from '../../../styles';
+import { OnProgressData } from 'react-native-video';
 
 interface Props {
   paused: boolean;
   shuffle: boolean;
-  progress: {
-    currentTime: number;
-    playableDuration: number;
-    seekableDuration: number;
-  };
+  progress: OnProgressData;
   onSeek: (seek: number) => void;
   setPaused: (paused: boolean) => void;
   skipPrevious: () => void;
@@ -61,6 +58,7 @@ class Footer extends React.Component<Props> {
       <View style={styles.playback}>
         <Slider
           value={progress.currentTime}
+          loaded={progress.playableDuration}
           max={progress.seekableDuration}
           onChange={onSeek}
         />
@@ -108,7 +106,7 @@ const mapDispatch = (dispatch: Dispatch<Action>) => ({
 const styles = StyleSheet.create({
   playback: {
     backgroundColor: Colors.controls,
-    height: 70,
+    height: 80,
     flexDirection: 'column'
   },
   timeBar: {
@@ -118,7 +116,9 @@ const styles = StyleSheet.create({
   },
   time: h4,
   controls: {
-    flexDirection: 'row'
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   buttonsLeft: {
     flex: 1

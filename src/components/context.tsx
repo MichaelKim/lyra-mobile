@@ -52,13 +52,9 @@ const Menu = ({ items, style, children }: Props) => {
   }, [showMenu]);
 
   const onOpen = React.useCallback(() => setMenu(true), [setMenu]);
-  const onClose = React.useCallback(() => {
-    console.log('close');
-    setMenu(false);
-  }, [setMenu]);
+  const onClose = React.useCallback(() => setMenu(false), [setMenu]);
   const onSelect = React.useCallback(
     (item: Item) => {
-      console.log('select', item.label);
       item.onPress();
       setMenu(false);
     },

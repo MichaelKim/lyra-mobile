@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Colors } from '../../../constants';
 
-export interface ProgressBarProps {
+interface ProgressBarProps {
   currentTime: number;
   seekableDuration: number;
 }
