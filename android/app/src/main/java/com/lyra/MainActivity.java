@@ -25,4 +25,10 @@ public class MainActivity extends ReactActivity {
       }
     };
   }
+
+  // See https://github.com/facebook/react-native/issues/13775#issuecomment-319673305
+  @Override
+  public void invokeDefaultOnBackPressed() {
+    moveTaskToBack(true);
+  }
 }

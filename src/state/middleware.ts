@@ -200,10 +200,4 @@ const changeServer: Middleware = store => next => action => {
   return result;
 };
 
-export default applyMiddleware(
-  logger,
-  queueSong,
-  saveToStorage,
-  checkQueue,
-  changeServer
-);
+export default [logger, queueSong, saveToStorage, checkQueue, changeServer];
