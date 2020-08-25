@@ -62,3 +62,4 @@ buck-out/
 yarn-error.log
 .vscode/
 misc/
+android/app/src/main/assets/index.android.bundle
