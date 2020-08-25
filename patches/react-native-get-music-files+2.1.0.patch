@@ -28,3 +28,25 @@ index bce0565..13e28cd 100644
  }
 -  
 \ No newline at end of file
+diff --git a/node_modules/react-native-get-music-files/android/src/main/java/com/cinder92/musicfiles/RNReactNativeGetMusicFilesModule.java b/node_modules/react-native-get-music-files/android/src/main/java/com/cinder92/musicfiles/RNReactNativeGetMusicFilesModule.java
+index 4907263..6bdc7ae 100644
+--- a/node_modules/react-native-get-music-files/android/src/main/java/com/cinder92/musicfiles/RNReactNativeGetMusicFilesModule.java
++++ b/node_modules/react-native-get-music-files/android/src/main/java/com/cinder92/musicfiles/RNReactNativeGetMusicFilesModule.java
+@@ -17,7 +17,7 @@ import android.net.Uri;
+ import android.os.Build;
+ import android.os.Environment;
+ import android.provider.MediaStore;
+-import android.support.annotation.Nullable;
++import androidx.annotation.Nullable;
+ import android.util.Log;
+ 
+ import com.facebook.react.bridge.ReadableMap;
+@@ -147,7 +147,7 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
+         }
+ 
+         String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
+-        Cursor musicCursor = musicResolver.query(musicUri, STAR, selection, null, sortOrder);
++        Cursor musicCursor = musicResolver.query(musicUri, null, selection, null, sortOrder);
+ 
+         //Log.i("Tienes => ",Integer.toString(musicCursor.getCount()));
+ 

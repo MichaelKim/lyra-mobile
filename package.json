@@ -14,7 +14,7 @@
     "clean": "cd android && ./gradlew clean",
     "test": "jest",
     "lint": "eslint .",
-    "postinstall": "patch-package && jetify"
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.0",
