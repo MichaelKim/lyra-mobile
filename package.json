@@ -6,11 +6,13 @@
     "start": "react-native start",
     "ports": "adb reverse tcp:8081 tcp:8081 && adb reverse tcp:8097 tcp:8097",
     "flipper": "adb shell am start -n com.lyra/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity",
+    "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "clean": "cd android && ./gradlew clean",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "patch-package && jetify"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.0",
@@ -56,6 +58,9 @@
     "eslint-plugin-react-hooks": "^4.1.0",
     "jest": "^26.4.2",
     "metro-react-native-babel-preset": "^0.63.0",
+    "patch-package": "^6.2.2",
+    "postinstall-postinstall": "^2.1.0",
+    "react-native-bundle-visualizer": "^2.2.1",
     "react-native-flipper": "^0.53.0",
     "react-native-svg-transformer": "^0.14.3",
     "react-test-renderer": "16.13.1",
