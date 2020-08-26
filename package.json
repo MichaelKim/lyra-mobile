@@ -13,7 +13,7 @@
     "release": "cd android && ./gradlew assembleRelease",
     "clean": "cd android && ./gradlew clean",
     "test": "jest",
-    "lint": "eslint .",
+    "lint": "eslint . && cd android && ./gradlew lint",
     "postinstall": "patch-package"
   },
   "dependencies": {

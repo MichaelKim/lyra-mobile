@@ -1,4 +1,3 @@
-- can't change playback slider
 - thumbnail on songlist
 - better playing icon for songlist
 - reorder queue

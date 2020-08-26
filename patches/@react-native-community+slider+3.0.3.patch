@@ -1,0 +1,20 @@
+diff --git a/node_modules/@react-native-community/slider/android/src/main/java/com/reactnativecommunity/slider/ReactSlider.java b/node_modules/@react-native-community/slider/android/src/main/java/com/reactnativecommunity/slider/ReactSlider.java
+index 1ca7b12..8cf4856 100644
+--- a/node_modules/@react-native-community/slider/android/src/main/java/com/reactnativecommunity/slider/ReactSlider.java
++++ b/node_modules/@react-native-community/slider/android/src/main/java/com/reactnativecommunity/slider/ReactSlider.java
+@@ -6,6 +6,7 @@
+  */
+ package com.reactnativecommunity.slider;
+ 
++import android.annotation.TargetApi;
+ import android.content.Context;
+ import android.graphics.Bitmap;
+ import android.graphics.BitmapFactory;
+@@ -107,6 +108,7 @@ public class ReactSlider extends AppCompatSeekBar {
+   }
+ 
+   @Override
++  @TargetApi(21)
+   public void onPopulateAccessibilityEvent(AccessibilityEvent event) {
+     super.onPopulateAccessibilityEvent(event);
+     if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED ||

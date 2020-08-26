@@ -1,9 +1,7 @@
-import { applyMiddleware } from 'redux';
 import { Middleware, Song } from '../types';
 import { getSongList } from '../util';
-import { downloadVideo, getRelatedVideos } from '../yt-util';
+import { downloadVideo, getRelatedVideos, setServer } from '../yt-util';
 import { clear, save } from './storage';
-import { setServer } from '../yt-util';
 
 const logger: Middleware = () => next => action => {
   console.log(action);
