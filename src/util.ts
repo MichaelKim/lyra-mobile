@@ -29,7 +29,8 @@ export async function getSongs(): Promise<Song[]> {
     title: true,
     artist: true,
     duration: true,
-    fields: ['title', 'artist', 'duration']
+    cover: true,
+    fields: ['title', 'artist', 'duration', 'artwork']
   });
 
   const songs: Array<Song> = tracks.map(track => ({
@@ -39,6 +40,11 @@ export async function getSongs(): Promise<Song[]> {
     duration: track.duration / 1000,
     source: 'LOCAL',
     filepath: track.path,
+    thumbnail: {
+      width: 60, // Not real thumbnail sizes
+      height: 60,
+      url: track.cover || track.artwork
+    },
     playlists: [],
     date: Date.now()
   }));

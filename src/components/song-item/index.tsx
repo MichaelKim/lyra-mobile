@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { Colors } from '../../constants';
 import { useCurrSong, useDispatch } from '../../hooks';
@@ -9,6 +9,7 @@ import { PlaylistID, Song } from '../../types';
 import { formatDuration } from '../../util';
 import ContextMenu from '../context';
 import AddToPlaylist from './add';
+import { Cover } from '../../icons';
 
 interface Props {
   song: Song;
@@ -62,13 +63,24 @@ const SongItem = ({ song, onSelect }: Props) => {
         onCancel={onCancel}
       />
       <RectButton rippleColor="#111" onPress={onItemPress} style={styles.rect}>
-        <Text style={styles.songTitle}>{song.title}</Text>
-        <Text style={styles.songArtist}>
-          {song.artist || 'Unknown Artist'} • {formatDuration(song.duration)}
-        </Text>
-        {isPlaying && <Text style={styles.songArtist}>Playing</Text>}
+        {song.thumbnail.url != null ? (
+          <Image
+            style={styles.thumbnail}
+            source={{ uri: song.thumbnail.url }}
+          />
+        ) : (
+          <View style={styles.thumbnail}>
+            <Cover width={45} height={45} />
+          </View>
+        )}
+        <View style={styles.text}>
+          <Text style={styles.songTitle}>{song.title}</Text>
+          <Text style={styles.songArtist}>
+            {song.artist || 'Unknown Artist'} • {formatDuration(song.duration)}
+          </Text>
+          {isPlaying && <Text style={styles.songArtist}>Playing</Text>}
+        </View>
       </RectButton>
-
       <ContextMenu items={items} style={styles.options}>
         <Options width={25} height={25} />
       </ContextMenu>
@@ -82,11 +94,22 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   rect: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    flex: 1
+  },
+  thumbnail: {
+    width: 60,
+    height: 45,
+    resizeMode: 'contain',
+    marginRight: 8,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  text: {
     flexDirection: 'column',
-    alignSelf: 'stretch',
     justifyContent: 'center',
-    paddingTop: 10,
-    paddingBottom: 10,
     flex: 1
   },
   songTitle: h3,

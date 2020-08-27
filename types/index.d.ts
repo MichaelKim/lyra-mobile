@@ -26,6 +26,8 @@ declare module 'react-native-get-music-files' {
     author: string;
     path: string;
     duration: number;
+    cover: string;
+    artwork: string;
   }
 
   function getAll(options: Options): Promise<Array<Track>>;

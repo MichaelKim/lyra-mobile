@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   thumbnail: {
     width: 120,
     height: 90,
+    resizeMode: 'contain',
     margin: 5
   },
   text: {

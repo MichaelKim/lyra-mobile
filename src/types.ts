@@ -10,6 +10,7 @@ interface SongShared {
   duration: number;
   playlists: PlaylistID[];
   date: number;
+  thumbnail: Thumbnail;
 }
 
 export interface LocalSong extends SongShared {
@@ -21,7 +22,6 @@ export interface VideoSong extends SongShared {
   source: 'YOUTUBE';
   url: SongID;
   views: number;
-  thumbnail: Thumbnail;
 }
 
 export type Song = LocalSong | VideoSong;
