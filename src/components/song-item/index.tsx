@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { Colors } from '../../constants';
 import { useCurrSong, useDispatch } from '../../hooks';
@@ -8,8 +8,8 @@ import { h3 } from '../../styles';
 import { PlaylistID, Song } from '../../types';
 import { formatDuration } from '../../util';
 import ContextMenu from '../context';
+import Thumbnail from '../thumbnail';
 import AddToPlaylist from './add';
-import { Cover } from '../../icons';
 
 interface Props {
   song: Song;
@@ -63,16 +63,7 @@ const SongItem = ({ song, onSelect }: Props) => {
         onCancel={onCancel}
       />
       <RectButton rippleColor="#111" onPress={onItemPress} style={styles.rect}>
-        {song.thumbnail.url != null ? (
-          <Image
-            style={styles.thumbnail}
-            source={{ uri: song.thumbnail.url }}
-          />
-        ) : (
-          <View style={styles.thumbnail}>
-            <Cover width={45} height={45} />
-          </View>
-        )}
+        <Thumbnail src={song.thumbnail.url} style={styles.thumbnail} />
         <View style={styles.text}>
           <Text style={styles.songTitle}>{song.title}</Text>
           <Text style={styles.songArtist}>
@@ -102,10 +93,7 @@ const styles = StyleSheet.create({
   thumbnail: {
     width: 60,
     height: 45,
-    resizeMode: 'contain',
-    marginRight: 8,
-    alignItems: 'center',
-    justifyContent: 'center'
+    marginRight: 8
   },
   text: {
     flexDirection: 'column',

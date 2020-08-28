@@ -6,6 +6,7 @@ import Related from './related';
 
 import { h2 } from '../../../styles';
 import { Colors } from '../../../constants';
+import Thumbnail from '../../thumbnail';
 
 interface Props {
   currSong: Song;
@@ -24,8 +25,7 @@ const PlaybackContent = ({ currSong }: Props) => {
         </>
       ) : (
         <>
-          <Text>{currSong.title}</Text>
-          <Text>{currSong.artist}</Text>
+          <Thumbnail src={currSong.thumbnail.url} style={styles.thumbnail} />
         </>
       )}
     </View>
@@ -43,6 +43,9 @@ const styles = StyleSheet.create({
     height: 1,
     borderTopWidth: 1,
     borderTopColor: Colors.border
+  },
+  thumbnail: {
+    flex: 1
   }
 });
 
