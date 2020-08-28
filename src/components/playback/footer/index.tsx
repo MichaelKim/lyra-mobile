@@ -56,16 +56,16 @@ class Footer extends React.Component<Props> {
 
     return (
       <View style={styles.playback}>
-        <Slider
-          value={progress.currentTime}
-          loaded={progress.playableDuration}
-          max={progress.seekableDuration}
-          onChange={onSeek}
-        />
         <View style={styles.timeBar}>
           <Text style={styles.time}>
             {formatDuration(progress.currentTime)}
           </Text>
+          <Slider
+            value={progress.currentTime}
+            loaded={progress.playableDuration}
+            max={progress.seekableDuration}
+            onChange={onSeek}
+          />
           <Text style={styles.time}>
             {formatDuration(progress.seekableDuration)}
           </Text>
@@ -111,7 +111,6 @@ const styles = StyleSheet.create({
   },
   timeBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginHorizontal: 10
   },
   time: h4,

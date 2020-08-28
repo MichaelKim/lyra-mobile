@@ -30,7 +30,7 @@ import Animated, {
   Value
 } from 'react-native-reanimated';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
-import { BAR_HEIGHT, Colors, NAVIGATION_HEIGHT } from '../../constants';
+import { Colors, NAVIGATION_HEIGHT } from '../../constants';
 import { clamp } from '../../util';
 
 interface PassedProps {
@@ -48,12 +48,15 @@ export class BottomSheet extends React.Component<Props> {
   // Proper height (Dimensions height is bugged on Android?)
   HEIGHT = new Value(this.props.height);
 
-  // 50: navigation tabs height, 60: bottom sheet header height
-  TOP = multiply(sub(this.HEIGHT, NAVIGATION_HEIGHT + BAR_HEIGHT - 1), -1);
-
-  headerHeight = new Value(60);
+  headerHeight = new Value(62);
   contentHeight = new Value(646);
-  footerHeight = new Value(70);
+  footerHeight = new Value(80);
+
+  // 50: navigation tabs height, 60: bottom sheet header height
+  TOP = multiply(
+    sub(this.HEIGHT, this.headerHeight, NAVIGATION_HEIGHT, -3),
+    -1
+  );
 
   onHeaderLayout = event([
     {

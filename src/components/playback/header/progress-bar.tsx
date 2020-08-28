@@ -12,11 +12,11 @@ const ProgressBar = ({ currentTime, seekableDuration }: ProgressBarProps) => {
 
   return (
     <View style={styles.progressBar}>
-      <View style={{ flex: left, backgroundColor: Colors.placeholder }} />
+      <View style={{ flex: left, backgroundColor: Colors.accent }} />
       <View
         style={{
           flex: seekableDuration - currentTime,
-          backgroundColor: Colors.sheet
+          backgroundColor: Colors.border
         }}
       />
     </View>

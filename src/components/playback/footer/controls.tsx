@@ -4,6 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import MusicControl from 'react-native-music-control';
 import { Forward, Next, Pause, Play, Previous, Replay } from '../../../icons';
 import { Command } from 'react-native-music-control/lib/types';
+import { Colors } from '../../../constants';
 
 interface Props {
   paused: boolean;
@@ -20,6 +21,8 @@ function useMediaControl(event: Command, handler: (value: any) => void) {
     return () => MusicControl.off(event);
   }, [event, handler]);
 }
+
+const BUTTON_SIZE = 30;
 
 const Controls = ({
   paused,
@@ -68,23 +71,37 @@ const Controls = ({
   return (
     <View style={styles.root}>
       <TouchableOpacity onPress={skipPrevious}>
-        <Previous width={30} height={30} />
+        <Previous
+          width={BUTTON_SIZE}
+          height={BUTTON_SIZE}
+          style={styles.button}
+        />
       </TouchableOpacity>
       <TouchableOpacity onPress={onReplay}>
-        <Replay width={30} height={30} />
+        <Replay
+          width={BUTTON_SIZE}
+          height={BUTTON_SIZE}
+          style={styles.button}
+        />
       </TouchableOpacity>
       <TouchableOpacity onPress={togglePause}>
-        {paused ? (
-          <Play width={30} height={30} />
-        ) : (
-          <Pause width={30} height={30} />
-        )}
+        <View style={[styles.button, styles.center]}>
+          {paused ? (
+            <Play width={40} height={40} />
+          ) : (
+            <Pause width={40} height={40} />
+          )}
+        </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={onForward}>
-        <Forward width={30} height={30} />
+        <Forward
+          width={BUTTON_SIZE}
+          height={BUTTON_SIZE}
+          style={styles.button}
+        />
       </TouchableOpacity>
       <TouchableOpacity onPress={skipNext}>
-        <Next width={30} height={30} />
+        <Next width={BUTTON_SIZE} height={BUTTON_SIZE} style={styles.button} />
       </TouchableOpacity>
     </View>
   );
@@ -92,7 +109,20 @@ const Controls = ({
 
 const styles = StyleSheet.create({
   root: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    alignItems: 'center'
+  },
+  button: {
+    marginHorizontal: 4
+  },
+  center: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
 

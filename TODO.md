@@ -1,5 +1,4 @@
 - better playing icon for songlist
-- style bottom sheet content for local songs
 - reorder queue
 - options on playlists
 - rewrite playlist to be ontop of screen instead of fullscreen modal

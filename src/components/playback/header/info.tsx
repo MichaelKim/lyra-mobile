@@ -6,6 +6,7 @@ import { Pause, Play } from '../../../icons';
 import { Song } from '../../../types';
 import Loading from '../../loading';
 import { h3, h4 } from '../../../styles';
+import Thumbnail from '../../thumbnail';
 
 export interface HeaderInfoProps {
   currSong: Song;
@@ -13,6 +14,8 @@ export interface HeaderInfoProps {
   paused: boolean;
   setPaused: (paused: boolean) => void;
 }
+
+const BUTTON_SIZE = 40;
 
 const HeaderInfo = ({
   currSong,
@@ -26,6 +29,7 @@ const HeaderInfo = ({
   ]);
   return (
     <View style={styles.header}>
+      <Thumbnail style={styles.thumbnail} src={currSong.thumbnail.url} />
       <View style={styles.song}>
         <Text style={styles.songTitle}>{currSong.title}</Text>
         <Text style={styles.songArtist}>{currSong.artist}</Text>
@@ -37,9 +41,9 @@ const HeaderInfo = ({
       ) : (
         <TouchableOpacity onPress={togglePause}>
           {paused ? (
-            <Play width={25} height={25} />
+            <Play width={BUTTON_SIZE} height={BUTTON_SIZE} />
           ) : (
-            <Pause width={25} height={25} />
+            <Pause width={BUTTON_SIZE} height={BUTTON_SIZE} />
           )}
         </TouchableOpacity>
       )}
@@ -51,9 +55,14 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: Colors.sheet,
     height: BAR_HEIGHT,
-    paddingHorizontal: 24,
+    paddingRight: 24,
     flexDirection: 'row',
     alignItems: 'center'
+  },
+  thumbnail: {
+    width: 45,
+    height: 45,
+    marginHorizontal: 8
   },
   song: {
     flex: 1
