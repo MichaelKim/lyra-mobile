@@ -29,6 +29,7 @@ const Slider = (props: Props) => {
 
 const styles = StyleSheet.create({
   slider: {
+    flexDirection: 'row',
     marginHorizontal: 16,
     flex: 1
   }

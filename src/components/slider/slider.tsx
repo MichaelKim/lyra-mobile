@@ -283,7 +283,8 @@ const styles = StyleSheet.create({
   root: {
     height: 20,
     alignItems: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    flex: 1
   },
   trackBox: {
     flex: 1,
