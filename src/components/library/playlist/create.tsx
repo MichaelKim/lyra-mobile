@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { Colors } from '../../../constants';
-import { h2 } from '../../../styles';
+import { h1, h2, h3 } from '../../../styles';
 
 interface Props {
   visible: boolean;
@@ -10,7 +10,7 @@ interface Props {
   onCancel: () => void;
 }
 
-const Playlists = ({ visible, onEnter, onCancel }: Props) => {
+const CreatePlaylist = ({ visible, onEnter, onCancel }: Props) => {
   const [newName, setName] = React.useState<string>('');
 
   const _onEnter = () => onEnter(newName || 'My Playlist');
@@ -34,7 +34,7 @@ const Playlists = ({ visible, onEnter, onCancel }: Props) => {
           <Pressable onPress={onCancel}>
             <Text style={styles.text}>Cancel</Text>
           </Pressable>
-          <Pressable onPress={_onEnter} style={styles.button}>
+          <Pressable onPress={_onEnter} style={styles.create}>
             <Text style={styles.text}>Create</Text>
           </Pressable>
         </View>
@@ -44,12 +44,12 @@ const Playlists = ({ visible, onEnter, onCancel }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  text: h2,
-  button: {
+  text: h3,
+  create: {
     backgroundColor: Colors.accent,
     padding: 4,
     borderRadius: 4,
-    marginLeft: 20
+    marginLeft: 40
   },
   header: {
     ...h2,
@@ -63,13 +63,14 @@ const styles = StyleSheet.create({
     paddingVertical: 20
   },
   textInput: {
-    ...h2,
+    ...h1,
     padding: 0,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
     height: 40,
     marginVertical: 12,
-    width: '50%'
+    width: '75%',
+    textAlign: 'center'
   },
   buttons: {
     flexDirection: 'row',
@@ -77,4 +78,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Playlists;
+export default CreatePlaylist;

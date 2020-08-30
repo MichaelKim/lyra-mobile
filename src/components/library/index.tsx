@@ -1,38 +1,26 @@
+import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { Colors } from '../../constants';
-import { NavigationProps } from '../../types';
-import Playlists from './playlist';
-import Songs from './songs';
-import Tabs from './tabs';
+import { RootTabParamList } from '../../App';
+import { PlaylistID, TabProps } from '../../types';
+import PlaylistDetail from './detail';
+import Library from './library';
 
-interface Props extends NavigationProps {}
+const Stack = createStackNavigator<LibraryStackParamList>();
 
-const Library = (_: Props) => {
+export type LibraryStackParamList = {
+  Library: undefined;
+  Playlist: { pid: PlaylistID };
+};
+
+type Props = TabProps<RootTabParamList, 'Library'>;
+
+const Nav = (_: Props) => {
   return (
-    <SafeAreaView style={styles.root}>
-      <LinearGradient
-        colors={[Colors.gradient, Colors.screen]}
-        locations={[0, 0.1]}
-        style={styles.linearGradient}>
-        <Tabs headers={['All Songs', 'Playlists', 'More']}>
-          <Songs />
-          <Playlists />
-          <Songs />
-        </Tabs>
-      </LinearGradient>
-    </SafeAreaView>
+    <Stack.Navigator initialRouteName="Library" headerMode="none">
+      <Stack.Screen name="Library" component={Library} />
+      <Stack.Screen name="Playlist" component={PlaylistDetail} />
+    </Stack.Navigator>
   );
 };
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1
-  },
-  linearGradient: {
-    flex: 1
-  }
-});
-
-export default Library;
+export default Nav;

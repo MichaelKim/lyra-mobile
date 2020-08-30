@@ -1,7 +1,7 @@
 - better playing icon for songlist
 - reorder queue
 - options on playlists
-- rewrite playlist to be ontop of screen instead of fullscreen modal
+- style modal for adding song to playlists
 
 - on header press, open/close bottom sheet
 

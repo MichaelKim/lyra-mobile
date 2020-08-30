@@ -7,83 +7,68 @@ import { h2, h3 } from '../../../styles';
 import { Playlist } from '../../../types';
 import Create from './create';
 import PlaylistItem from './item';
-import PlaylistScreen from './screen';
 import { Add } from '../../../icons';
+import { useNavigation } from '@react-navigation/native';
 
 interface Props {}
 
 const Playlists = (_: Props) => {
   const [showModal, setModal] = React.useState<boolean>(false);
-  const [selectedPlaylist, setPlaylist] = React.useState<
-    Playlist | undefined
-  >();
-
+  const navigation = useNavigation();
   const playlists = useSelector(state => Object.values(state.playlists));
 
   const dispatch = useDispatch();
-  const createPlaylist = React.useCallback(
-    (name: string) =>
-      dispatch({
-        type: 'CREATE_PLAYLIST',
-        playlist: {
-          id: Date.now().toString(),
-          name,
-          songs: []
-        }
-      }),
-    [dispatch]
-  );
+  const createPlaylist = (name: string) =>
+    dispatch({
+      type: 'CREATE_PLAYLIST',
+      playlist: {
+        id: Date.now().toString(),
+        name,
+        songs: []
+      }
+    });
 
-  const onSelect = React.useCallback((playlist: Playlist) => {
-    setPlaylist(playlist);
-  }, []);
+  const onSelect = (playlist: Playlist) => {
+    navigation.navigate('Playlist', { pid: playlist.id });
+  };
 
-  const onNewPlaylist = React.useCallback(() => setModal(true), [setModal]);
+  const onNewPlaylist = () => setModal(true);
 
-  const onEnter = React.useCallback(
-    (name: string) => {
-      createPlaylist(name);
-      setModal(false);
-    },
-    [createPlaylist, setModal]
-  );
+  const onEnter = (name: string) => {
+    createPlaylist(name);
+    setModal(false);
+  };
 
-  const onCancel = React.useCallback(() => setModal(false), [setModal]);
-
-  const onClose = React.useCallback(() => {
-    setPlaylist(undefined);
-  }, []);
-
-  if (playlists.length === 0) {
-    return (
-      <View style={styles.empty}>
-        <Text style={styles.text}>No playlists!</Text>
-        <RectButton onPress={onNewPlaylist} style={styles.button}>
-          <Text style={styles.text}>Create New Playlist</Text>
-        </RectButton>
-        <Create visible={showModal} onEnter={onEnter} onCancel={onCancel} />
-      </View>
-    );
-  }
+  const onCancel = () => setModal(false);
 
   return (
     <>
-      <RectButton onPress={onNewPlaylist} style={styles.rect}>
-        <View style={styles.add}>
-          <Add width={25} height={25} />
-        </View>
-        <Text style={h2}>Create New Playlist</Text>
-      </RectButton>
       <Create visible={showModal} onEnter={onEnter} onCancel={onCancel} />
-      <FlatList
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.scrollViewContainer}
-        data={playlists}
-        renderItem={({ item }) => (
-          <PlaylistItem key={item.id} playlist={item} onSelect={onSelect} />
-        )}
-      />
-      <PlaylistScreen playlist={selectedPlaylist} onClose={onClose} />
+      {playlists.length === 0 ? (
+        <View style={styles.empty}>
+          <Text style={styles.text}>No playlists!</Text>
+          <RectButton onPress={onNewPlaylist} style={styles.button}>
+            <Text style={styles.text}>Create New Playlist</Text>
+          </RectButton>
+        </View>
+      ) : (
+        <>
+          <RectButton onPress={onNewPlaylist} style={styles.rect}>
+            <View style={styles.add}>
+              <Add width={25} height={25} />
+            </View>
+            <Text style={h2}>Create New Playlist</Text>
+          </RectButton>
+          <FlatList
+            contentInsetAdjustmentBehavior="automatic"
+            contentContainerStyle={styles.scrollViewContainer}
+            data={playlists}
+            renderItem={({ item }) => (
+              <PlaylistItem key={item.id} playlist={item} onSelect={onSelect} />
+            )}
+          />
+        </>
+      )}
     </>
   );
 };
