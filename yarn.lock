@@ -1816,14 +1816,6 @@
     "@types/react" "*"
     "@types/react-native" "*"
 
-"@types/react-native-video@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@types/react-native-video/-/react-native-video-5.0.1.tgz#605b3e3170b2a91c514e828b486030ff426e2e9c"
-  integrity sha512-GxQV9fR7EzE2L02pKk6RpklcD6cbUxph9xl6OYaiY+YJNSlm0H6sQXLJ3sYRybmyoQQpF8VLncOkWjlMzVnbmQ==
-  dependencies:
-    "@types/react" "*"
-    "@types/react-native" "*"
-
 "@types/react-native@*":
   version "0.63.4"
   resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.63.4.tgz#4610b0df0e5f0db4c68d495754ad9f8bc3b8893f"
@@ -3215,11 +3207,6 @@ electron-to-chromium@^1.3.523:
   version "1.3.544"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.544.tgz#ac1f7d319f6060f3d6d122261d542ec77eb1427e"
   integrity sha512-jx6H7M1db76Q/dI3MadZC4qwNTvpiq8tdYEJswxexrIm5bH+LKRdg+VAteMF1tJJbBLrcuogE9N3nxT3Dp1gag==
-
-eme-encryption-scheme-polyfill@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/eme-encryption-scheme-polyfill/-/eme-encryption-scheme-polyfill-2.0.1.tgz#b080b01bffd74c75c9cf8044c1cabedf3b83954f"
-  integrity sha512-Wz+Ro1c0/2Wsx2RLFvTOO0m4LvYn+7cSnq3XOvRvLLBq8jbvUACH/zpU9s0/5+mQa5oaelkU69x+q0z/iWYrFA==
 
 emittery@^0.7.1:
   version "0.7.1"
@@ -5247,11 +5234,6 @@ jsx-ast-utils@^2.4.1:
     array-includes "^3.1.1"
     object.assign "^4.1.0"
 
-keymirror@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/keymirror/-/keymirror-0.1.1.tgz#918889ea13f8d0a42e7c557250eee713adc95c35"
-  integrity sha1-kYiJ6hP40KQufFVyUO7nE63JXDU=
-
 kind-of@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-1.1.0.tgz#140a3d2d41a36d2efcfa9377b62c24f8495a5c44"
@@ -6592,7 +6574,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.4"
 
-prop-types@15.7.2, prop-types@^15.5.10, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@15.7.2, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -6732,11 +6714,6 @@ react-native-modal@^11.5.6:
     prop-types "^15.6.2"
     react-native-animatable "1.3.3"
 
-react-native-music-control@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/react-native-music-control/-/react-native-music-control-0.12.0.tgz#aa63864f2f056f1e47928eebbc7880e3c00fc88b"
-  integrity sha512-+NK4cFSQ3teciEXutlb1sav7YUgZaYbjnY6uAozA3A+F9F2jAOpDfw1YAko7kzNqpRR35xov3S7Ql3Alq7kJtA==
-
 react-native-permissions@^2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-2.1.5.tgz#6cfc4f1ab1590f4952299b7cdc9698525ad540e0"
@@ -6785,14 +6762,10 @@ react-native-svg@^12.1.0:
     css-select "^2.1.0"
     css-tree "^1.0.0-alpha.39"
 
-react-native-video@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-5.0.2.tgz#8f07da0cd85a1d4b316d115f3786409efc9e39fb"
-  integrity sha512-zbItbMH0uZYkK7xFKa41+950QjoTrIl60bY1vAP7gxTn20HGHvHZRw28h9A5npK5T0QuWMAkn8twaGzqcDkTug==
-  dependencies:
-    keymirror "^0.1.1"
-    prop-types "^15.5.10"
-    shaka-player "^2.4.4"
+react-native-track-player@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/react-native-track-player/-/react-native-track-player-1.2.3.tgz#cd147b1fc93a229c49392abd7b37f087285e673a"
+  integrity sha512-h8HWOC9Zo54hen0ttlGzdofEMH38CPfT6+UWAcbEoHFgGcvxsRlJAgubdtM3QWwWZh20Q2zvQA8+8/l4Bu0yfA==
 
 react-native@0.63.2:
   version "0.63.2"
@@ -7285,13 +7258,6 @@ setprototypeof@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.1.1.tgz#7e95acb24aa92f5885e0abef5ba131330d4ae683"
   integrity sha512-JvdAWfbXeIGaZ9cILp38HntZSFSo3mWg6xGcJJsd+d4aRMOqauag1C63dJfDw7OaMYwEbHMOxEZ1lqVRYP2OAw==
-
-shaka-player@^2.4.4:
-  version "2.5.14"
-  resolved "https://registry.yarnpkg.com/shaka-player/-/shaka-player-2.5.14.tgz#271e005006ff4f93e2f216cc95602415a2e04b67"
-  integrity sha512-GSY4Dj7D+YuO7rrqoNX1caCWO2QNnJ8bzzgIOgKCL8z0rJOLNcNzMeGL0xBYCMK7rzzwjOhcPeYMB13rWkPgVw==
-  dependencies:
-    eme-encryption-scheme-polyfill "^2.0.1"
 
 shallow-clone@^0.1.2:
   version "0.1.2"

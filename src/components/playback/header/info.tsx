@@ -7,26 +7,28 @@ import { Song } from '../../../types';
 import Loading from '../../loading';
 import { h3, h4 } from '../../../styles';
 import Thumbnail from '../../thumbnail';
+import TrackPlayer, { usePlaybackState } from 'react-native-track-player';
 
-export interface HeaderInfoProps {
+export interface Props {
   currSong: Song;
-  loading: boolean;
-  paused: boolean;
-  setPaused: (paused: boolean) => void;
 }
 
 const BUTTON_SIZE = 40;
 
-const HeaderInfo = ({
-  currSong,
-  loading,
-  paused,
-  setPaused
-}: HeaderInfoProps) => {
-  const togglePause = React.useCallback(() => setPaused(!paused), [
-    paused,
-    setPaused
-  ]);
+const HeaderInfo = ({ currSong }: Props) => {
+  const playbackState = usePlaybackState();
+
+  const loading =
+    playbackState === TrackPlayer.STATE_BUFFERING ||
+    playbackState === TrackPlayer.STATE_CONNECTING;
+
+  const paused = playbackState === TrackPlayer.STATE_PAUSED;
+
+  const togglePause = React.useCallback(() => {
+    if (paused) TrackPlayer.play();
+    else TrackPlayer.pause();
+  }, [paused]);
+
   return (
     <View style={styles.header}>
       <Thumbnail style={styles.thumbnail} src={currSong.thumbnail.url} />

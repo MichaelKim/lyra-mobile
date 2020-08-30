@@ -1,21 +1,21 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Colors } from '../../../constants';
+import { useTrackPlayerProgress } from 'react-native-track-player';
 
-interface ProgressBarProps {
-  currentTime: number;
-  seekableDuration: number;
-}
+interface Props {}
 
-const ProgressBar = ({ currentTime, seekableDuration }: ProgressBarProps) => {
-  const left = seekableDuration === 0 ? 1 : currentTime;
+const ProgressBar = (_: Props) => {
+  const { position, duration } = useTrackPlayerProgress();
+
+  const left = duration === 0 ? 1 : position;
 
   return (
     <View style={styles.progressBar}>
       <View style={{ flex: left, backgroundColor: Colors.accent }} />
       <View
         style={{
-          flex: seekableDuration - currentTime,
+          flex: duration - position,
           backgroundColor: Colors.border
         }}
       />

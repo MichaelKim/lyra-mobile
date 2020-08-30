@@ -1,32 +1,18 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { OnProgressData } from 'react-native-video';
-import HeaderInfo, { HeaderInfoProps } from './info';
+import HeaderInfo from './info';
 import ProgressBar from './progress-bar';
+import { Song } from '../../../types';
 
-interface Props extends HeaderInfoProps {
-  progress: OnProgressData;
+interface Props {
+  currSong: Song;
 }
 
-const PlaybackHeader = ({
-  currSong,
-  loading,
-  paused,
-  setPaused,
-  progress: { currentTime, seekableDuration }
-}: Props) => {
+const PlaybackHeader = ({ currSong }: Props) => {
   return (
     <View style={styles.root}>
-      <ProgressBar
-        currentTime={currentTime}
-        seekableDuration={seekableDuration}
-      />
-      <HeaderInfo
-        currSong={currSong}
-        loading={loading}
-        paused={paused}
-        setPaused={setPaused}
-      />
+      <ProgressBar />
+      <HeaderInfo currSong={currSong} />
     </View>
   );
 };

@@ -1,11 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import MusicControl from 'react-native-music-control';
-import Video, { OnProgressData } from 'react-native-video';
+import TrackPlayer from 'react-native-track-player';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 import { BAR_HEIGHT } from '../../constants';
-import { Action, Song, StoreState } from '../../types';
+import { Song, StoreState } from '../../types';
 import { getStreamURL } from '../../yt-util';
 import PlaybackContent from './content';
 import PlaybackFooter from './footer';
@@ -18,48 +16,16 @@ interface PassedProps {
 
 type Props = PassedProps & {
   currSong: Song | null;
-  skipNext: () => void;
 };
 
-interface State {
-  src: string;
-  loading: boolean;
-  paused: boolean;
-  progress: OnProgressData;
-  autoplay: boolean;
-}
-
-class Playback extends React.Component<Props, State> {
-  state = {
-    src: '',
-    loading: true,
-    paused: true,
-    autoplay: false,
-    progress: {
-      currentTime: 0,
-      playableDuration: 0,
-      seekableDuration: 0
-    }
-  };
-
-  player = React.createRef<Video>();
-
-  setPaused = (paused: boolean) => {
-    this.setState({
-      paused
-    });
-  };
-
+class Playback extends React.Component<Props> {
   loadSong = async (prevSongID?: string) => {
     const { currSong } = this.props;
 
     if (currSong == null) {
       if (prevSongID != null) {
         // currSong turned null, stop playing
-        this.setState({
-          paused: true,
-          src: ''
-        });
+        TrackPlayer.stop();
       }
       return;
     }
@@ -68,126 +34,72 @@ class Playback extends React.Component<Props, State> {
       return;
     }
 
-    this.setState({
-      autoplay: prevSongID != null,
-      paused: true,
-      loading: true
-    });
-
+    await TrackPlayer.pause();
+    await TrackPlayer.reset();
     if (currSong.source === 'LOCAL') {
-      this.setState({
-        src: currSong.filepath
-      });
-      MusicControl.setNowPlaying({
+      await TrackPlayer.add({
+        id: currSong.id,
         title: currSong.title,
         artist: currSong.artist,
-        duration: currSong.duration
+        url: currSong.filepath,
+        duration: currSong.duration,
+        artwork: currSong.thumbnail.url
       });
     } else {
       const src = await getStreamURL(currSong.id);
-      this.setState({
-        src
-      });
-      MusicControl.setNowPlaying({
+      await TrackPlayer.add({
+        id: currSong.id,
         title: currSong.title,
         artist: currSong.artist,
+        url: src,
         duration: Number(currSong.duration || 1),
         artwork: currSong.thumbnail.url
-        // description: '', // Android Only
-        // color: 0xFFFFFF, // Notification Color - Android Only
-        // date: '1983-01-02T00:00:00Z', // Release Date (RFC 3339) - Android Only
-        // rating: 84, // Android Only (Boolean or Number depending on the type)
       });
     }
 
-    // Update progress once loaded
-    this.setState({
-      progress: {
-        currentTime: 0,
-        playableDuration: 0,
-        seekableDuration: Number(currSong.duration || 1)
-      }
-    });
+    if (prevSongID != null) {
+      TrackPlayer.play();
+    }
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    await TrackPlayer.setupPlayer({});
+    await TrackPlayer.updateOptions({
+      jumpInterval: 10,
+      capabilities: [
+        TrackPlayer.CAPABILITY_PLAY,
+        TrackPlayer.CAPABILITY_PAUSE,
+        TrackPlayer.CAPABILITY_SEEK_TO,
+        TrackPlayer.CAPABILITY_JUMP_FORWARD,
+        TrackPlayer.CAPABILITY_JUMP_BACKWARD,
+        TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
+        TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+        TrackPlayer.CAPABILITY_STOP
+      ],
+      compactCapabilities: [
+        TrackPlayer.CAPABILITY_PLAY,
+        TrackPlayer.CAPABILITY_PAUSE
+      ]
+    });
     this.loadSong();
   }
 
   componentDidUpdate(prevProps: Props) {
     this.loadSong(prevProps.currSong?.id);
-
-    MusicControl.updatePlayback({
-      elapsedTime: this.state.progress.currentTime,
-      state:
-        this.props.currSong == null
-          ? MusicControl.STATE_STOPPED
-          : this.state.loading
-          ? MusicControl.STATE_BUFFERING
-          : this.state.paused
-          ? MusicControl.STATE_PAUSED
-          : MusicControl.STATE_PLAYING
-    });
   }
 
-  onSeek = (seek: number) => {
-    if (this.player.current) {
-      this.setState(s => ({
-        loading: true,
-        progress: {
-          ...s.progress,
-          // Eagerly set new position to immediately update slider
-          currentTime: seek
-        }
-      }));
-      this.player.current.seek(seek);
-    }
-  };
-
-  onProgress = (progress: OnProgressData) => {
-    this.setState({
-      progress
-    });
-  };
-
-  onLoad = () => {
-    this.setState({
-      paused: !this.state.autoplay,
-      loading: false
-    });
-  };
-
-  onFinishedSeek = () => {
-    this.setState({
-      loading: false
-    });
-  };
-
-  skipNext = () => {
-    this.setState({
-      paused: true
-    });
-    this.onSeek(0);
-    this.props.skipNext();
-  };
+  componentWillUnmount() {
+    TrackPlayer.destroy();
+  }
 
   renderHeader = () => {
     const { currSong } = this.props;
-    const { loading, paused, progress } = this.state;
 
     if (currSong == null) {
       return null;
     }
 
-    return (
-      <PlaybackHeader
-        currSong={currSong}
-        loading={loading}
-        paused={paused}
-        progress={progress}
-        setPaused={this.setPaused}
-      />
-    );
+    return <PlaybackHeader currSong={currSong} />;
   };
 
   renderContent = () => {
@@ -201,20 +113,11 @@ class Playback extends React.Component<Props, State> {
   };
 
   renderFooter = () => {
-    const { paused, progress } = this.state;
-    return (
-      <PlaybackFooter
-        paused={paused}
-        progress={progress}
-        onSeek={this.onSeek}
-        setPaused={this.setPaused}
-      />
-    );
+    return <PlaybackFooter />;
   };
 
   render() {
     const { currSong, tab } = this.props;
-    const { src, paused } = this.state;
 
     if (currSong == null) {
       return null;
@@ -222,18 +125,6 @@ class Playback extends React.Component<Props, State> {
 
     return (
       <View style={styles.container}>
-        {src !== '' && (
-          <Video
-            source={{ uri: src }}
-            ref={this.player}
-            playInBackground
-            paused={paused}
-            onLoad={this.onLoad}
-            onSeek={this.onFinishedSeek}
-            onProgress={this.onProgress}
-            onEnd={this.skipNext}
-          />
-        )}
         <Slide
           tab={tab}
           renderHeader={this.renderHeader}
@@ -256,14 +147,10 @@ const mapState = (state: StoreState) => {
   };
 };
 
-const mapDispatch = (dispatch: Dispatch<Action>) => ({
-  skipNext: () => dispatch({ type: 'SKIP_NEXT' })
-});
-
 const styles = StyleSheet.create({
   container: {
     height: BAR_HEIGHT
   }
 });
 
-export default connect(mapState, mapDispatch)(Playback);
+export default connect(mapState)(Playback);
