@@ -73,13 +73,13 @@ class Playback extends React.Component<Props> {
         TrackPlayer.CAPABILITY_JUMP_FORWARD,
         TrackPlayer.CAPABILITY_JUMP_BACKWARD,
         TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-        TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
-        TrackPlayer.CAPABILITY_STOP
-      ],
-      compactCapabilities: [
-        TrackPlayer.CAPABILITY_PLAY,
-        TrackPlayer.CAPABILITY_PAUSE
+        TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS
+        // TrackPlayer.CAPABILITY_STOP
       ]
+      // compactCapabilities: [
+      //   TrackPlayer.CAPABILITY_PLAY,
+      //   TrackPlayer.CAPABILITY_PAUSE
+      // ]
     });
     this.loadSong();
   }

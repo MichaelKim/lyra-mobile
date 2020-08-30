@@ -17,7 +17,7 @@ const Footer = (_: Props) => {
 
   const dispatch = useDispatch();
   const toggleShuffle = React.useCallback(
-    () => dispatch({ type: 'SET_SHUFFLE', shuffle }),
+    () => dispatch({ type: 'SET_SHUFFLE', shuffle: !shuffle }),
     [dispatch, shuffle]
   );
 

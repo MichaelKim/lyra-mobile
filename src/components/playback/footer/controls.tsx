@@ -39,7 +39,6 @@ const Controls = (_: Props) => {
     await TrackPlayer.seekTo(0);
     if (position < 3) {
       dispatch({ type: 'SKIP_PREVIOUS' });
-      await TrackPlayer.skipToPrevious();
     }
   }, [dispatch, position]);
 
@@ -47,7 +46,24 @@ const Controls = (_: Props) => {
     await TrackPlayer.pause();
     await TrackPlayer.seekTo(0);
     dispatch({ type: 'SKIP_NEXT' });
-    await TrackPlayer.skipToNext();
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    const cancelPrevious = TrackPlayer.addEventListener(
+      'remote-previous',
+      () => {
+        dispatch({ type: 'SKIP_PREVIOUS' });
+      }
+    );
+
+    const cancelNext = TrackPlayer.addEventListener('remote-next', () => {
+      dispatch({ type: 'SKIP_NEXT' });
+    });
+
+    return () => {
+      cancelPrevious.remove();
+      cancelNext.remove();
+    };
   }, [dispatch]);
 
   return (
