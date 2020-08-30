@@ -1,15 +1,16 @@
 import React from 'react';
 import { Button, SafeAreaView, StyleSheet, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { RootTabParamList } from '../../App';
 import { Colors } from '../../constants';
 import { useDispatch } from '../../hooks';
 import { h1 } from '../../styles';
-import { NavigationProps, Song } from '../../types';
+import { Song, TabProps } from '../../types';
 import { getSongs } from '../../util';
 import Loading from '../loading';
 import ServerSettings from './server';
 
-interface Props extends NavigationProps {}
+type Props = TabProps<RootTabParamList, 'Settings'>;
 
 const Settings = (_: Props) => {
   const [loading, setLoading] = React.useState(false);

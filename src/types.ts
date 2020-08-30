@@ -1,4 +1,6 @@
 import { Dispatch, MiddlewareAPI, Store as ReduxStore } from 'redux';
+import { ParamListBase, RouteProp } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 export type SongID = string;
 export type PlaylistID = string;
@@ -51,16 +53,10 @@ export interface SortType {
   direction: boolean;
 }
 
-export interface NavigationProps {
-  route: {
-    params: {
-      paramName?: any;
-    };
-  };
-  navigation: {
-    navigate: (screenName: string) => void;
-  };
-}
+export type TabProps<P extends ParamListBase, R extends keyof P = string> = {
+  route: RouteProp<P, R>;
+  navigation: BottomTabNavigationProp<P, R>;
+};
 
 // Redux types
 export type Store = ReduxStore<StoreState, Action>;

@@ -1,12 +1,13 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RootTabParamList } from '../../App';
 import { Colors } from '../../constants';
 import { useCurrSong, useSelector } from '../../hooks';
 import { h1, h2 } from '../../styles';
-import { NavigationProps } from '../../types';
+import { TabProps } from '../../types';
 import SongItem from '../song-item';
 
-interface Props extends NavigationProps {}
+type Props = TabProps<RootTabParamList, 'Queue'>;
 
 const Queue = (_: Props) => {
   const currSong = useCurrSong();

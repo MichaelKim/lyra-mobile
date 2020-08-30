@@ -21,7 +21,14 @@ import {
 import store from './state/store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-const Tab = createBottomTabNavigator();
+export type RootTabParamList = {
+  Library: undefined;
+  Search: undefined;
+  Queue: undefined;
+  Settings: undefined;
+};
+
+const Tab = createBottomTabNavigator<RootTabParamList>();
 
 const Icons = {
   Library: LibraryIcon,

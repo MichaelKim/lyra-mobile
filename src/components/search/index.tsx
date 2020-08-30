@@ -1,17 +1,18 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
+import { RootTabParamList } from '../../App';
 import { Colors } from '../../constants';
 import { useDispatch } from '../../hooks';
-import { NavigationProps, VideoSong } from '../../types';
+import { h1 } from '../../styles';
+import { StackProps, VideoSong } from '../../types';
 import { ytSearch } from '../../yt-util';
 import Loading from '../loading';
 import Search from '../search-bar';
 import YtItem from '../yt-item';
-import { h1 } from '../../styles';
 
-interface Props extends NavigationProps {}
+type Props = StackProps<RootTabParamList, 'Search'>;
 
-const YtSearch = (props: Props) => {
+const YtSearch = (_: Props) => {
   const [searching, setSearching] = React.useState(false);
   const [videos, setVideos] = React.useState<Array<VideoSong>>([]);
   const dispatch = useDispatch();
@@ -27,7 +28,6 @@ const YtSearch = (props: Props) => {
 
   const onSelect = (song: VideoSong) => {
     dispatch({ type: 'SELECT_SONG', song });
-    props.navigation.navigate('Playing');
   };
 
   return (

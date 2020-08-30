@@ -13,23 +13,14 @@ interface Props {
 const Playlists = ({ visible, onEnter, onCancel }: Props) => {
   const [newName, setName] = React.useState<string>('');
 
-  const onChange = React.useCallback((text: string) => setName(text), [
-    setName
-  ]);
-
-  const _onEnter = React.useCallback(() => onEnter(newName || 'My Playlist'), [
-    onEnter,
-    newName
-  ]);
-
-  const _onCancel = React.useCallback(() => onCancel(), [onCancel]);
+  const _onEnter = () => onEnter(newName || 'My Playlist');
 
   return (
     <Modal
       useNativeDriver
       isVisible={visible}
-      onBackdropPress={_onCancel}
-      onBackButtonPress={_onCancel}>
+      onBackdropPress={onCancel}
+      onBackButtonPress={onCancel}>
       <View style={styles.modal}>
         <Text style={styles.header}>Enter Playlist Name</Text>
         <TextInput
@@ -37,10 +28,10 @@ const Playlists = ({ visible, onEnter, onCancel }: Props) => {
           placeholder="My Playlist"
           placeholderTextColor={Colors.placeholder}
           value={newName}
-          onChangeText={onChange}
+          onChangeText={setName}
         />
         <View style={styles.buttons}>
-          <Pressable onPress={_onCancel}>
+          <Pressable onPress={onCancel}>
             <Text style={styles.text}>Cancel</Text>
           </Pressable>
           <Pressable onPress={_onEnter} style={styles.button}>
