@@ -27,8 +27,8 @@ const PlaylistScreen = ({ playlist, onClose }: Props) => {
 
   return (
     <Modal
-      isVisible={playlist != null}
       useNativeDriver
+      isVisible={playlist != null}
       backdropOpacity={1}
       backdropColor={Colors.screen}>
       <Pressable onPress={onClose}>

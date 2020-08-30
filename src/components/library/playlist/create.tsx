@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { Colors } from '../../../constants';
-import { h2, h3 } from '../../../styles';
+import { h2 } from '../../../styles';
 
 interface Props {
   visible: boolean;
@@ -25,12 +25,16 @@ const Playlists = ({ visible, onEnter, onCancel }: Props) => {
   const _onCancel = React.useCallback(() => onCancel(), [onCancel]);
 
   return (
-    <Modal isVisible={visible} useNativeDriver>
+    <Modal
+      useNativeDriver
+      isVisible={visible}
+      onBackdropPress={_onCancel}
+      onBackButtonPress={_onCancel}>
       <View style={styles.modal}>
-        <Text style={styles.header}>New Playlist</Text>
+        <Text style={styles.header}>Enter Playlist Name</Text>
         <TextInput
           style={styles.textInput}
-          placeholder="Playlist Name"
+          placeholder="My Playlist"
           placeholderTextColor={Colors.placeholder}
           value={newName}
           onChangeText={onChange}
@@ -53,27 +57,32 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: Colors.accent,
     padding: 4,
-    borderRadius: 4
+    borderRadius: 4,
+    marginLeft: 20
   },
   header: {
     ...h2,
     marginBottom: 8
   },
   modal: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: Colors.screen,
+    borderRadius: 10,
+    paddingVertical: 20
   },
   textInput: {
-    ...h3,
+    ...h2,
     padding: 0,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
     height: 40,
-    paddingLeft: 4
+    marginVertical: 12,
+    width: '50%'
   },
   buttons: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center'
   }
 });
 

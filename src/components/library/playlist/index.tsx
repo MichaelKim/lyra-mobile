@@ -107,8 +107,11 @@ const styles = StyleSheet.create({
   text: h2,
   button: {
     backgroundColor: Colors.accent,
-    padding: 4,
-    borderRadius: 4
+    marginTop: 8,
+    paddingHorizontal: 12,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center'
   },
   header: {
     ...h2,
