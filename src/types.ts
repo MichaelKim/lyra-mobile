@@ -128,7 +128,12 @@ export type Action =
       id: PlaylistID;
     }
   | {
-      type: 'SET_PLAYLISTS';
+      type: 'ADD_TO_PLAYLISTS';
+      sid: SongID;
+      pids: PlaylistID[];
+    }
+  | {
+      type: 'REMOVE_FROM_PLAYLISTS';
       sid: SongID;
       pids: PlaylistID[];
     }

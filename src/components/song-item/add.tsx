@@ -3,28 +3,64 @@ import { Pressable, StyleSheet, Text, View, FlatList } from 'react-native';
 import Modal from 'react-native-modal';
 import { Colors } from '../../constants';
 import { h2, h3 } from '../../styles';
-import { PlaylistID } from '../../types';
-import { useSelector } from '../../hooks';
+import { PlaylistID, SongID } from '../../types';
+import { useSelector, useDispatch } from '../../hooks';
 import CheckBox from '@react-native-community/checkbox';
 
 interface Props {
-  current: PlaylistID[];
+  sid: SongID;
+  pids: PlaylistID[];
   visible: boolean;
-  onAdd: (playlists: PlaylistID[]) => void;
-  onCancel: () => void;
+  onClose: () => void;
 }
 
-const AddToPlaylist = ({ current, visible, onAdd, onCancel }: Props) => {
-  const [selected, setSelected] = React.useState<Set<PlaylistID>>(
-    new Set(current)
-  );
+const AddToPlaylist = ({ sid, pids, visible, onClose }: Props) => {
+  const current = new Set(pids);
+  const [added, setAdded] = React.useState<Set<PlaylistID>>(new Set());
+  const [removed, setRemoved] = React.useState<Set<PlaylistID>>(new Set());
 
   const playlists = useSelector(state => Object.values(state.playlists));
 
-  const _onAdd = React.useCallback(() => onAdd([...selected]), [
-    onAdd,
-    selected
-  ]);
+  const onSelect = (add: boolean, pid: PlaylistID) => {
+    if (add) {
+      if (!current.has(pid)) {
+        setAdded(s => {
+          s.add(pid);
+          return new Set(s);
+        });
+      }
+      setRemoved(s => {
+        s.delete(pid);
+        return new Set(s);
+      });
+    } else {
+      if (current.has(pid)) {
+        setRemoved(s => {
+          s.add(pid);
+          return new Set(s);
+        });
+      }
+      setAdded(s => {
+        s.delete(pid);
+        return new Set(s);
+      });
+    }
+  };
+
+  const dispatch = useDispatch();
+  const onDone = () => {
+    const addedArr = [...added];
+    const removedArr = [...removed];
+
+    if (addedArr.length > 0) {
+      dispatch({ type: 'ADD_TO_PLAYLISTS', sid, pids: addedArr });
+    }
+    if (removedArr.length > 0) {
+      dispatch({ type: 'REMOVE_FROM_PLAYLISTS', sid, pids: removedArr });
+    }
+
+    onClose();
+  };
 
   return (
     <Modal isVisible={visible} useNativeDriver>
@@ -37,25 +73,19 @@ const AddToPlaylist = ({ current, visible, onAdd, onCancel }: Props) => {
           renderItem={({ item }) => (
             <View style={styles.row}>
               <CheckBox
-                value={selected.has(item.id)}
-                onValueChange={(value: boolean) =>
-                  setSelected(s => {
-                    if (value) s.add(item.id);
-                    else s.delete(item.id);
-                    return new Set(s);
-                  })
-                }
+                value={current.has(item.id) || added.has(item.id)}
+                onValueChange={(value: boolean) => onSelect(value, item.id)}
               />
               <Text style={styles.text}>{item.name}</Text>
             </View>
           )}
         />
         <View style={styles.buttons}>
-          <Pressable onPress={onCancel}>
+          <Pressable onPress={onClose}>
             <Text style={styles.text}>Cancel</Text>
           </Pressable>
-          <Pressable onPress={_onAdd} style={styles.button}>
-            <Text style={styles.text}>Add</Text>
+          <Pressable onPress={onDone} style={styles.button}>
+            <Text style={styles.text}>Done</Text>
           </Pressable>
         </View>
       </View>

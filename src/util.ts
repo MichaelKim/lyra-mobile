@@ -54,7 +54,7 @@ export async function getSongs(): Promise<Song[]> {
 
 export function getSongList(
   songs: { [ID in SongID]: Song },
-  playlist?: string,
+  playlist?: string | null,
   sort?: SortType
 ): Array<Song> {
   const songlist = Object.values(songs);

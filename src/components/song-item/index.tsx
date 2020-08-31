@@ -5,7 +5,7 @@ import { Colors } from '../../constants';
 import { useCurrSong, useDispatch } from '../../hooks';
 import { Options } from '../../icons';
 import { h3 } from '../../styles';
-import { PlaylistID, Song } from '../../types';
+import { Song } from '../../types';
 import { formatDuration } from '../../util';
 import ContextMenu from '../context';
 import Thumbnail from '../thumbnail';
@@ -39,28 +39,17 @@ const SongItem = ({ song, onSelect }: Props) => {
     }
   ];
 
-  const onItemPress = React.useCallback(() => onSelect && onSelect(song), [
-    onSelect,
-    song
-  ]);
+  const onItemPress = () => onSelect && onSelect(song);
 
-  const onAdd = React.useCallback(
-    (pids: PlaylistID[]) => {
-      dispatch({ type: 'SET_PLAYLISTS', sid: song.id, pids });
-      setModal(false);
-    },
-    [song, dispatch]
-  );
-
-  const onCancel = React.useCallback(() => setModal(false), [setModal]);
+  const onClose = () => setModal(false);
 
   return (
     <View style={styles.root}>
       <AddToPlaylist
-        current={song.playlists}
+        sid={song.id}
+        pids={song.playlists}
         visible={showModal}
-        onAdd={onAdd}
-        onCancel={onCancel}
+        onClose={onClose}
       />
       <RectButton rippleColor="#111" onPress={onItemPress} style={styles.rect}>
         <Thumbnail src={song.thumbnail.url} style={styles.thumbnail} />

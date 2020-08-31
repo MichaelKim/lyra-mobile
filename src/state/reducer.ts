@@ -194,8 +194,65 @@ export default function rootReducer(
       ) as StoreState;
     }
 
-    case 'SET_PLAYLISTS': {
+    case 'ADD_TO_PLAYLISTS': {
       const { sid, pids } = action;
+      console.log('song:', state.songs[sid]);
+      console.log(
+        'playlists:',
+        pids.map(p => state.playlists[p])
+      );
+
+      const song = state.songs[sid];
+
+      // Invalid song ID
+      if (song == null) {
+        console.error('song is null');
+        return state;
+      }
+
+      // Add pids to song
+      const newPids = [...song.playlists, ...pids];
+      if (__DEV__) {
+        // Check for dups
+        if (newPids.length !== new Set(newPids).size) {
+          console.error('song playlists duplicate');
+        }
+      }
+
+      function updatePlaylists(playlists: StoreState['playlists']) {
+        for (let pid of pids) {
+          if (__DEV__) {
+            if (playlists[pid] == null) {
+              console.error('missing playlist');
+            }
+
+            // Check for dup
+            if (playlists[pid].songs.includes(sid)) {
+              console.error('adding song twice to playlist');
+            }
+          }
+
+          playlists[pid].songs.push(sid);
+        }
+        return playlists;
+      }
+
+      return u.update(
+        {
+          songs: {
+            [sid]: {
+              playlists: p => [...p, ...pids]
+            }
+          },
+          playlists: updatePlaylists
+        },
+        state
+      );
+    }
+
+    case 'REMOVE_FROM_PLAYLISTS': {
+      const { sid, pids } = action;
+
       const song = state.songs[sid];
 
       // Invalid song ID
@@ -203,20 +260,37 @@ export default function rootReducer(
         return state;
       }
 
+      // Remove pids from song
+      const p = new Set(song.playlists);
       for (let pid of pids) {
-        // Invalid playlist ID
-        if (state.playlists[pid] == null) {
-          return state;
+        if (__DEV__) {
+          if (!p.has(pid)) {
+            console.error('playlist missing from song on delete');
+          }
         }
+        p.delete(pid);
+      }
+
+      // Remove sid from playlists
+      const playlists = state.playlists;
+      for (let pid of pids) {
+        if (__DEV__) {
+          // Check for dup
+          if (!playlists[pid].songs.includes(sid)) {
+            console.error('song missing from playlist on delete');
+          }
+        }
+
+        const idx = playlists[pid].songs.indexOf(sid);
+        playlists[pid].songs.splice(idx, 1);
       }
 
       return u(
         {
           songs: {
-            [sid]: {
-              playlists: pids
-            }
-          }
+            [sid]: song
+          },
+          playlists
         },
         state
       ) as StoreState;

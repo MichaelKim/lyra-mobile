@@ -83,7 +83,8 @@ const saveToStorage: Middleware = store => next => action => {
     case 'REMOVE_SONG':
     case 'CREATE_PLAYLIST':
     case 'DELETE_PLAYLIST':
-    case 'SET_PLAYLISTS':
+    case 'ADD_TO_PLAYLISTS':
+    case 'REMOVE_FROM_PLAYLISTS':
     case 'CHANGE_VOLUME':
     case 'SKIP_PREVIOUS':
     case 'SKIP_NEXT':
