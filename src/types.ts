@@ -128,6 +128,12 @@ export type Action =
       removed: PlaylistID[];
     }
   | {
+      type: 'UPDATE_PLAYLIST';
+      pid: PlaylistID;
+      added: SongID[];
+      removed: SongID[];
+    }
+  | {
       type: 'CHANGE_VOLUME';
       volume: number;
     }

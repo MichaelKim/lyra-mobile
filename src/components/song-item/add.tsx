@@ -1,11 +1,13 @@
+import CheckBox from '@react-native-community/checkbox';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View, FlatList } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { Colors } from '../../constants';
-import { h2, h3 } from '../../styles';
+import { useDispatch, useSelect, useSelector } from '../../hooks';
+import { h2 } from '../../styles';
 import { PlaylistID, SongID } from '../../types';
-import { useSelector, useDispatch } from '../../hooks';
-import CheckBox from '@react-native-community/checkbox';
+import ActionButtons from '../action-buttons';
+import Header from '../library/detail/header';
 
 interface Props {
   sid: SongID;
@@ -15,59 +17,35 @@ interface Props {
 }
 
 const AddToPlaylist = ({ sid, pids, visible, onClose }: Props) => {
-  const current = new Set(pids);
-  const [added, setAdded] = React.useState<Set<PlaylistID>>(new Set());
-  const [removed, setRemoved] = React.useState<Set<PlaylistID>>(new Set());
+  const [has, addedSet, removedSet, toggle] = useSelect(pids);
 
   const playlists = useSelector(state => Object.values(state.playlists));
 
-  const onSelect = (add: boolean, pid: PlaylistID) => {
-    if (add) {
-      if (!current.has(pid)) {
-        setAdded(s => {
-          s.add(pid);
-          return new Set(s);
-        });
-      }
-      setRemoved(s => {
-        s.delete(pid);
-        return new Set(s);
-      });
-    } else {
-      if (current.has(pid)) {
-        setRemoved(s => {
-          s.add(pid);
-          return new Set(s);
-        });
-      }
-      setAdded(s => {
-        s.delete(pid);
-        return new Set(s);
-      });
-    }
-  };
-
   const dispatch = useDispatch();
   const onDone = () => {
-    const addedArr = [...added];
-    const removedArr = [...removed];
+    const added = [...addedSet];
+    const removed = [...removedSet];
 
-    if (addedArr.length > 0 || removedArr.length > 0) {
+    if (added.length > 0 || removed.length > 0) {
       dispatch({
         type: 'UPDATE_SONG_PLAYLISTS',
         sid,
-        added: addedArr,
-        removed: removedArr
+        added,
+        removed
       });
     }
-
     onClose();
   };
 
   return (
-    <Modal isVisible={visible} useNativeDriver>
-      <View style={styles.modal}>
-        <Text style={styles.header}>Add to Playlist</Text>
+    <Modal
+      useNativeDriver
+      isVisible={visible}
+      style={styles.modal}
+      onBackdropPress={onClose}
+      onBackButtonPress={onClose}>
+      <View style={styles.root}>
+        <Header title="Add to Playlist" onBack={onClose} />
         <FlatList
           contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={styles.scrollViewContainer}
@@ -75,60 +53,35 @@ const AddToPlaylist = ({ sid, pids, visible, onClose }: Props) => {
           renderItem={({ item }) => (
             <View style={styles.row}>
               <CheckBox
-                value={current.has(item.id) || added.has(item.id)}
-                onValueChange={(value: boolean) => onSelect(value, item.id)}
+                value={has(item.id)}
+                onValueChange={() => toggle(item.id)}
               />
-              <Text style={styles.text}>{item.name}</Text>
+              <Text style={styles.playlistName}>{item.name}</Text>
             </View>
           )}
         />
-        <View style={styles.buttons}>
-          <Pressable onPress={onClose}>
-            <Text style={styles.text}>Cancel</Text>
-          </Pressable>
-          <Pressable onPress={onDone} style={styles.button}>
-            <Text style={styles.text}>Done</Text>
-          </Pressable>
-        </View>
+        <ActionButtons onDone={onDone} onCancel={onClose} />
       </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  modal: {
+    margin: 0
+  },
+  root: {
+    flex: 1,
+    backgroundColor: Colors.screen
+  },
   scrollViewContainer: {
     marginHorizontal: 24
   },
   row: {
     flexDirection: 'row',
-    flex: 1
+    height: 60
   },
-  text: h2,
-  button: {
-    backgroundColor: Colors.accent,
-    padding: 4,
-    borderRadius: 4
-  },
-  header: {
-    ...h2,
-    marginBottom: 8
-  },
-  modal: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  textInput: {
-    ...h3,
-    padding: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    height: 40,
-    paddingLeft: 4
-  },
-  buttons: {
-    flexDirection: 'row'
-  }
+  playlistName: h2
 });
 
 export default AddToPlaylist;

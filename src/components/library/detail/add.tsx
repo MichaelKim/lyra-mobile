@@ -1,13 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, Switch, Pressable } from 'react-native';
+import { StyleSheet, Switch, Text, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
 import { Colors } from '../../../constants';
-import { h3, h2 } from '../../../styles';
+import { useDispatch, useSelect, useSelector } from '../../../hooks';
+import { h3 } from '../../../styles';
+import { PlaylistID } from '../../../types';
+import { formatDuration, getSongList } from '../../../util';
+import ActionButtons from '../../action-buttons';
 import Header from './header';
-import { useSelector } from '../../../hooks';
-import { getSongList, formatDuration } from '../../../util';
-import { FlatList } from 'react-native-gesture-handler';
-import { SongID, PlaylistID } from '../../../types';
 
 type Props = {
   pid: PlaylistID;
@@ -17,24 +18,23 @@ type Props = {
 
 const AddModal = ({ pid, visible, onClose }: Props) => {
   const songs = useSelector(state => getSongList(state.songs));
-  const current = new Set(
-    songs.filter(s => s.playlists.includes(pid)).map(s => s.id)
-  );
-  const [selected, setSelected] = React.useState<Set<SongID>>(current);
+  const sids = songs.filter(s => s.playlists.includes(pid)).map(s => s.id);
+  const [has, addedSet, removedSet, toggle] = useSelect(sids);
 
-  const onChange = (value: boolean, sid: SongID) => {
-    setSelected(s => {
-      if (value) s.add(sid);
-      else s.delete(sid);
-      return new Set(s);
-    });
-  };
-
-  // Reset selected
-  const onHide = () => setSelected(current);
-
+  const dispatch = useDispatch();
   const onDone = () => {
-    // TODO: add songs to playlist
+    const added = [...addedSet];
+    const removed = [...removedSet];
+
+    if (added.length > 0 || removed.length > 0) {
+      console.log(added, removed);
+      dispatch({
+        type: 'UPDATE_PLAYLIST',
+        pid,
+        added,
+        removed
+      });
+    }
     onClose();
   };
 
@@ -44,7 +44,6 @@ const AddModal = ({ pid, visible, onClose }: Props) => {
       propagateSwipe
       isVisible={visible}
       style={styles.modal}
-      onModalHide={onHide}
       onBackdropPress={onClose}
       onBackButtonPress={onClose}>
       <View style={styles.root}>
@@ -63,20 +62,13 @@ const AddModal = ({ pid, visible, onClose }: Props) => {
                 </Text>
               </View>
               <Switch
-                onValueChange={(value: boolean) => onChange(value, item.id)}
-                value={selected.has(item.id)}
+                onValueChange={() => toggle(item.id)}
+                value={has(item.id)}
               />
             </View>
           )}
         />
-        <View style={styles.buttons}>
-          <Pressable onPress={onDone} style={styles.cancelButton}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </Pressable>
-          <Pressable onPress={onDone} style={styles.doneButton}>
-            <Text style={styles.buttonText}>Done</Text>
-          </Pressable>
-        </View>
+        <ActionButtons onDone={onDone} onCancel={onClose} />
       </View>
     </Modal>
   );
@@ -106,26 +98,7 @@ const styles = StyleSheet.create({
   songArtist: {
     fontSize: 12,
     color: Colors.subtext
-  },
-  buttons: {
-    flexDirection: 'row',
-    alignSelf: 'stretch',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    backgroundColor: Colors.playback,
-    paddingVertical: 8
-  },
-  doneButton: {
-    backgroundColor: Colors.accent,
-    paddingVertical: 4,
-    paddingHorizontal: 20,
-    borderRadius: 4
-  },
-  cancelButton: {
-    paddingVertical: 4,
-    paddingHorizontal: 20
-  },
-  buttonText: h2
+  }
 });
 
 export default AddModal;

@@ -329,6 +329,55 @@ export default function rootReducer(
       });
     }
 
+    case 'UPDATE_PLAYLIST': {
+      const { pid, added, removed } = action;
+
+      const playlist = state.playlists[pid];
+
+      // Invalid song ID
+      if (playlist == null) {
+        console.error('playlist is null');
+        return state;
+      }
+
+      return produce(state, s => {
+        // Update sids to playlist
+        const sids = new Set(s.playlists[pid].songs);
+        added.forEach(a => sids.add(a));
+        removed.forEach(r => sids.delete(r));
+
+        s.playlists[pid].songs = [...sids];
+
+        // Update pid to songs
+        for (let sid of added) {
+          if (s.songs[sid] != null) {
+            // Check for dup
+            if (!s.songs[sid].playlists.includes(pid)) {
+              s.songs[sid].playlists.push(pid);
+            } else {
+              console.error('adding playlist twice to song');
+            }
+          } else {
+            console.error('missing song for added');
+          }
+        }
+
+        for (let sid of removed) {
+          if (s.songs[sid] != null) {
+            // Check for dup
+            const idx = s.songs[sid].playlists.indexOf(pid);
+            if (idx >= 0) {
+              s.songs[sid].playlists.splice(idx, 1);
+            } else {
+              console.error('playlist not in song');
+            }
+          } else {
+            console.error('missing song for removed');
+          }
+        }
+      });
+    }
+
     case 'UPDATE_TAGS': {
       const sid = action.id;
       if (state.songs[sid] == null) {

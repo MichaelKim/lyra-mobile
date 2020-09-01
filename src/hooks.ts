@@ -33,3 +33,41 @@ export function useCurrSong() {
     return curr != null ? songs[curr] ?? cache[curr]?.song : null;
   });
 }
+
+export function useSelect<T>(
+  initialValue: T[]
+): [(value: T) => boolean, Set<T>, Set<T>, (value: T) => void] {
+  const current = new Set<T>(initialValue);
+
+  const [[added, removed], setSet] = React.useState<[Set<T>, Set<T>]>([
+    new Set(),
+    new Set()
+  ]);
+
+  // TODO: possible bug here with infinite rerenders
+  // React.useEffect(() => {
+  // setSet([new Set(), new Set()]);
+  // }, [initialValue]);
+
+  const has = (value: T) =>
+    !removed.has(value) && (current.has(value) || added.has(value));
+
+  const toggle = (value: T) => {
+    setSet(([a, r]) => {
+      if (has(value)) {
+        if (current.has(value)) {
+          r.add(value);
+        }
+        a.delete(value);
+      } else {
+        if (!current.has(value)) {
+          a.add(value);
+        }
+        r.delete(value);
+      }
+      return [a, r];
+    });
+  };
+
+  return [has, added, removed, toggle];
+}
