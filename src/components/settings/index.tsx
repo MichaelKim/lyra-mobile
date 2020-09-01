@@ -5,7 +5,7 @@ import { RootTabParamList } from '../../App';
 import { Colors } from '../../constants';
 import { useDispatch } from '../../hooks';
 import { h1 } from '../../styles';
-import { Song, TabProps } from '../../types';
+import { TabProps } from '../../types';
 import { getSongs } from '../../util';
 import Loading from '../loading';
 import ServerSettings from './server';
@@ -17,13 +17,19 @@ const Settings = (_: Props) => {
 
   const dispatch = useDispatch();
   const clearData = () => dispatch({ type: 'CLEAR_DATA' });
-  const addSongs = (songs: Array<Song>) =>
-    dispatch({ type: 'ADD_SONGS', songs });
 
   const getLocalSongs = async () => {
     setLoading(true);
     const songs = await getSongs();
-    addSongs(songs);
+    dispatch({ type: 'ADD_SONGS', songs });
+    dispatch({
+      type: 'CREATE_PLAYLIST',
+      playlist: {
+        id: Date.now().toString(),
+        name: 'Local Songs',
+        songs: songs.map(s => s.id)
+      }
+    });
     setLoading(false);
   };
 

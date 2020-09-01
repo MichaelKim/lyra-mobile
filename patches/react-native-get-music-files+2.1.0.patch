@@ -29,7 +29,7 @@ index bce0565..13e28cd 100644
 -  
 \ No newline at end of file
 diff --git a/node_modules/react-native-get-music-files/android/src/main/java/com/cinder92/musicfiles/RNReactNativeGetMusicFilesModule.java b/node_modules/react-native-get-music-files/android/src/main/java/com/cinder92/musicfiles/RNReactNativeGetMusicFilesModule.java
-index 4907263..789580e 100644
+index 4907263..10d84e7 100644
 --- a/node_modules/react-native-get-music-files/android/src/main/java/com/cinder92/musicfiles/RNReactNativeGetMusicFilesModule.java
 +++ b/node_modules/react-native-get-music-files/android/src/main/java/com/cinder92/musicfiles/RNReactNativeGetMusicFilesModule.java
 @@ -17,9 +17,12 @@ import android.net.Uri;
@@ -66,7 +66,7 @@ index 4907263..789580e 100644
 +                                                // encoded = fcm.saveImageToStorageAndGetPath(pathToImg, songImage);
 +                                                // items.putString("cover", "file://" + encoded);
 +                                                encoded = Base64.encodeToString(albumImageData, Base64.DEFAULT);
-+                                                items.putString("cover", "data:image/jpeg;base64" + encoded);
++                                                items.putString("cover", "data:image/jpeg;base64," + encoded);
                                              } catch (Exception e) {
                                                  // Just let images empty
                                                  Log.e("error in image", e.getMessage());
@@ -84,7 +84,7 @@ index 4907263..789580e 100644
 +                                                    songImage.compress(Bitmap.CompressFormat.JPEG, 60, byteArrayOutputStream);
 +                                                    byte[] byteArray = byteArrayOutputStream.toByteArray();
 +                                                    blurred = Base64.encodeToString(byteArray, Base64.DEFAULT);
-+                                                    items.putString("blur", "data:image/jpeg;base64" + blurred);
++                                                    items.putString("blur", "data:image/jpeg;base64," + blurred);
                                                  } catch (Exception e) {
                                                      Log.e("error in image-blured", e.getMessage());
                                                  }
