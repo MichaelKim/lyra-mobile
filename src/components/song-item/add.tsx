@@ -7,7 +7,7 @@ import { useDispatch, useSelect, useSelector } from '../../hooks';
 import { h2 } from '../../styles';
 import { PlaylistID, SongID } from '../../types';
 import ActionButtons from '../action-buttons';
-import Header from '../library/detail/header';
+import Header from '../library/header';
 
 interface Props {
   sid: SongID;

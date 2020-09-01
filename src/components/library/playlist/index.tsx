@@ -64,7 +64,7 @@ const Playlists = (_: Props) => {
             contentContainerStyle={styles.scrollViewContainer}
             data={playlists}
             renderItem={({ item }) => (
-              <PlaylistItem key={item.id} playlist={item} onSelect={onSelect} />
+              <PlaylistItem playlist={item} onSelect={onSelect} />
             )}
           />
         </>

@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import { useDispatch, useSelector } from '../../hooks';
-import { Song } from '../../types';
-import { getSongList } from '../../util';
-import SongItem from '../song-item';
+import { useDispatch, useSelector } from '../../../hooks';
+import { Song } from '../../../types';
+import { getSongList } from '../../../util';
+import SongItem from '../../song-item';
 
 interface Props {}
 
@@ -21,9 +21,7 @@ const Songs = (_: Props) => {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.scrollViewContainer}
       data={songs}
-      renderItem={({ item }) => (
-        <SongItem key={item.id} song={item} onSelect={onSelect} />
-      )}
+      renderItem={({ item }) => <SongItem song={item} onSelect={onSelect} />}
     />
   );
 };

@@ -2,13 +2,13 @@ import React from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
-import { Colors } from '../../../constants';
-import { useDispatch, useSelect, useSelector } from '../../../hooks';
-import { h3 } from '../../../styles';
-import { PlaylistID } from '../../../types';
-import { formatDuration, getSongList } from '../../../util';
-import ActionButtons from '../../action-buttons';
-import Header from './header';
+import { Colors } from '../../../../constants';
+import { useDispatch, useSelect, useSelector } from '../../../../hooks';
+import { h3 } from '../../../../styles';
+import { PlaylistID } from '../../../../types';
+import { formatDuration, getSongList } from '../../../../util';
+import ActionButtons from '../../../action-buttons';
+import Header from '../../header';
 
 type Props = {
   pid: PlaylistID;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Back } from '../../../icons';
-import { h1 } from '../../../styles';
+import { Back } from '../../icons';
+import { h1 } from '../../styles';
 
 type Props = {
   title: string;

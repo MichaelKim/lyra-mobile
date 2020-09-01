@@ -5,8 +5,9 @@ import { Colors } from '../../constants';
 import { StackProps } from '../../types';
 import { LibraryStackParamList } from './index';
 import Playlists from './playlist';
-import Songs from './songs';
+import Songs from './song';
 import Tabs from './tabs';
+import Artists from './artist';
 
 type Props = StackProps<LibraryStackParamList, 'Library'>;
 
@@ -17,9 +18,9 @@ const Library = (_: Props) => {
         colors={[Colors.gradient, Colors.screen]}
         locations={[0, 0.1]}
         style={styles.linearGradient}>
-        <Tabs headers={['All Songs', 'Playlists', 'More']}>
-          <Songs />
+        <Tabs headers={['Playlists', 'Artists', 'All Songs']}>
           <Playlists />
+          <Artists />
           <Songs />
         </Tabs>
       </LinearGradient>
