@@ -78,13 +78,11 @@ const saveToStorage: Middleware = store => next => action => {
   switch (action.type) {
     case 'LOAD_STORAGE':
     case 'SELECT_SONG':
-    case 'SELECT_PLAYLIST':
     case 'ADD_SONGS':
     case 'REMOVE_SONG':
     case 'CREATE_PLAYLIST':
     case 'DELETE_PLAYLIST':
-    case 'ADD_TO_PLAYLISTS':
-    case 'REMOVE_FROM_PLAYLISTS':
+    case 'UPDATE_SONG_PLAYLISTS':
     case 'CHANGE_VOLUME':
     case 'SKIP_PREVIOUS':
     case 'SKIP_NEXT':
@@ -102,16 +100,22 @@ const saveToStorage: Middleware = store => next => action => {
     case 'DOWNLOAD_ADD':
     case 'DOWNLOAD_FINISH': {
       // There's already a song being downloaded
-      if (action.type === 'DOWNLOAD_ADD' && newState.dlQueue.length > 1) {
+      if (
+        action.type === 'DOWNLOAD_ADD' &&
+        newState.download.queue.length > 1
+      ) {
         break;
       }
 
       // There are no more songs to download
-      if (action.type === 'DOWNLOAD_FINISH' && newState.dlQueue.length === 0) {
+      if (
+        action.type === 'DOWNLOAD_FINISH' &&
+        newState.download.queue.length === 0
+      ) {
         break;
       }
 
-      const id = newState.dlQueue[0];
+      const id = newState.download.queue[0];
       downloadVideo(id)
         .on('progress', (progress: number) =>
           store.dispatch({ type: 'DOWNLOAD_PROGRESS', progress })

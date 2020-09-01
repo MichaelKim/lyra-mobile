@@ -52,11 +52,13 @@ const AddToPlaylist = ({ sid, pids, visible, onClose }: Props) => {
     const addedArr = [...added];
     const removedArr = [...removed];
 
-    if (addedArr.length > 0) {
-      dispatch({ type: 'ADD_TO_PLAYLISTS', sid, pids: addedArr });
-    }
-    if (removedArr.length > 0) {
-      dispatch({ type: 'REMOVE_FROM_PLAYLISTS', sid, pids: removedArr });
+    if (addedArr.length > 0 || removedArr.length > 0) {
+      dispatch({
+        type: 'UPDATE_SONG_PLAYLISTS',
+        sid,
+        added: addedArr,
+        removed: removedArr
+      });
     }
 
     onClose();

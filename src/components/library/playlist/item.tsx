@@ -4,26 +4,16 @@ import { RectButton } from 'react-native-gesture-handler';
 import { Colors } from '../../../constants';
 import { h2 } from '../../../styles';
 import { Playlist } from '../../../types';
-import { useSelector } from '../../../hooks';
 
-interface Props {
+type Props = {
   playlist: Playlist;
   onSelect?: (playlist: Playlist) => void;
-}
+};
 
 const PlaylistItem = ({ playlist, onSelect }: Props) => {
-  const onItemPress = React.useCallback(() => onSelect && onSelect(playlist), [
-    onSelect,
-    playlist
-  ]);
+  const onItemPress = () => onSelect?.(playlist);
 
-  // TODO: fix playlist.songs
-  const numSongs = useSelector(state =>
-    Object.values(state.songs).reduce(
-      (acc, song) => (song.playlists.includes(playlist.id) ? acc + 1 : acc),
-      0
-    )
-  );
+  const numSongs = playlist.songs.length;
 
   return (
     <View style={styles.root}>

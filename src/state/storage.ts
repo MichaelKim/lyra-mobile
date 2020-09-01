@@ -26,8 +26,10 @@ export const initialState: StoreState = {
     cache: {}
   },
   history: [],
-  dlQueue: [],
-  dlProgress: 0
+  download: {
+    queue: [],
+    progress: 0
+  }
 };
 
 export function save(state: StoreState) {

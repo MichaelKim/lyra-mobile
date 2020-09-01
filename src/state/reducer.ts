@@ -1,37 +1,102 @@
-import u from 'updeep';
+import produce from 'immer';
+import { Action, StoreState } from '../types';
 import { initialState } from './storage';
-
-import { SongID, StoreState, Action, SortType, QueueType } from '../types';
 
 const MAX_QUEUE_SIZE = 50;
 
-// Removes ids from cache
-function cleanCache(ids: Array<SongID>, cache: QueueType['cache']) {
-  return ids.reduce((acc, id) => {
-    // Missing id
-    if (cache[id] == null) {
-      return cache;
-    }
-    // Only one left, remove from cache
-    if (cache[id].count === 1) {
-      return u.omit(id, cache) as QueueType['cache'];
-    }
-    // Decrease count
-    return u(
-      {
-        [id]: {
-          count: cache[id].count - 1
-        }
-      },
-      cache
-    ) as QueueType['cache'];
-  }, cache);
+function volumeReducer(state: StoreState['volume'], action: Action) {
+  switch (action.type) {
+    case 'CHANGE_VOLUME':
+      return produce(state, s => {
+        s.amount = Math.max(Math.min(action.volume, 1), 0);
+      });
+
+    case 'MUTE':
+      return produce(state, s => {
+        s.muted = action.muted;
+      });
+
+    default:
+      return state;
+  }
 }
 
-export default function rootReducer(
-  state: StoreState = initialState,
-  action: Action
-): StoreState {
+function sortReducer(state: StoreState['sort'], action: Action) {
+  switch (action.type) {
+    case 'SET_SORT':
+      return produce(state, s => {
+        s.column = action.column;
+        s.direction = action.direction;
+      });
+
+    default:
+      return state;
+  }
+}
+
+function shuffleReducer(state: StoreState['shuffle'], action: Action) {
+  switch (action.type) {
+    case 'SET_SHUFFLE':
+      return action.shuffle;
+
+    default:
+      return state;
+  }
+}
+
+function historyReducer(state: StoreState['history'], action: Action) {
+  switch (action.type) {
+    case 'ADD_TO_HISTORY': {
+      const cache = new Set<string>([action.search, ...state]);
+      return Array.from(cache).slice(0, MAX_QUEUE_SIZE);
+    }
+
+    case 'REMOVE_FROM_HISTORY':
+      return produce(state, s => {
+        const idx = s.indexOf(action.search);
+        s.splice(idx, 1);
+      });
+
+    default:
+      return state;
+  }
+}
+
+function downloadReducer(state: StoreState['download'], action: Action) {
+  switch (action.type) {
+    case 'DOWNLOAD_ADD':
+      return produce(state, s => {
+        s.queue.push(action.id);
+      });
+
+    case 'DOWNLOAD_PROGRESS':
+      return produce(state, s => {
+        s.progress = action.progress;
+      });
+
+    default:
+      return state;
+  }
+}
+
+function serverReducer(state: StoreState['yt'], action: Action) {
+  switch (action.type) {
+    case 'SET_LYRA_URL':
+      return produce(state, s => {
+        s.url = action.url;
+      });
+
+    case 'SET_LYRA_API':
+      return produce(state, s => {
+        s.api = action.api;
+      });
+
+    default:
+      return state;
+  }
+}
+
+function loadReducer(state: StoreState, action: Action) {
   switch (action.type) {
     case 'LOAD_STORAGE':
       return {
@@ -39,168 +104,184 @@ export default function rootReducer(
         loaded: true
       };
 
-    case 'SELECT_SONG': {
-      const { id } = action.song;
-      const { queue } = state;
-
-      // Clean cache
-      const cache = cleanCache(queue.next, queue.cache);
-
-      const newQueue = {
-        prev:
-          queue.curr != null
-            ? [...queue.prev, queue.curr].slice(-MAX_QUEUE_SIZE)
-            : queue.prev,
-        curr: id,
-        next: [],
-        cache:
-          queue.prev.length >= MAX_QUEUE_SIZE
-            ? cleanCache([queue.prev[0]], cache)
-            : cache
-      };
-
-      if (state.songs[id] != null) {
-        return {
-          ...state,
-          queue: newQueue
-        };
-      }
-
-      if (queue.cache[id] != null) {
-        return {
-          ...state,
-          queue: u(
-            {
-              cache: {
-                [id]: {
-                  count: state.queue.cache[id].count + 1
-                }
-              }
-            },
-            newQueue
-          ) as QueueType
-        };
-      }
-
+    case 'CLEAR_DATA':
       return {
-        ...state,
-        queue: u(
-          {
-            cache: {
-              [id]: {
-                song: action.song,
-                count: 1
-              }
-            }
-          },
-          newQueue
-        ) as QueueType
+        ...initialState,
+        loaded: true
       };
+
+    default:
+      return state;
+  }
+}
+
+function queueReducer(state: StoreState['queue'], action: Action) {
+  switch (action.type) {
+    case 'SKIP_PREVIOUS': {
+      if (state.curr == null) {
+        // Nothing playing right now
+        return state;
+      }
+
+      if (state.prev.length === 0) {
+        return state;
+      }
+
+      return produce(state, s => {
+        if (s.curr != null) {
+          s.next.unshift(s.curr);
+        }
+        const sid = s.prev.pop();
+        s.curr = sid ?? null;
+      });
     }
 
-    case 'SELECT_PLAYLIST':
-      return u(
-        {
-          currScreen: action.id
-        },
-        state
-      ) as StoreState;
+    case 'SKIP_NEXT': {
+      // Middleware: queues song if next is empty
+      if (state.next.length === 0) {
+        return state;
+      }
+
+      return produce(state, s => {
+        if (s.curr != null) {
+          s.prev.push(s.curr);
+
+          // Clean cache
+          const prev = s.prev.splice(-MAX_QUEUE_SIZE);
+          for (let sid of s.prev) {
+            if (s.cache[sid] != null) {
+              if (s.cache[sid].count === 1) {
+                delete s.cache[sid];
+              } else {
+                s.cache[sid].count--;
+              }
+            }
+          }
+
+          s.prev = prev;
+        }
+        s.curr = s.next.shift() ?? null;
+      });
+    }
+
+    default:
+      return state;
+  }
+}
+
+export default function rootReducer(
+  state: StoreState = initialState,
+  action: Action
+): StoreState {
+  state = loadReducer(state, action);
+  state = produce(state, s => {
+    s.shuffle = shuffleReducer(s.shuffle, action);
+    s.sort = sortReducer(s.sort, action);
+    s.history = historyReducer(s.history, action);
+    s.volume = volumeReducer(s.volume, action);
+    s.download = downloadReducer(s.download, action);
+    s.yt = serverReducer(s.yt, action);
+    s.queue = queueReducer(s.queue, action);
+  });
+
+  switch (action.type) {
+    case 'SELECT_SONG': {
+      const { id } = action.song;
+
+      return produce(state, s => {
+        if (s.queue.curr != null) {
+          s.queue.prev.push(s.queue.curr);
+          s.queue.prev = s.queue.prev.slice(-MAX_QUEUE_SIZE);
+        }
+        s.queue.curr = id;
+        s.queue.next = [];
+
+        if (s.songs[id] != null) {
+          return s;
+        }
+
+        if (s.queue.cache[id] != null) {
+          s.queue.cache[id].count++;
+          return s;
+        }
+
+        s.queue.cache[id] = {
+          song: action.song,
+          count: 1
+        };
+      });
+    }
 
     case 'ADD_SONGS': {
-      const newSongs = action.songs.reduce((acc: StoreState['songs'], song) => {
-        return u(
-          {
-            [song.id]: song
-          },
-          acc
-        ) as StoreState['songs'];
-      }, state.songs);
+      return produce(state, s => {
+        for (let song of action.songs) {
+          s.songs[song.id] = song;
 
-      // Remove songs from cache
-      const songIDs = action.songs.map(s => s.id);
-      const cache = cleanCache(songIDs, state.queue.cache);
-
-      return {
-        ...state,
-        songs: newSongs,
-        queue: {
-          ...state.queue,
-          cache
+          // Remove from cache
+          delete s.queue.cache[song.id];
         }
-      };
+      });
     }
 
     case 'REMOVE_SONG': {
-      const { queue, songs } = state;
-      if (songs[action.id] == null) {
+      const { songs } = state;
+      const sid = action.id;
+
+      if (songs[sid] == null) {
+        console.error('song missing');
         return state;
       }
 
-      // Clean cache
-      const cache = cleanCache([action.id], queue.cache);
+      return produce(state, s => {
+        delete s.songs[sid];
 
-      return {
-        ...state,
-        songs: u.omit(action.id, songs) as StoreState['songs'],
-        queue: {
-          prev: queue.prev.filter(p => p !== action.id),
-          curr: queue.curr === action.id ? null : action.id,
-          next: queue.next.filter(p => p !== action.id),
-          cache
+        // Remove from queue
+        s.queue.prev = s.queue.prev.filter(i => i !== sid);
+        if (s.queue.curr === sid) {
+          s.queue.curr = null;
         }
-      };
+        s.queue.next = s.queue.next.filter(i => i !== sid);
+      });
     }
 
     case 'CREATE_PLAYLIST':
-      return u(
-        {
-          playlists: {
-            [action.playlist.id]: action.playlist
+      return produce(state, s => {
+        const { playlist } = action;
+        if (s.playlists[playlist.id] != null) {
+          console.error('duplicate playlist');
+          return s;
+        }
+        s.playlists[playlist.id] = playlist;
+
+        for (let sid of playlist.songs) {
+          if (s.songs[sid] != null) {
+            if (!s.songs[sid].playlists.includes(playlist.id)) {
+              s.songs[sid].playlists.push(playlist.id);
+            } else {
+              console.error('song already in new playlist');
+            }
+          } else {
+            console.error('missing song for playlist');
           }
-        },
-        state
-      ) as StoreState;
-
-    case 'DELETE_PLAYLIST': {
-      const playlist = state.playlists[action.id];
-      if (playlist == null) {
-        return state;
-      }
-
-      const songs = state.songs;
-
-      playlist.songs.forEach(id => {
-        const index = songs[id].playlists.indexOf(action.id);
-        if (index !== -1) songs[id].playlists.splice(index, 1);
+        }
       });
 
-      if (state.currScreen === action.id) {
-        return u(
-          {
-            playlists: u.omit(action.id),
-            songs,
-            currScreen: null
-          },
-          state
-        ) as StoreState;
-      }
+    case 'DELETE_PLAYLIST':
+      return produce(state, s => {
+        const pid = action.id;
 
-      return u(
-        {
-          playlists: u.omit(action.id),
-          songs
-        },
-        state
-      ) as StoreState;
-    }
+        for (let sid of s.playlists[pid].songs) {
+          const idx = s.songs[sid].playlists.indexOf(pid);
+          if (idx >= 0) {
+            s.songs[sid].playlists.splice(idx, 1);
+          }
+        }
 
-    case 'ADD_TO_PLAYLISTS': {
-      const { sid, pids } = action;
-      console.log('song:', state.songs[sid]);
-      console.log(
-        'playlists:',
-        pids.map(p => state.playlists[p])
-      );
+        delete s.playlists[pid];
+      });
+
+    case 'UPDATE_SONG_PLAYLISTS': {
+      const { sid, added, removed } = action;
 
       const song = state.songs[sid];
 
@@ -210,356 +291,92 @@ export default function rootReducer(
         return state;
       }
 
-      // Add pids to song
-      const newPids = [...song.playlists, ...pids];
-      if (__DEV__) {
-        // Check for dups
-        if (newPids.length !== new Set(newPids).size) {
-          console.error('song playlists duplicate');
-        }
-      }
+      return produce(state, s => {
+        // Update pids to song
+        const pids = new Set(s.songs[sid].playlists);
+        added.forEach(a => pids.add(a));
+        removed.forEach(r => pids.delete(r));
 
-      function updatePlaylists(playlists: StoreState['playlists']) {
-        for (let pid of pids) {
-          if (__DEV__) {
-            if (playlists[pid] == null) {
-              console.error('missing playlist');
-            }
+        s.songs[sid].playlists = [...pids];
 
+        // Update sid to playlists
+        for (let pid of added) {
+          if (s.playlists[pid] != null) {
             // Check for dup
-            if (playlists[pid].songs.includes(sid)) {
+            if (!s.playlists[pid].songs.includes(sid)) {
+              s.playlists[pid].songs.push(sid);
+            } else {
               console.error('adding song twice to playlist');
             }
+          } else {
+            console.error('missing playlist for added');
           }
-
-          playlists[pid].songs.push(sid);
         }
-        return playlists;
-      }
 
-      return u.update(
-        {
-          songs: {
-            [sid]: {
-              playlists: p => [...p, ...pids]
+        for (let pid of removed) {
+          if (s.playlists[pid] != null) {
+            // Check for dup
+            const idx = s.playlists[pid].songs.indexOf(sid);
+            if (idx >= 0) {
+              s.playlists[pid].songs.splice(idx, 1);
+            } else {
+              console.error('song not in playlist');
             }
-          },
-          playlists: updatePlaylists
-        },
-        state
-      );
-    }
-
-    case 'REMOVE_FROM_PLAYLISTS': {
-      const { sid, pids } = action;
-
-      const song = state.songs[sid];
-
-      // Invalid song ID
-      if (song == null) {
-        return state;
-      }
-
-      // Remove pids from song
-      const p = new Set(song.playlists);
-      for (let pid of pids) {
-        if (__DEV__) {
-          if (!p.has(pid)) {
-            console.error('playlist missing from song on delete');
+          } else {
+            console.error('missing playlist for removed');
           }
         }
-        p.delete(pid);
-      }
-
-      // Remove sid from playlists
-      const playlists = state.playlists;
-      for (let pid of pids) {
-        if (__DEV__) {
-          // Check for dup
-          if (!playlists[pid].songs.includes(sid)) {
-            console.error('song missing from playlist on delete');
-          }
-        }
-
-        const idx = playlists[pid].songs.indexOf(sid);
-        playlists[pid].songs.splice(idx, 1);
-      }
-
-      return u(
-        {
-          songs: {
-            [sid]: song
-          },
-          playlists
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'CHANGE_VOLUME': {
-      return u(
-        {
-          volume: {
-            amount: Math.max(Math.min(action.volume, 1), 0)
-          }
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'MUTE': {
-      return u(
-        {
-          volume: {
-            muted: action.muted
-          }
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'SKIP_PREVIOUS': {
-      const { queue } = state;
-      const { prev, curr, next } = queue;
-      if (curr == null) {
-        // Nothing playing right now
-        return state;
-      }
-
-      if (prev.length === 0) {
-        return state;
-      }
-
-      return u(
-        {
-          queue: {
-            prev: prev.slice(0, -1),
-            curr: prev[prev.length - 1],
-            next: [curr, ...next]
-          }
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'SKIP_NEXT': {
-      const { queue } = state;
-      const { prev, curr, next } = queue;
-
-      // Middleware: queues song if next is empty
-      if (next.length === 0) {
-        return state;
-      }
-
-      // Clean cache
-      const cache =
-        prev.length >= MAX_QUEUE_SIZE
-          ? cleanCache([prev[0]], queue.cache)
-          : queue.cache;
-
-      return {
-        ...state,
-        queue: {
-          prev: curr == null ? prev : [...prev, curr].slice(-MAX_QUEUE_SIZE),
-          curr: next[0],
-          next: next.slice(1),
-          cache
-        }
-      };
+      });
     }
 
     case 'UPDATE_TAGS': {
-      const song = Object.values(state.songs).find(s => s.id === action.id);
-      if (song == null) {
+      const sid = action.id;
+      if (state.songs[sid] == null) {
         return state;
       }
 
-      return u(
-        {
-          songs: {
-            [song.id]: {
-              title: action.title,
-              artist: action.artist
-            }
-          }
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'SET_SORT': {
-      const sort: SortType = {
-        column: action.column,
-        direction: action.direction
-      };
-      return u(
-        {
-          sort
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'SET_SHUFFLE': {
-      return u(
-        {
-          shuffle: action.shuffle
-        },
-        state
-      ) as StoreState;
+      return produce(state, s => {
+        s.songs[sid].title = action.title;
+        s.songs[sid].artist = action.artist;
+      });
     }
 
     case 'QUEUE_SONG': {
       const { song } = action;
-      const next = [...state.queue.next, song.id];
 
-      // Song in library
-      if (state.songs[song.id] != null) {
-        return u(
-          {
-            queue: {
-              next
-            }
-          },
-          state
-        ) as StoreState;
-      }
+      return produce(state, s => {
+        s.queue.next.push(song.id);
+        if (s.songs[song.id] != null) {
+          // Song in library
+          return s;
+        }
 
-      // Song in cache
-      if (state.queue.cache[song.id] != null) {
-        return u(
-          {
-            queue: {
-              next,
-              cache: {
-                [song.id]: {
-                  count: state.queue.cache[song.id].count + 1
-                }
-              }
-            }
-          },
-          state
-        ) as StoreState;
-      }
+        if (s.queue.cache[song.id] != null) {
+          // Song in cache
+          s.queue.cache[song.id].count++;
+          return s;
+        }
 
-      // Add to cache
-      return u(
-        {
-          queue: {
-            next,
-            cache: {
-              [song.id]: {
-                song,
-                count: 1
-              }
-            }
-          }
-        },
-        state
-      ) as StoreState;
+        // Add to cache
+        s.queue.cache[song.id] = {
+          song,
+          count: 1
+        };
+      });
     }
 
-    case 'ADD_TO_HISTORY': {
-      const cache = new Set<string>();
-      // Remove duplicates and limit to 50
-      const history = [action.search, ...state.history]
-        .filter(str => {
-          if (cache.has(str)) return false;
-          cache.add(str);
-          return true;
-        })
-        .slice(0, MAX_QUEUE_SIZE);
-      return {
-        ...state,
-        history
-      };
-    }
+    case 'DOWNLOAD_FINISH':
+      return produce(state, s => {
+        s.download.queue.shift();
+        s.download.progress = 0;
 
-    case 'REMOVE_FROM_HISTORY': {
-      const idx = state.history.indexOf(action.search);
-      const history = state.history.slice();
-      history.splice(idx, 1);
-      return {
-        ...state,
-        history
-      };
-    }
-
-    case 'DOWNLOAD_ADD': {
-      return u(
-        {
-          dlQueue: [...state.dlQueue, action.id]
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'DOWNLOAD_PROGRESS': {
-      return u(
-        {
-          dlProgress: action.progress
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'DOWNLOAD_FINISH': {
-      if (action.song == null) {
-        return u(
-          {
-            dlQueue: state.dlQueue.slice(1),
-            dlProgress: 0
-          },
-          state
-        ) as StoreState;
-      }
-
-      return u(
-        {
-          songs: {
-            [action.song.id]: action.song
-          },
-          dlQueue: state.dlQueue.slice(1),
-          dlProgress: 0
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'SET_LYRA_URL': {
-      return u(
-        {
-          yt: {
-            url: action.url
-          }
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'SET_LYRA_API': {
-      return u(
-        {
-          yt: {
-            api: action.api
-          }
-        },
-        state
-      ) as StoreState;
-    }
-
-    case 'CLEAR_DATA':
-      return u(
-        {
-          loaded: true
-        },
-        initialState
-      ) as StoreState;
+        const { song } = action;
+        if (song != null) {
+          s.songs[song.id] = song;
+        }
+      });
 
     default:
-      unreachable(action);
       return state;
   }
 }
-
-function unreachable(_: never) {}

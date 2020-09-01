@@ -1,7 +1,7 @@
-import { Dispatch, MiddlewareAPI, Store as ReduxStore } from 'redux';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { ParamListBase, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { Dispatch, MiddlewareAPI } from 'redux';
 
 export type SongID = string;
 export type PlaylistID = string;
@@ -65,15 +65,6 @@ export type TabProps<P extends ParamListBase, R extends keyof P = string> = {
 };
 
 // Redux types
-export type Store = ReduxStore<StoreState, Action>;
-
-export interface QueueType {
-  prev: SongID[];
-  curr: SongID | null;
-  next: SongID[];
-  cache: { [ID in SongID]: { song: Song; count: number } };
-}
-
 export interface StoreState {
   loaded: boolean;
   yt: {
@@ -86,10 +77,17 @@ export interface StoreState {
   volume: { amount: number; muted: boolean };
   sort: SortType;
   shuffle: boolean;
-  queue: QueueType;
+  queue: {
+    prev: SongID[];
+    curr: SongID | null;
+    next: SongID[];
+    cache: { [ID in SongID]: { song: Song; count: number } };
+  };
   history: string[]; // Search history
-  dlQueue: SongID[]; // Queue of downloading videos
-  dlProgress: number;
+  download: {
+    queue: SongID[]; // Queue of downloading videos
+    progress: number;
+  };
 }
 
 export interface Middleware {
@@ -108,10 +106,6 @@ export type Action =
       song: Song;
     }
   | {
-      type: 'SELECT_PLAYLIST';
-      id: string | null;
-    }
-  | {
       type: 'ADD_SONGS';
       songs: Song[];
     }
@@ -128,14 +122,10 @@ export type Action =
       id: PlaylistID;
     }
   | {
-      type: 'ADD_TO_PLAYLISTS';
+      type: 'UPDATE_SONG_PLAYLISTS';
       sid: SongID;
-      pids: PlaylistID[];
-    }
-  | {
-      type: 'REMOVE_FROM_PLAYLISTS';
-      sid: SongID;
-      pids: PlaylistID[];
+      added: PlaylistID[];
+      removed: PlaylistID[];
     }
   | {
       type: 'CHANGE_VOLUME';

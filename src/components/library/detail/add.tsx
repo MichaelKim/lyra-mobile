@@ -4,7 +4,7 @@ import Modal from 'react-native-modal';
 import { Colors } from '../../../constants';
 import { h3, h2 } from '../../../styles';
 import Header from './header';
-import { useSelector, useDispatch } from '../../../hooks';
+import { useSelector } from '../../../hooks';
 import { getSongList, formatDuration } from '../../../util';
 import { FlatList } from 'react-native-gesture-handler';
 import { SongID, PlaylistID } from '../../../types';
@@ -33,7 +33,6 @@ const AddModal = ({ pid, visible, onClose }: Props) => {
   // Reset selected
   const onHide = () => setSelected(current);
 
-  const dispatch = useDispatch();
   const onDone = () => {
     // TODO: add songs to playlist
     onClose();
@@ -71,7 +70,7 @@ const AddModal = ({ pid, visible, onClose }: Props) => {
           )}
         />
         <View style={styles.buttons}>
-          <Pressable onPress={onCancel} style={styles.cancelButton}>
+          <Pressable onPress={onDone} style={styles.cancelButton}>
             <Text style={styles.buttonText}>Cancel</Text>
           </Pressable>
           <Pressable onPress={onDone} style={styles.doneButton}>
