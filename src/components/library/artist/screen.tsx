@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from '../../../hooks';
 import { h2 } from '../../../styles';
 import { Song, StackProps } from '../../../types';
 import SongItem from '../../song-item';
-import Header from '../header';
+import Header from '../../full-modal/header';
 import { LibraryStackParamList } from '../index';
 
 type Props = StackProps<LibraryStackParamList, 'Artist'>;

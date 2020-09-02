@@ -1,14 +1,13 @@
 import React from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Modal from 'react-native-modal';
 import { Colors } from '../../../../constants';
 import { useDispatch, useSelect, useSelector } from '../../../../hooks';
 import { h3 } from '../../../../styles';
 import { PlaylistID } from '../../../../types';
 import { formatDuration, getSongList } from '../../../../util';
 import ActionButtons from '../../../action-buttons';
-import Header from '../../header';
+import FullModal from '../../../full-modal';
 
 type Props = {
   pid: PlaylistID;
@@ -39,49 +38,33 @@ const AddModal = ({ pid, visible, onClose }: Props) => {
   };
 
   return (
-    <Modal
-      useNativeDriver
-      propagateSwipe
-      isVisible={visible}
-      style={styles.modal}
-      onBackdropPress={onClose}
-      onBackButtonPress={onClose}>
-      <View style={styles.root}>
-        <Header title="Select Songs" onBack={onClose} />
-        <FlatList
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={styles.scrollViewContainer}
-          data={songs}
-          renderItem={({ item }) => (
-            <View style={styles.row}>
-              <View style={styles.song}>
-                <Text style={styles.songTitle}>{item.title}</Text>
-                <Text style={styles.songArtist}>
-                  {item.artist || 'Unknown Artist'} •{' '}
-                  {formatDuration(item.duration)}
-                </Text>
-              </View>
-              <Switch
-                onValueChange={() => toggle(item.id)}
-                value={has(item.id)}
-              />
+    <FullModal visible={visible} header="Select Songs" onClose={onClose}>
+      <FlatList
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={styles.scrollViewContainer}
+        data={songs}
+        renderItem={({ item }) => (
+          <View style={styles.row}>
+            <View style={styles.song}>
+              <Text style={styles.songTitle}>{item.title}</Text>
+              <Text style={styles.songArtist}>
+                {item.artist || 'Unknown Artist'} •{' '}
+                {formatDuration(item.duration)}
+              </Text>
             </View>
-          )}
-        />
-        <ActionButtons onDone={onDone} onCancel={onClose} />
-      </View>
-    </Modal>
+            <Switch
+              onValueChange={() => toggle(item.id)}
+              value={has(item.id)}
+            />
+          </View>
+        )}
+      />
+      <ActionButtons onDone={onDone} onCancel={onClose} />
+    </FullModal>
   );
 };
 
 const styles = StyleSheet.create({
-  modal: {
-    margin: 0
-  },
-  root: {
-    flex: 1,
-    backgroundColor: Colors.screen
-  },
   scrollViewContainer: {
     marginHorizontal: 24
   },

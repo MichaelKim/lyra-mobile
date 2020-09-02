@@ -1,13 +1,12 @@
 import CheckBox from '@react-native-community/checkbox';
 import React from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import Modal from 'react-native-modal';
 import { Colors } from '../../constants';
 import { useDispatch, useSelect, useSelector } from '../../hooks';
 import { h2 } from '../../styles';
 import { PlaylistID, SongID } from '../../types';
 import ActionButtons from '../action-buttons';
-import Header from '../library/header';
+import FullModal from '../full-modal';
 
 interface Props {
   sid: SongID;
@@ -38,31 +37,27 @@ const AddToPlaylist = ({ sid, pids, visible, onClose }: Props) => {
   };
 
   return (
-    <Modal
-      useNativeDriver
-      isVisible={visible}
+    <FullModal
+      visible={visible}
+      header="Add to Playlist"
       style={styles.modal}
-      onBackdropPress={onClose}
-      onBackButtonPress={onClose}>
-      <View style={styles.root}>
-        <Header title="Add to Playlist" onBack={onClose} />
-        <FlatList
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={styles.scrollViewContainer}
-          data={playlists}
-          renderItem={({ item }) => (
-            <View style={styles.row}>
-              <CheckBox
-                value={has(item.id)}
-                onValueChange={() => toggle(item.id)}
-              />
-              <Text style={styles.playlistName}>{item.name}</Text>
-            </View>
-          )}
-        />
-        <ActionButtons onDone={onDone} onCancel={onClose} />
-      </View>
-    </Modal>
+      onClose={onClose}>
+      <FlatList
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={styles.scrollViewContainer}
+        data={playlists}
+        renderItem={({ item }) => (
+          <View style={styles.row}>
+            <CheckBox
+              value={has(item.id)}
+              onValueChange={() => toggle(item.id)}
+            />
+            <Text style={styles.playlistName}>{item.name}</Text>
+          </View>
+        )}
+      />
+      <ActionButtons onDone={onDone} onCancel={onClose} />
+    </FullModal>
   );
 };
 

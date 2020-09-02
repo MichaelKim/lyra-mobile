@@ -9,7 +9,7 @@ import { getSongList } from '../../../../util';
 import SongItem from '../../../song-item';
 import { LibraryStackParamList } from '../../index';
 import AddModal from './add';
-import Header from '../../header';
+import Header from '../../../full-modal/header';
 
 type Props = StackProps<LibraryStackParamList, 'Playlist'>;
 
