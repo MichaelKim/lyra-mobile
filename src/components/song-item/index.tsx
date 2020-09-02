@@ -51,7 +51,10 @@ const SongItem = ({ song, onSelect }: Props) => {
         visible={showModal}
         onClose={onClose}
       />
-      <RectButton rippleColor="#111" onPress={onItemPress} style={styles.rect}>
+      <RectButton
+        rippleColor={Colors.ripple}
+        onPress={onItemPress}
+        style={styles.rect}>
         <Thumbnail src={song.thumbnail.url} style={styles.thumbnail} />
         <View style={styles.text}>
           <Text style={styles.songTitle}>{song.title}</Text>

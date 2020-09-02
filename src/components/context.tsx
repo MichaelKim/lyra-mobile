@@ -1,13 +1,14 @@
 import React from 'react';
 import {
   Modal,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableNativeFeedback,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Colors } from '../constants';
 
 interface Item {
   label: string;
@@ -51,15 +52,12 @@ const Menu = ({ items, style, children }: Props) => {
     };
   }, [showMenu]);
 
-  const onOpen = React.useCallback(() => setMenu(true), [setMenu]);
-  const onClose = React.useCallback(() => setMenu(false), [setMenu]);
-  const onSelect = React.useCallback(
-    (item: Item) => {
-      item.onPress();
-      setMenu(false);
-    },
-    [setMenu]
-  );
+  const onOpen = () => setMenu(true);
+  const onClose = () => setMenu(false);
+  const onSelect = (item: Item) => {
+    item.onPress();
+    setMenu(false);
+  };
 
   return (
     <>
@@ -80,12 +78,12 @@ const Menu = ({ items, style, children }: Props) => {
                   }
                 ]}>
                 {items.map(item => (
-                  <TouchableNativeFeedback
+                  <Pressable
                     key={item.label}
-                    background={TouchableNativeFeedback.Ripple('black', false)}
+                    android_ripple={{ color: Colors.ripple }}
                     onPress={() => onSelect(item)}>
                     <Text style={styles.menuItem}>{item.label}</Text>
-                  </TouchableNativeFeedback>
+                  </Pressable>
                 ))}
               </View>
             )}

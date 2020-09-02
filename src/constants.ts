@@ -9,7 +9,8 @@ export const Colors = {
   placeholder: '#888',
   border: '#555',
   lightborder: '#888',
-  accent: '#4286f4'
+  accent: '#4286f4',
+  ripple: '#111'
 };
 
 // Height of playback bottom sheet header

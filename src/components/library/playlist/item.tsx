@@ -17,7 +17,10 @@ const PlaylistItem = ({ playlist, onSelect }: Props) => {
 
   return (
     <View style={styles.root}>
-      <RectButton rippleColor="#111" onPress={onItemPress} style={styles.rect}>
+      <RectButton
+        rippleColor={Colors.ripple}
+        onPress={onItemPress}
+        style={styles.rect}>
         <Text style={styles.name}>{playlist.name}</Text>
         <Text style={styles.numSongs}>
           {numSongs} {numSongs === 1 ? 'song' : 'songs'}

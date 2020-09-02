@@ -1,19 +1,19 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from '../hooks';
 import { Options } from '../icons';
+import { h3, h4 } from '../styles';
 import { VideoSong } from '../types';
 import { formatDuration } from '../util';
 import ContextMenu from './context';
-import { h3, h4 } from '../styles';
+import { Colors } from '../constants';
 
-interface PassedProps {
+type Props = {
   onPress?: () => void;
   video: VideoSong;
-}
+};
 
-const YtItem = ({ onPress, video }: PassedProps) => {
+const YtItem = ({ onPress, video }: Props) => {
   const dispatch = useDispatch();
   const addSong = (song: VideoSong) =>
     dispatch({ type: 'ADD_SONGS', songs: [song] });
@@ -36,7 +36,10 @@ const YtItem = ({ onPress, video }: PassedProps) => {
 
   return (
     <View style={styles.root}>
-      <RectButton onPress={onPress} rippleColor="#111" style={styles.rect}>
+      <Pressable
+        onPress={onPress}
+        android_ripple={{ color: Colors.ripple }}
+        style={styles.rect}>
         <Image style={styles.thumbnail} source={{ uri: video.thumbnail.url }} />
         <View style={styles.text}>
           <Text style={styles.title}>{video.title}</Text>
@@ -45,7 +48,7 @@ const YtItem = ({ onPress, video }: PassedProps) => {
             {video.views && ` • ${video.views} views`}
           </Text>
         </View>
-      </RectButton>
+      </Pressable>
 
       <ContextMenu items={items} style={styles.options}>
         <Options width={25} height={25} />
