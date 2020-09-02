@@ -1,15 +1,27 @@
 import React from 'react';
-import { View, Image, ImageStyle, StyleSheet } from 'react-native';
+import { Image, ImageStyle, StyleSheet, View } from 'react-native';
 import { Cover } from '../icons';
+import { Thumbnail as ThumbnailType } from '../types';
 
-interface Props {
-  src?: string;
+type Props = {
+  src: ThumbnailType;
   style?: ImageStyle;
-}
+};
 
 const Thumbnail = ({ src, style }: Props) => {
-  if (src != null) {
-    return <Image style={[styles.thumbnail, style]} source={{ uri: src }} />;
+  const [ratio, setRatio] = React.useState<number>(1);
+
+  if (src.url) {
+    Image.getSize(src.url, (width, height) => {
+      setRatio(width / height);
+    });
+
+    return (
+      <Image
+        style={[styles.thumbnail, { aspectRatio: ratio }, style]}
+        source={{ uri: src.url }}
+      />
+    );
   }
 
   return (
@@ -23,7 +35,8 @@ const styles = StyleSheet.create({
   thumbnail: {
     resizeMode: 'contain',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    aspectRatio: 1
   }
 });
 

@@ -4,10 +4,10 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Colors } from '../constants';
 
 interface Item {
@@ -15,11 +15,11 @@ interface Item {
   onPress: () => void;
 }
 
-interface Props {
+type Props = {
   items: Array<Item>;
   style: object;
   children: React.ReactNode;
-}
+};
 
 // TODO: add proper positioning (pageX, within screen)
 const Menu = ({ items, style, children }: Props) => {

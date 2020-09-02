@@ -29,7 +29,7 @@ const HeaderInfo = ({
   ]);
   return (
     <View style={styles.header}>
-      <Thumbnail style={styles.thumbnail} src={currSong.thumbnail.url} />
+      <Thumbnail style={styles.thumbnail} src={currSong.thumbnail} />
       <View style={styles.song}>
         <Text style={styles.songTitle}>{currSong.title}</Text>
         <Text style={styles.songArtist}>{currSong.artist}</Text>
@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   thumbnail: {
-    width: 45,
     height: 45,
     marginHorizontal: 8
   },

@@ -1,33 +1,21 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Colors } from '../../../constants';
 import { Song } from '../../../types';
-import YtItem from '../../yt-item';
+import Thumbnail from '../../thumbnail';
 import Related from './related';
 
-import { h2 } from '../../../styles';
-import { Colors } from '../../../constants';
-import Thumbnail from '../../thumbnail';
-
-interface Props {
+type Props = {
   currSong: Song;
-}
+};
 
 const PlaybackContent = ({ currSong }: Props) => {
   return (
     <View style={styles.root}>
-      {currSong.source === 'YOUTUBE' ? (
-        <>
-          <Text style={styles.subtitle}>Currently Playing</Text>
-          <YtItem video={currSong} />
-          <View style={styles.divider} />
-          <Text style={styles.subtitle}>Related Videos</Text>
-          <Related currSong={currSong} />
-        </>
-      ) : (
-        <>
-          <Thumbnail src={currSong.thumbnail.url} style={styles.thumbnail} />
-        </>
-      )}
+      <View style={styles.thumbnailRoot}>
+        <Thumbnail src={currSong.thumbnail} style={styles.thumbnail} />
+      </View>
+      {currSong.source === 'YOUTUBE' && <Related currSong={currSong} />}
     </View>
   );
 };
@@ -38,14 +26,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24
   },
-  subtitle: h2,
-  divider: {
-    height: 1,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border
+  thumbnailRoot: {
+    flexDirection: 'row'
   },
   thumbnail: {
-    flex: 1
+    flex: 1,
+    maxWidth: '100%'
   }
 });
 

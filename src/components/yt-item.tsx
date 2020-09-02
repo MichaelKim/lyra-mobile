@@ -1,12 +1,14 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
+import { Colors } from '../constants';
 import { useDispatch } from '../hooks';
 import { Options } from '../icons';
 import { h3, h4 } from '../styles';
 import { VideoSong } from '../types';
 import { formatDuration } from '../util';
 import ContextMenu from './context';
-import { Colors } from '../constants';
+import Thumbnail from './thumbnail';
 
 type Props = {
   onPress?: () => void;
@@ -36,11 +38,11 @@ const YtItem = ({ onPress, video }: Props) => {
 
   return (
     <View style={styles.root}>
-      <Pressable
+      <RectButton
         onPress={onPress}
-        android_ripple={{ color: Colors.ripple }}
+        rippleColor={Colors.ripple}
         style={styles.rect}>
-        <Image style={styles.thumbnail} source={{ uri: video.thumbnail.url }} />
+        <Thumbnail src={video.thumbnail} style={styles.thumbnail} />
         <View style={styles.text}>
           <Text style={styles.title}>{video.title}</Text>
           <Text style={styles.details}>
@@ -48,7 +50,7 @@ const YtItem = ({ onPress, video }: Props) => {
             {video.views && ` • ${video.views} views`}
           </Text>
         </View>
-      </Pressable>
+      </RectButton>
 
       <ContextMenu items={items} style={styles.options}>
         <Options width={25} height={25} />
@@ -70,10 +72,8 @@ const styles = StyleSheet.create({
     flex: 1
   },
   thumbnail: {
-    width: 120,
-    height: 90,
-    resizeMode: 'contain',
-    margin: 5
+    height: 60,
+    marginRight: 8
   },
   text: {
     flexDirection: 'column',

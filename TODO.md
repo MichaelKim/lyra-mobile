@@ -1,7 +1,6 @@
 - better playing icon for songlist
 - reorder queue
 - options on playlists
-- make playback content consistent with local and yt
 - add loop button to playback
 - swipe playback header / content to skip previous / next
 

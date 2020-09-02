@@ -29,7 +29,7 @@ export interface VideoSong extends SongShared {
 
 export type Song = LocalSong | VideoSong;
 
-interface Thumbnail {
+export interface Thumbnail {
   width: number;
   height: number;
   url: string;

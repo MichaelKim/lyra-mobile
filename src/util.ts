@@ -43,7 +43,7 @@ export async function getSongs(): Promise<Song[]> {
     thumbnail: {
       width: 60, // Not real thumbnail sizes
       height: 60,
-      url: track.cover || track.artwork
+      url: track.cover || track.artwork || ''
     },
     playlists: [],
     date: Date.now()

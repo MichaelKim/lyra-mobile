@@ -11,10 +11,10 @@ import ContextMenu from '../context';
 import Thumbnail from '../thumbnail';
 import AddToPlaylist from './add';
 
-interface Props {
+type Props = {
   song: Song;
   onSelect?: (song: Song) => void;
-}
+};
 
 const SongItem = ({ song, onSelect }: Props) => {
   const currSong = useCurrSong();
@@ -55,7 +55,7 @@ const SongItem = ({ song, onSelect }: Props) => {
         rippleColor={Colors.ripple}
         onPress={onItemPress}
         style={styles.rect}>
-        <Thumbnail src={song.thumbnail.url} style={styles.thumbnail} />
+        <Thumbnail src={song.thumbnail} style={styles.thumbnail} />
         <View style={styles.text}>
           <Text style={styles.songTitle}>{song.title}</Text>
           <Text style={styles.songArtist}>
@@ -83,8 +83,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   thumbnail: {
-    width: 60,
-    height: 45,
+    width: 45,
     marginRight: 8
   },
   text: {
