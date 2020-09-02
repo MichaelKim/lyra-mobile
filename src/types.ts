@@ -76,7 +76,10 @@ export interface StoreState {
   playlists: { [ID in PlaylistID]: Playlist };
   volume: { amount: number; muted: boolean };
   sort: SortType;
-  shuffle: boolean;
+  playback: {
+    shuffle: boolean;
+    repeat: boolean;
+  };
   queue: {
     prev: SongID[];
     curr: SongID | null;
@@ -157,6 +160,10 @@ export type Action =
   | {
       type: 'SET_SHUFFLE';
       shuffle: boolean;
+    }
+  | {
+      type: 'SET_REPEAT';
+      repeat: boolean;
     }
   | {
       type: 'QUEUE_SONG';

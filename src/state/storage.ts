@@ -18,7 +18,10 @@ export const initialState: StoreState = {
     column: 'TITLE',
     direction: false
   },
-  shuffle: false,
+  playback: {
+    shuffle: false,
+    repeat: false
+  },
   queue: {
     prev: [],
     curr: null,

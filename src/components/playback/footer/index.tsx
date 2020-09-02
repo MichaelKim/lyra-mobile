@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Colors } from '../../../constants';
-import { Shuffle } from '../../../icons';
+import { Shuffle, Repeat } from '../../../icons';
 import { Action, StoreState } from '../../../types';
 import { formatDuration } from '../../../util';
 import Slider from '../../slider';
@@ -12,16 +12,18 @@ import Controls from './controls';
 import { h4 } from '../../../styles';
 import { OnProgressData } from 'react-native-video';
 
-interface Props {
+type Props = {
   paused: boolean;
   shuffle: boolean;
+  repeat: boolean;
   progress: OnProgressData;
   onSeek: (seek: number) => void;
   setPaused: (paused: boolean) => void;
   skipPrevious: () => void;
   skipNext: () => void;
   setShuffle: (shuffle: boolean) => void;
-}
+  setRepeat: (repeat: boolean) => void;
+};
 
 class Footer extends React.Component<Props> {
   skipPreviousOrStart = () => {
@@ -44,10 +46,15 @@ class Footer extends React.Component<Props> {
     this.props.setShuffle(!this.props.shuffle);
   };
 
+  toggleRepeat = () => {
+    this.props.setRepeat(!this.props.repeat);
+  };
+
   render() {
     const {
       paused,
       shuffle,
+      repeat,
       progress,
       onSeek,
       setPaused,
@@ -71,7 +78,11 @@ class Footer extends React.Component<Props> {
           </Text>
         </View>
         <View style={styles.controls}>
-          <View style={styles.buttonsLeft} />
+          <View style={styles.buttonsLeft}>
+            <TouchableOpacity onPress={this.toggleRepeat}>
+              <Repeat width={30} height={30} fillOpacity={repeat ? 1 : 0.3} />
+            </TouchableOpacity>
+          </View>
           <Controls
             paused={paused}
             skipPrevious={this.skipPreviousOrStart}
@@ -82,7 +93,7 @@ class Footer extends React.Component<Props> {
           />
           <View style={styles.buttonsRight}>
             <TouchableOpacity onPress={this.toggleShuffle}>
-              <Shuffle width={30} height={30} fillOpacity={shuffle ? 1 : 0.5} />
+              <Shuffle width={30} height={30} fillOpacity={shuffle ? 1 : 0.3} />
             </TouchableOpacity>
           </View>
         </View>
@@ -93,14 +104,16 @@ class Footer extends React.Component<Props> {
 
 const mapState = (state: StoreState) => {
   return {
-    shuffle: state.shuffle
+    shuffle: state.playback.shuffle,
+    repeat: state.playback.repeat
   };
 };
 
 const mapDispatch = (dispatch: Dispatch<Action>) => ({
   skipPrevious: () => dispatch({ type: 'SKIP_PREVIOUS' }),
   skipNext: () => dispatch({ type: 'SKIP_NEXT' }),
-  setShuffle: (shuffle: boolean) => dispatch({ type: 'SET_SHUFFLE', shuffle })
+  setShuffle: (shuffle: boolean) => dispatch({ type: 'SET_SHUFFLE', shuffle }),
+  setRepeat: (repeat: boolean) => dispatch({ type: 'SET_REPEAT', repeat })
 });
 
 const styles = StyleSheet.create({
@@ -117,7 +130,8 @@ const styles = StyleSheet.create({
   controls: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginHorizontal: 12
   },
   buttonsLeft: {
     flex: 1

@@ -34,10 +34,17 @@ function sortReducer(state: StoreState['sort'], action: Action) {
   }
 }
 
-function shuffleReducer(state: StoreState['shuffle'], action: Action) {
+function playbackReducer(state: StoreState['playback'], action: Action) {
   switch (action.type) {
     case 'SET_SHUFFLE':
-      return action.shuffle;
+      return produce(state, s => {
+        s.shuffle = action.shuffle;
+      });
+
+    case 'SET_REPEAT':
+      return produce(state, s => {
+        s.repeat = action.repeat;
+      });
 
     default:
       return state;
@@ -175,7 +182,7 @@ export default function rootReducer(
 ): StoreState {
   state = loadReducer(state, action);
   state = produce(state, s => {
-    s.shuffle = shuffleReducer(s.shuffle, action);
+    s.playback = playbackReducer(s.playback, action);
     s.sort = sortReducer(s.sort, action);
     s.history = historyReducer(s.history, action);
     s.volume = volumeReducer(s.volume, action);

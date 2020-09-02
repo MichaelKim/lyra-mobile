@@ -12,22 +12,23 @@ import PlaybackFooter from './footer';
 import PlaybackHeader from './header';
 import Slide from './slide';
 
-interface PassedProps {
+type PassedProps = {
   tab: number;
-}
+};
 
 type Props = PassedProps & {
   currSong: Song | null;
+  repeat: boolean;
   skipNext: () => void;
 };
 
-interface State {
+type State = {
   src: string;
   loading: boolean;
   paused: boolean;
   progress: OnProgressData;
   autoplay: boolean;
-}
+};
 
 class Playback extends React.Component<Props, State> {
   state = {
@@ -163,7 +164,7 @@ class Playback extends React.Component<Props, State> {
     });
   };
 
-  skipNext = () => {
+  onEnd = () => {
     this.setState({
       paused: true
     });
@@ -213,7 +214,7 @@ class Playback extends React.Component<Props, State> {
   };
 
   render() {
-    const { currSong, tab } = this.props;
+    const { currSong, tab, repeat } = this.props;
     const { src, paused } = this.state;
 
     if (currSong == null) {
@@ -226,12 +227,13 @@ class Playback extends React.Component<Props, State> {
           <Video
             source={{ uri: src }}
             ref={this.player}
+            repeat={repeat}
             playInBackground
             paused={paused}
             onLoad={this.onLoad}
             onSeek={this.onFinishedSeek}
             onProgress={this.onProgress}
-            onEnd={this.skipNext}
+            onEnd={this.onEnd}
           />
         )}
         <Slide
@@ -252,7 +254,8 @@ const mapState = (state: StoreState) => {
   } = state;
 
   return {
-    currSong: curr != null ? songs[curr] ?? cache[curr]?.song : null
+    currSong: curr != null ? songs[curr] ?? cache[curr]?.song : null,
+    repeat: state.playback.repeat
   };
 };
 

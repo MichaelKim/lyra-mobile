@@ -10,6 +10,7 @@ export { default as Options } from './options.svg';
 export { default as Pause } from './pause.svg';
 export { default as Play } from './play.svg';
 export { default as Queue } from './queue.svg';
+export { default as Repeat } from './repeat.svg';
 export { default as Replay } from './replay-10.svg';
 export { default as Search } from './search.svg';
 export { default as Shuffle } from './shuffle.svg';

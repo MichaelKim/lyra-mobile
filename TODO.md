@@ -1,8 +1,8 @@
 - better playing icon for songlist
 - reorder queue
 - options on playlists
-- add loop button to playback
 - swipe playback header / content to skip previous / next
+- show loading circle on buffer
 
 - on header press, open/close bottom sheet
 
