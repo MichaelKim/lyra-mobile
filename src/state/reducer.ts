@@ -240,6 +240,15 @@ export default function rootReducer(
       }
 
       return produce(state, s => {
+        // Remove from playlists
+        const pids = s.songs[sid].playlists;
+        for (let pid of pids) {
+          const idx = s.playlists[pid].songs.indexOf(sid);
+          if (idx >= 0) {
+            s.playlists[pid].songs.splice(idx, 1);
+          }
+        }
+
         delete s.songs[sid];
 
         // Remove from queue
