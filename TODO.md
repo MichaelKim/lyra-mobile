@@ -3,6 +3,7 @@
 - reorder queue
 - swipe playback header / content to skip previous / next
 - show loading circle on buffer
+- add favourites playlist? (favourite button to song)
 
 - on header press, open/close bottom sheet
 
