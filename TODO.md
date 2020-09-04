@@ -1,6 +1,5 @@
-- better playing icon for songlist
-- reorder queue
 - options on playlists
+- reorder queue
 - swipe playback header / content to skip previous / next
 - show loading circle on buffer
 

@@ -10,6 +10,7 @@ import { formatDuration } from '../../util';
 import ContextMenu from '../context';
 import Thumbnail from '../thumbnail';
 import AddToPlaylist from './add';
+import Playing from './playing';
 
 type Props = {
   song: Song;
@@ -55,13 +56,16 @@ const SongItem = ({ song, onSelect }: Props) => {
         rippleColor={Colors.ripple}
         onPress={onItemPress}
         style={styles.rect}>
-        <Thumbnail src={song.thumbnail} style={styles.thumbnail} />
+        {isPlaying ? (
+          <Playing />
+        ) : (
+          <Thumbnail src={song.thumbnail} style={styles.thumbnail} />
+        )}
         <View style={styles.text}>
           <Text style={styles.songTitle}>{song.title}</Text>
           <Text style={styles.songArtist}>
             {song.artist || 'Unknown Artist'} • {formatDuration(song.duration)}
           </Text>
-          {isPlaying && <Text style={styles.songArtist}>Playing</Text>}
         </View>
       </RectButton>
       <ContextMenu items={items} style={styles.options}>
