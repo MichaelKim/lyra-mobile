@@ -4,10 +4,12 @@ Lyra is a cross-platform music player app that can play songs on your computer, 
 
 This repository contains the code for the mobile app version of Lyra, written in React Native. Also check out the [desktop and browser app](https://github.com/LenKagamine/lyra).
 
-<img alt="Library" src="./screenshots/library.png"  width="24%">
-<img alt="Youtube search" src="./screenshots/search.png"  width="24%">
-<img alt="Playback controls and related songs" src="./screenshots/playback.png"  width="24%">
-<img alt="Notification media controls" src="./screenshots/notification.png"  width="24%">
+<div align="center">
+<img alt="Library" src="./screenshots/library.png" width="24%">
+<img alt="Youtube search" src="./screenshots/search.png" width="24%">
+<img alt="Playback controls and related songs" src="./screenshots/playback.png" width="24%">
+<img alt="Notification media controls" src="./screenshots/notification.png" width="24%">
+</div>
 
 ## Features
 
