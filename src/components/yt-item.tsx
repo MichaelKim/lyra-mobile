@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { Colors } from '../constants';
-import { useDispatch } from '../hooks';
+import { useDispatch, useSelector } from '../hooks';
 import { Options } from '../icons';
 import { h3, h4 } from '../styles';
 import { VideoSong } from '../types';
@@ -16,23 +16,21 @@ type Props = {
 };
 
 const YtItem = ({ onPress, video }: Props) => {
+  const songAdded = useSelector(state => state.songs[video.id] != null);
   const dispatch = useDispatch();
-  const addSong = (song: VideoSong) =>
-    dispatch({ type: 'ADD_SONGS', songs: [song] });
-  const queueSong = (song: VideoSong) => dispatch({ type: 'QUEUE_SONG', song });
-
   const items = [
-    {
-      label: 'Add to Library',
-      onPress: () => {
-        addSong(video);
-      }
-    },
+    songAdded
+      ? {
+          label: 'Remove from Library',
+          onPress: () => dispatch({ type: 'REMOVE_SONG', id: video.id })
+        }
+      : {
+          label: 'Add to Library',
+          onPress: () => dispatch({ type: 'ADD_SONGS', songs: [video] })
+        },
     {
       label: 'Add to Queue',
-      onPress: () => {
-        queueSong(video);
-      }
+      onPress: () => dispatch({ type: 'QUEUE_SONG', song: video })
     }
   ];
 

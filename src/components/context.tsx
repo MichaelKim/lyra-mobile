@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Colors } from '../constants';
+import { h3 } from '../styles';
 
 interface Item {
   label: string;
@@ -102,6 +103,8 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
   menuItem: {
+    ...h3,
+    color: 'black',
     padding: 10
   }
 });
