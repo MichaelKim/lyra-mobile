@@ -24,16 +24,14 @@ const PlaylistDetail = ({ route, navigation }: Props) => {
     dispatch({ type: 'SELECT_SONG', song });
   };
 
-  const onClose = () => {
-    navigation.goBack();
-  };
+  const onBack = () => navigation.goBack();
 
   const onAdd = () => setModal(true);
   const onCancel = () => setModal(false);
 
   return (
     <SafeAreaView style={styles.root}>
-      <Header title={playlist.name} onBack={onClose} />
+      <Header title={playlist.name} onBack={onBack} />
       <AddModal pid={playlist.id} visible={showModal} onClose={onCancel} />
       {songs.length === 0 ? (
         <View style={styles.empty}>

@@ -1,4 +1,3 @@
-- options on playlists
 - add long press to open options
 - reorder queue
 - swipe playback header / content to skip previous / next

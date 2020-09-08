@@ -26,7 +26,6 @@ const AddModal = ({ pid, visible, onClose }: Props) => {
     const removed = [...removedSet];
 
     if (added.length > 0 || removed.length > 0) {
-      console.log(added, removed);
       dispatch({
         type: 'UPDATE_PLAYLIST',
         pid,
