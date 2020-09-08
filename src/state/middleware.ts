@@ -42,7 +42,7 @@ const queueSong: Middleware = store => next => action => {
 
   // Enable autoplay for youtube only if shuffle is on
   if (currSong.source === 'YOUTUBE') {
-    if (newState.shuffle) {
+    if (newState.playback.shuffle) {
       getRelatedVideos(currSong.id).then(related => {
         store.dispatch({ type: 'QUEUE_SONG', song: related[0] });
       });
@@ -51,7 +51,7 @@ const queueSong: Middleware = store => next => action => {
   }
 
   // Shuffle from library
-  if (newState.shuffle) {
+  if (newState.playback.shuffle) {
     const songs = getSongList(newState.songs, newState.currScreen).filter(
       song => song.id !== currSong.id
     );
@@ -83,12 +83,14 @@ const saveToStorage: Middleware = store => next => action => {
     case 'CREATE_PLAYLIST':
     case 'DELETE_PLAYLIST':
     case 'UPDATE_SONG_PLAYLISTS':
+    case 'UPDATE_PLAYLIST':
     case 'CHANGE_VOLUME':
     case 'SKIP_PREVIOUS':
     case 'SKIP_NEXT':
     case 'UPDATE_TAGS':
     case 'SET_SORT':
     case 'SET_SHUFFLE':
+    case 'SET_REPEAT':
     case 'QUEUE_SONG':
     case 'ADD_TO_HISTORY':
     case 'REMOVE_FROM_HISTORY':

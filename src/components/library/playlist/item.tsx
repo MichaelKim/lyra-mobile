@@ -1,9 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
-import { Colors } from '../../../constants';
+import { StyleSheet } from 'react-native';
 import { h2 } from '../../../styles';
 import { Playlist } from '../../../types';
+import Row from '../../row';
 
 type Props = {
   playlist: Playlist;
@@ -14,39 +13,20 @@ const PlaylistItem = ({ playlist, onSelect }: Props) => {
   const onItemPress = () => onSelect?.(playlist);
 
   const numSongs = playlist.songs.length;
+  const subtitle = `${numSongs} ${numSongs === 1 ? 'song' : 'songs'}`;
 
   return (
-    <View style={styles.root}>
-      <RectButton
-        rippleColor={Colors.ripple}
-        onPress={onItemPress}
-        style={styles.rect}>
-        <Text style={styles.name}>{playlist.name}</Text>
-        <Text style={styles.numSongs}>
-          {numSongs} {numSongs === 1 ? 'song' : 'songs'}
-        </Text>
-      </RectButton>
-    </View>
+    <Row
+      title={playlist.name}
+      subtitle={subtitle}
+      onPress={onItemPress}
+      titleStyle={styles.name}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  root: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  rect: {
-    flexDirection: 'column',
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    flex: 1
-  },
-  name: h2,
-  numSongs: {
-    fontSize: 12,
-    color: Colors.subtext
-  }
+  name: h2
 });
 
 export default React.memo(PlaylistItem);

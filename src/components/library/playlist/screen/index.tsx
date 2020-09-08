@@ -10,6 +10,7 @@ import SongItem from '../../../song-item';
 import { LibraryStackParamList } from '../../index';
 import AddModal from './add';
 import Header from '../../../full-modal/header';
+import { Add } from '../../../../icons';
 
 type Props = StackProps<LibraryStackParamList, 'Playlist'>;
 
@@ -42,14 +43,22 @@ const PlaylistDetail = ({ route, navigation }: Props) => {
           </RectButton>
         </View>
       ) : (
-        <FlatList
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={styles.scrollViewContainer}
-          data={songs}
-          renderItem={({ item }) => (
-            <SongItem song={item} onSelect={onSelect} />
-          )}
-        />
+        <>
+          <RectButton onPress={onAdd} style={styles.rect}>
+            <View style={styles.add}>
+              <Add width={25} height={25} />
+            </View>
+            <Text style={h2}>Add Songs</Text>
+          </RectButton>
+          <FlatList
+            contentInsetAdjustmentBehavior="automatic"
+            contentContainerStyle={styles.scrollViewContainer}
+            data={songs}
+            renderItem={({ item }) => (
+              <SongItem song={item} onSelect={onSelect} />
+            )}
+          />
+        </>
       )}
     </SafeAreaView>
   );
@@ -67,6 +76,15 @@ const styles = StyleSheet.create({
     flex: 1
   },
   text: h2,
+  rect: {
+    flexDirection: 'row',
+    marginHorizontal: 24,
+    paddingVertical: 10
+  },
+  add: {
+    paddingRight: 4,
+    justifyContent: 'center'
+  },
   scrollViewContainer: {
     marginHorizontal: 24
   },
