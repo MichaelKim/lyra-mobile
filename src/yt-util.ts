@@ -45,7 +45,7 @@ export async function getRelatedVideos(id: SongID): Promise<VideoSong[]> {
   return videos;
 }
 
-export async function ytSuggest(keyword: string) {
+export async function ytSuggest(keyword: string): Promise<string[]> {
   if (!keyword) return [];
 
   const res = await f(`/yt/suggest?query=${keyword}`);

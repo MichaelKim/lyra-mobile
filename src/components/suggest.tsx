@@ -1,28 +1,30 @@
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
+import { Colors } from '../constants';
+import { h3 } from '../styles';
 
-interface Props {
+type Props = {
   text: string;
   search: string;
   onPress: (value: string) => void;
-}
+};
 
 const Suggestion = ({ text, search, onPress }: Props) => {
-  const selectItem = () => {
-    onPress(text);
-  };
+  const selectItem = () => onPress(text);
 
   const idx = text.indexOf(search);
 
   const textItem =
     idx === -1 ? (
-      text
+      <Text style={styles.text}>{text}</Text>
     ) : (
       <>
-        <Text style={styles.bold}>{text.substring(0, idx)}</Text>
-        <Text>{search}</Text>
-        <Text style={styles.bold}>{text.substring(idx + search.length)}</Text>
+        <Text style={[styles.text, styles.bold]}>{text.substring(0, idx)}</Text>
+        <Text style={styles.text}>{search}</Text>
+        <Text style={[styles.text, styles.bold]}>
+          {text.substring(idx + search.length)}
+        </Text>
       </>
     );
 
@@ -34,7 +36,14 @@ const Suggestion = ({ text, search, onPress }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  suggest: {},
+  suggest: {
+    backgroundColor: Colors.sheet
+  },
+  text: {
+    ...h3,
+    paddingHorizontal: 8,
+    paddingVertical: 4
+  },
   bold: {
     fontWeight: 'bold'
   }

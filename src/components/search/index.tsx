@@ -5,7 +5,7 @@ import { Colors } from '../../constants';
 import { useDispatch } from '../../hooks';
 import { h1 } from '../../styles';
 import { StackProps, VideoSong } from '../../types';
-import { ytSearch } from '../../yt-util';
+import { ytSearch, ytSuggest } from '../../yt-util';
 import Loading from '../loading';
 import Search from '../search-bar';
 import YtItem from '../yt-item';
@@ -15,7 +15,16 @@ type Props = StackProps<RootTabParamList, 'Search'>;
 const YtSearch = (_: Props) => {
   const [searching, setSearching] = React.useState(false);
   const [videos, setVideos] = React.useState<Array<VideoSong>>([]);
+  const [suggest, setSuggest] = React.useState<string[]>([]);
   const dispatch = useDispatch();
+
+  const onChange = async (value: string) => {
+    if (value === '') {
+      setSuggest([]);
+    } else {
+      setSuggest(await ytSuggest(value));
+    }
+  };
 
   const onSearch = (value: string) => {
     setSearching(true);
@@ -36,7 +45,7 @@ const YtSearch = (_: Props) => {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.scrollViewContainer}>
         <Text style={styles.title}>YouTube</Text>
-        <Search onEnter={onSearch} />
+        <Search onChange={onChange} onEnter={onSearch} suggestions={suggest} />
         {searching ? (
           <Loading />
         ) : (
