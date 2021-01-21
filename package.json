@@ -27,7 +27,7 @@
     "@reduxjs/toolkit": "^1.4.0",
     "@types/react-redux": "^7.1.9",
     "crypto-js": "^3.3.0",
-    "immer": "^7.0.8",
+    "immer": "^8.0.1",
     "react": "16.13.1",
     "react-native": "0.63.2",
     "react-native-gesture-handler": "^1.7.0",
