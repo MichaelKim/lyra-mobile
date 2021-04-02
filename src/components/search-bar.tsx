@@ -11,6 +11,7 @@ type Props = {
   initialValue?: string;
   onChange?: (value: string) => void;
   onEnter?: (value: string) => void;
+  defaultSuggestions?: string[];
   suggestions?: string[];
 };
 

@@ -29,6 +29,8 @@ const YtSearch = (_: Props) => {
   const onSearch = (value: string) => {
     setSearching(true);
 
+    dispatch({ type: 'ADD_TO_HISTORY', search: value });
+
     ytSearch(value).then(results => {
       setSearching(false);
       setVideos(results);
