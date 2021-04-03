@@ -4,8 +4,8 @@ import Animated, {
   block,
   Clock,
   cond,
-  Easing,
-  interpolate,
+  EasingNode,
+  interpolateNode,
   set,
   startClock,
   stopClock,
@@ -26,7 +26,7 @@ class Playing extends React.Component<{}> {
   config = {
     toValue: 1,
     duration: 2000,
-    easing: Easing.linear
+    easing: EasingNode.linear
   };
 
   position = block([
@@ -45,12 +45,12 @@ class Playing extends React.Component<{}> {
     this.clockState.position
   ]);
 
-  lowOpacity = interpolate(this.position, {
+  lowOpacity = interpolateNode(this.position, {
     inputRange: [0, 0.3, 0.7, 1],
     outputRange: [0, 1, 1, 0]
   });
 
-  highOpacity = interpolate(this.position, {
+  highOpacity = interpolateNode(this.position, {
     inputRange: [0, 0.3, 0.6, 0.7, 1],
     outputRange: [0, 0, 1, 1, 0]
   });

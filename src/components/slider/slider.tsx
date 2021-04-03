@@ -10,7 +10,7 @@ import Animated, {
   cond,
   eq,
   event,
-  interpolate,
+  interpolateNode,
   max,
   or,
   set,
@@ -98,7 +98,7 @@ class Slider extends React.Component<Props, _State> {
   ]);
 
   toPercent = (value: Animated.Adaptable<number>) =>
-    interpolate(value, {
+    interpolateNode(value, {
       inputRange: [this.min, this.max],
       outputRange: [0, this.width]
     });
@@ -112,7 +112,7 @@ class Slider extends React.Component<Props, _State> {
   pos = clamp(this.x, 0, this.width);
 
   // Touch value of slider
-  value = interpolate(this.pos, {
+  value = interpolateNode(this.pos, {
     inputRange: [0, this.width],
     outputRange: [this.min, this.max]
   });
