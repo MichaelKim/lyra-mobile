@@ -1,26 +1,16 @@
-import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import React, { useState } from 'react';
+import { LayoutChangeEvent, StyleSheet, View, ViewStyle } from 'react-native';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
-  and,
-  block,
-  call,
-  Clock,
-  clockRunning,
-  cond,
-  eq,
-  event,
-  interpolateNode,
-  max,
-  or,
-  set,
-  spring,
-  startClock,
-  stopClock,
-  sub,
-  Value
+  cancelAnimation,
+  interpolate,
+  runOnJS,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring
 } from 'react-native-reanimated';
-import { clamp, formatDuration } from '../../util';
+import { formatDuration } from '../../util';
 import Bubble, { BUBBLE_WIDTH } from './bubble';
 
 const THUMB_SIZE = 16;
@@ -38,245 +28,128 @@ type Props = {
   onSlidingComplete: (value: number) => void;
 };
 
-type _State = {
-  text: string;
+const SPRING_CONFIG = {
+  damping: 10,
+  mass: 1,
+  stiffness: 150,
+  overshootClamping: false,
+  restSpeedThreshold: 0.001,
+  restDisplacementThreshold: 0.001
 };
 
-class Slider extends React.Component<Props, _State> {
-  static defaultProps = {
-    minimumTrackTintColor: '#f3f',
-    maximumTrackTintColor: 'transparent',
-    cacheTrackTintColor: '#777',
-    borderColor: '#fff'
-  };
+export default function Slider({
+  minimumTrackTintColor = '#fcf',
+  maximumTrackTintColor = 'transparent',
+  seekableTrackTintColor = '#777',
+  style,
+  progress,
+  seekable,
+  minimumValue,
+  maximumValue,
+  onSlidingStart,
+  onSlidingComplete
+}: Props) {
+  const [text, setText] = useState('0:00');
 
-  state: _State = { text: '0:00' };
+  const dragging = useSharedValue(false);
+  const opacity = useSharedValue(0);
+  const x = useSharedValue(0);
+  const width = useSharedValue(200);
 
-  clock = new Clock();
-  clockState = {
-    finished: new Value(0),
-    velocity: new Value(0),
-    position: new Value(0),
-    time: new Value(0)
-  };
-  config = {
-    damping: 10,
-    mass: 1,
-    stiffness: 150,
-    overshootClamping: false,
-    restSpeedThreshold: 0.001,
-    restDisplacementThreshold: 0.001,
-    toValue: new Value(0)
-  };
+  function toPercent(value: number) {
+    'worklet';
+    return interpolate(value, [0, width.value], [minimumValue, maximumValue]);
+  }
 
-  panState = new Value<number>(0);
-  x = new Value<number>(0);
-  width = new Value<number>(0);
+  function setBubbleText(value: number) {
+    setText(formatDuration(value));
+  }
 
-  min = new Value<number>(this.props.minimumValue);
-  max = new Value<number>(this.props.maximumValue);
-  progress = new Value<number>(this.props.progress);
-  seekable = new Value<number>(this.props.seekable);
-
-  handlePan = event([
-    {
-      nativeEvent: {
-        state: this.panState,
-        x: this.x
-      }
+  const handler = useAnimatedGestureHandler({
+    onStart: () => {
+      dragging.value = true;
+      cancelAnimation(opacity);
+      onSlidingStart && runOnJS(onSlidingStart)();
+    },
+    onActive: e => {
+      opacity.value = withSpring(1, SPRING_CONFIG);
+      x.value = Math.min(Math.max(e.x, 0), width.value);
+      runOnJS(setBubbleText)(toPercent(x.value));
+    },
+    onEnd: () => {
+      dragging.value = false;
+      opacity.value = withSpring(0, SPRING_CONFIG);
+      runOnJS(onSlidingComplete)(toPercent(x.value));
     }
-  ]);
-
-  onLayout = event([
-    {
-      nativeEvent: {
-        layout: {
-          width: this.width
-        }
-      }
-    }
-  ]);
-
-  toPercent = (value: Animated.Adaptable<number>) =>
-    interpolateNode(value, {
-      inputRange: [this.min, this.max],
-      outputRange: [0, this.width]
-    });
-
-  // Current position
-  progressPos = this.toPercent(this.progress);
-  // Seekable position
-  seekablePos = this.toPercent(this.seekable);
-
-  // Touch position of thumb
-  pos = clamp(this.x, 0, this.width);
-
-  // Touch value of slider
-  value = interpolateNode(this.pos, {
-    inputRange: [0, this.width],
-    outputRange: [this.min, this.max]
   });
 
-  /*
-  - While panning, use the position taken from touch events
-    - When done panning, send finish callback
-  - While not panning, use provided position (progress)
-  */
-  seek = block([
-    cond(
-      or(eq(this.panState, State.ACTIVE), eq(this.panState, State.BEGAN)),
-      [
-        // Currently panning
-        call([this.value], ([value]) =>
-          this.setState({ text: formatDuration(value) })
-        ),
-        cond(
-          eq(this.panState, State.BEGAN),
-          call([this.value], () => this.props.onSlidingStart?.())
-        ),
-        this.pos
-      ],
-      [
-        cond(
-          eq(this.panState, State.END),
-          [
-            // Done panning
-            set(this.panState, State.UNDETERMINED),
-            call([this.value], ([value]) =>
-              this.props.onSlidingComplete(value)
-            ),
-            this.pos
-          ],
-          // Not panning
-          this.progressPos
-        )
-      ]
-    )
-  ]);
+  const thumbBoxStyle = useAnimatedStyle(() => ({
+    left: dragging.value
+      ? x.value
+      : interpolate(progress, [minimumValue, maximumValue], [0, width.value])
+  }));
 
-  // Thumb bubble fade animation
-  runSpring = (toValue: number) => [
-    cond(clockRunning(this.clock), 0, [
-      set(this.clockState.finished, 0),
-      set(this.clockState.velocity, 0),
-      set(this.config.toValue, toValue),
-      startClock(this.clock)
-    ]),
-    spring(this.clock, this.clockState, this.config),
-    cond(this.clockState.finished, stopClock(this.clock)),
-    this.clockState.position
-  ];
+  const thumbStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [
+      {
+        scale: opacity.value
+      }
+    ]
+  }));
 
-  // Fading the thumb bubble
-  opacity = cond(
-    or(eq(this.panState, State.BEGAN), eq(this.panState, State.ACTIVE)),
-    this.runSpring(1),
-    cond(
-      or(eq(this.panState, State.UNDETERMINED), eq(this.panState, State.END)),
-      [
-        cond(
-          and(clockRunning(this.clock), eq(this.config.toValue, 1)),
-          stopClock(this.clock)
-        ),
-        this.runSpring(0)
-      ],
-      this.clockState.position
-    )
-  );
+  const onLayout = (e: LayoutChangeEvent) => {
+    width.value = e.nativeEvent.layout.width;
+  };
 
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.minimumValue !== this.props.minimumValue) {
-      this.min.setValue(this.props.minimumValue);
-    }
-    if (prevProps.maximumValue !== this.props.maximumValue) {
-      this.max.setValue(this.props.maximumValue);
-    }
-    if (prevProps.progress !== this.props.progress) {
-      this.progress.setValue(this.props.progress);
-    }
-    if (prevProps.seekable !== this.props.seekable) {
-      this.seekable.setValue(this.props.seekable);
-    }
-  }
-
-  render() {
-    const {
-      style,
-      minimumTrackTintColor,
-      maximumTrackTintColor,
-      seekableTrackTintColor
-    } = this.props;
-    const { text } = this.state;
-
-    return (
-      <PanGestureHandler
-        onGestureEvent={this.handlePan}
-        onHandlerStateChange={this.handlePan}
-        minDist={0}>
-        <Animated.View style={[styles.root, style]}>
-          <Animated.View style={styles.trackBox} onLayout={this.onLayout}>
-            <Animated.View
-              style={[
-                styles.track,
-                {
-                  backgroundColor: minimumTrackTintColor,
-                  flex: this.seek
-                }
-              ]}
-            />
-            <Animated.View
-              style={[
-                styles.track,
-                {
-                  backgroundColor: seekableTrackTintColor,
-                  flex: max(sub(this.seekablePos, this.seek), 0)
-                }
-              ]}
-            />
-            <Animated.View
-              style={[
-                styles.track,
-                {
-                  backgroundColor: maximumTrackTintColor,
-                  flex: sub(this.width, max(this.seekablePos, this.seek))
-                }
-              ]}
-            />
-          </Animated.View>
+  return (
+    <PanGestureHandler onGestureEvent={handler} minDist={0}>
+      <Animated.View style={[styles.root, style]}>
+        <Animated.View style={styles.trackBox} onLayout={onLayout}>
           <Animated.View
             style={[
-              styles.thumbBox,
+              styles.track,
               {
-                left: this.seek
+                backgroundColor: minimumTrackTintColor,
+                flex: progress - minimumValue
               }
-            ]}>
-            <View
-              style={[
-                styles.thumb,
-                {
-                  backgroundColor: minimumTrackTintColor
-                }
-              ]}
-            />
-            <Animated.View
-              style={[
-                styles.bubble,
-                {
-                  opacity: this.opacity,
-                  transform: [
-                    {
-                      scale: this.opacity
-                    }
-                  ]
-                }
-              ]}>
-              <Bubble text={text} />
-            </Animated.View>
+            ]}
+          />
+          <Animated.View
+            style={[
+              styles.track,
+              {
+                backgroundColor: seekableTrackTintColor,
+                flex: seekable - progress
+              }
+            ]}
+          />
+          <Animated.View
+            style={[
+              styles.track,
+              {
+                backgroundColor: maximumTrackTintColor,
+                flex: maximumValue - seekable
+              }
+            ]}
+          />
+        </Animated.View>
+        <Animated.View style={[styles.thumbBox, thumbBoxStyle]}>
+          <View
+            style={[
+              styles.thumb,
+              {
+                backgroundColor: minimumTrackTintColor
+              }
+            ]}
+          />
+          <Animated.View style={[styles.bubble, thumbStyle]}>
+            <Bubble text={text} />
           </Animated.View>
         </Animated.View>
-      </PanGestureHandler>
-    );
-  }
+      </Animated.View>
+    </PanGestureHandler>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -312,5 +185,3 @@ const styles = StyleSheet.create({
     width: BUBBLE_WIDTH
   }
 });
-
-export default Slider;
