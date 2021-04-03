@@ -1,37 +1,21 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { LayoutChangeEvent, StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
-  State,
+  PanGestureHandlerGestureEvent,
   TapGestureHandler
 } from 'react-native-gesture-handler';
 import Animated, {
-  and,
-  add,
-  block,
-  Clock,
-  clockRunning,
-  cond,
-  decay,
-  divide,
-  eq,
-  event,
-  greaterOrEq,
-  lessOrEq,
-  lessThan,
-  multiply,
-  neq,
-  not,
-  set,
-  spring,
-  startClock,
-  stopClock,
-  sub,
-  Value
+  cancelAnimation,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withDecay,
+  withSpring
 } from 'react-native-reanimated';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
 import { Colors, NAVIGATION_HEIGHT } from '../../constants';
-import { clamp } from '../../util';
 
 interface PassedProps {
   tab: number;
@@ -44,257 +28,139 @@ type Props = PassedProps & {
   height: number;
 };
 
-export class BottomSheet extends React.Component<Props> {
-  // Proper height (Dimensions height is bugged on Android?)
-  HEIGHT = new Value(this.props.height);
+type GestureContext = {
+  start: number; // Position of slide on touch start
+};
 
-  headerHeight = new Value(62);
-  contentHeight = new Value(646);
-  footerHeight = new Value(80);
+const SPRING_CONFIG = {
+  damping: 50,
+  mass: 0.3,
+  stiffness: 121.6,
+  overshootClamping: true,
+  restSpeedThreshold: 0.3,
+  restDisplacementThreshold: 0.3
+};
 
-  // 50: navigation tabs height, 60: bottom sheet header height
-  TOP = multiply(
-    sub(this.HEIGHT, this.headerHeight, NAVIGATION_HEIGHT, -3),
-    -1
+function BottomSheet({
+  height,
+  tab,
+  renderHeader,
+  renderContent,
+  renderFooter
+}: Props) {
+  const y = useSharedValue(0); // Position
+  // Heights
+  const headerHeight = useSharedValue(62);
+  const contentHeight = useSharedValue(646);
+  const footerHeight = useSharedValue(80);
+
+  const top = useDerivedValue(
+    () => -(height - headerHeight.value - NAVIGATION_HEIGHT + 3)
   );
 
-  onHeaderLayout = event([
-    {
-      nativeEvent: {
-        layout: {
-          height: this.headerHeight
-        }
+  const gestureHandler = useAnimatedGestureHandler<
+    PanGestureHandlerGestureEvent,
+    GestureContext
+  >({
+    onStart(_, ctx) {
+      cancelAnimation(y);
+      ctx.start = y.value;
+    },
+    onActive(e, ctx) {
+      y.value = ctx.start + e.translationY;
+    },
+    onEnd({ velocityY }) {
+      if (y.value + velocityY * 0.5 > top.value / 2) {
+        // spring to 0
+        y.value = withSpring(0, SPRING_CONFIG);
+      } else if (y.value > top.value) {
+        // spring to top
+        y.value = withSpring(top.value, SPRING_CONFIG);
+      } else {
+        // decay
+        y.value = withDecay({
+          velocity: velocityY,
+          deceleration: 0.998,
+          clamp: [-(contentHeight.value + footerHeight.value), top.value]
+        });
       }
     }
-  ]);
+  });
 
-  onContentLayout = event([
-    {
-      nativeEvent: {
-        layout: {
-          height: this.contentHeight
-        }
+  const sheetStyle = useAnimatedStyle(() => ({
+    height: -top.value,
+    transform: [
+      {
+        translateY: Math.max(y.value, top.value)
       }
-    }
-  ]);
+    ]
+  }));
 
-  onFooterLayout = event([
-    {
-      nativeEvent: {
-        layout: {
-          height: this.footerHeight
-        }
+  const contentStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: Math.min(y.value - top.value, 0)
       }
-    }
-  ]);
+    ],
+    top: headerHeight.value,
+    minHeight: -top.value + footerHeight.value
+  }));
 
-  clock = new Clock(); // Clock for spring
+  const footerStyle = useAnimatedStyle(() => ({
+    bottom: top.value + footerHeight.value
+  }));
 
-  // Clock state
-  clockState = {
-    finished: new Value(0),
-    velocity: new Value(0),
-    position: new Value(0),
-    time: new Value(0)
-  };
-
-  // Snap (spring) config
-  config = {
-    damping: 50,
-    mass: 0.3,
-    stiffness: 121.6,
-    overshootClamping: true,
-    restSpeedThreshold: 0.3,
-    restDisplacementThreshold: 0.3,
-    toValue: new Value(0)
-  };
-
-  // Sliding (delay) config
-  config2 = {
-    deceleration: 0.998
-  };
-
-  prevDelta = new Value<number>(0);
-  delta = new Value<number>(0); // Distance of pan
-  velocity = new Value<number>(0); // Velocity of pan
-  panState = new Value(-1); // State of panning
-  prev = new Value<number>(0); // Position before moving
-
-  close = new Value<number>(0);
-
-  handlePan = event([
-    {
-      nativeEvent: {
-        translationY: this.delta,
-        velocityY: this.velocity,
-        state: this.panState
-      }
-    }
-  ]);
-
-  // Next position
-  next = add(this.prev, sub(this.delta, this.prevDelta));
-
-  // Expected position, if let go
-  slide = add(this.next, multiply(0.5, this.velocity));
-
-  // Snapping point, if let go
-  snap = cond(
-    this.close,
-    0,
-    cond(lessOrEq(this.slide, divide(this.TOP, 2)), this.TOP, 0)
-  );
-
-  // Velocity, clamped
-  newVelocity = cond(greaterOrEq(this.next, 0), 0, this.velocity);
-
-  // Content height + footer height: the highest the content can go (negative value)
-  contentLimit = sub(sub(0, this.contentHeight), this.footerHeight);
-
-  pos = block([
-    cond(
-      eq(this.panState, State.ACTIVE),
-      [
-        cond(clockRunning(this.clock), stopClock(this.clock)),
-        // Clamp prev to [TOP, 0]
-        set(this.prev, clamp(this.next, this.contentLimit, 0)),
-        set(this.prevDelta, this.delta),
-        set(this.close, 0)
-      ],
-      cond(neq(this.panState, -1), [
-        // Start of animation, reset values
-        cond(eq(this.panState, State.BEGAN), set(this.velocity, 0)), // TODO: find out why this is required
-        set(this.delta, 0),
-        set(this.prevDelta, 0),
-        cond(
-          and(not(this.close), lessThan(this.prev, this.TOP)),
-          [
-            // Content higher than TOP: scroll
-            cond(not(clockRunning(this.clock)), [
-              // Start clock
-              set(this.clockState.finished, 0),
-              set(this.clockState.velocity, this.velocity),
-              set(this.clockState.position, this.prev),
-              set(this.clockState.time, 0), // Avoid jumping at start
-              startClock(this.clock)
-            ]),
-            decay(this.clock, this.clockState, this.config2),
-            // Finished
-            cond(this.clockState.finished, [
-              stopClock(this.clock),
-              set(this.velocity, 0)
-            ]),
-            // Move prev, clamped to bottom of content
-            set(
-              this.prev,
-              clamp(this.clockState.position, this.contentLimit, 0)
-            ),
-            // If prev is moved below TOP, then it has slid past TOP: clamp to TOP and end sliding
-            cond(
-              greaterOrEq(this.prev, this.TOP),
-              [
-                set(this.prev, this.TOP),
-                stopClock(this.clock),
-                set(this.clockState.finished, 1),
-                set(this.velocity, 0)
-              ],
-              set(this.velocity, this.clockState.velocity)
-            )
-          ],
-          [
-            // Snap
-            cond(and(this.close, lessThan(this.prev, this.TOP)), [
-              // If still scrolling when tab pressed, the clock is still running
-              // Set to value manually
-              set(this.config.toValue, 0)
-            ]),
-            cond(clockRunning(this.clock), 0, [
-              // Start clock
-              set(this.clockState.finished, 0),
-              set(this.clockState.velocity, this.newVelocity),
-              set(this.clockState.position, this.prev),
-              set(this.config.toValue, this.snap),
-              startClock(this.clock)
-            ]),
-            spring(this.clock, this.clockState, this.config),
-            cond(this.clockState.finished, [
-              stopClock(this.clock),
-              set(this.velocity, 0),
-              set(this.close, 0)
-            ]),
-            set(this.prev, this.clockState.position),
-            set(this.velocity, this.clockState.velocity)
-          ]
-        )
-      ])
-    ),
-    this.prev
-  ]);
-
-  // Sensor position: clamped to TOP
-  fixed = cond(lessThan(this.pos, this.TOP), this.TOP, this.pos);
-
-  // Content position: additional delta
-  diff = cond(lessThan(this.pos, this.TOP), sub(this.pos, this.TOP), 0);
-
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.height !== this.props.height) {
-      this.HEIGHT.setValue(this.props.height);
-    }
-
-    if (prevProps.tab !== this.props.tab) {
-      this.close.setValue(1);
-    }
-  }
-
-  render() {
-    return (
-      <PanGestureHandler
-        onGestureEvent={this.handlePan}
-        onHandlerStateChange={this.handlePan}>
-        <Animated.View
-          style={[
-            styles.sheet,
-            {
-              height: multiply(this.TOP, -1),
-              transform: [{ translateY: this.fixed }]
-            }
-          ]}>
-          <TapGestureHandler>
-            <Animated.View>
-              <Animated.View
-                style={styles.header}
-                onLayout={this.onHeaderLayout}>
-                {this.props.renderHeader()}
-              </Animated.View>
-              <Animated.View
-                style={[
-                  styles.content,
-                  {
-                    transform: [{ translateY: this.diff }],
-                    top: this.headerHeight,
-                    minHeight: sub(sub(0, this.TOP), this.footerHeight)
-                  }
-                ]}
-                onLayout={this.onContentLayout}>
-                {this.props.renderContent()}
-              </Animated.View>
-              <Animated.View
-                style={[
-                  styles.footer,
-                  {
-                    bottom: add(this.TOP, this.footerHeight)
-                  }
-                ]}
-                onLayout={this.onFooterLayout}>
-                {this.props.renderFooter()}
-              </Animated.View>
-            </Animated.View>
-          </TapGestureHandler>
-        </Animated.View>
-      </PanGestureHandler>
+  const onHeaderLayout = (e: LayoutChangeEvent) => {
+    y.value = withSpring(
+      y.value > top.value / 2 ? 0 : top.value,
+      SPRING_CONFIG
     );
-  }
+    headerHeight.value = e.nativeEvent.layout.height;
+  };
+
+  const onContentLayout = (e: LayoutChangeEvent) => {
+    y.value = withSpring(
+      y.value > top.value / 2 ? 0 : top.value,
+      SPRING_CONFIG
+    );
+    contentHeight.value = e.nativeEvent.layout.height;
+  };
+
+  const onFooterLayout = (e: LayoutChangeEvent) => {
+    y.value = withSpring(
+      y.value > top.value / 2 ? 0 : top.value,
+      SPRING_CONFIG
+    );
+    footerHeight.value = e.nativeEvent.layout.height;
+  };
+
+  useEffect(() => {
+    y.value = withSpring(0, SPRING_CONFIG);
+  }, [y, tab]);
+
+  return (
+    <PanGestureHandler onGestureEvent={gestureHandler}>
+      <Animated.View style={[styles.sheet, sheetStyle]}>
+        <TapGestureHandler>
+          <Animated.View>
+            <Animated.View style={styles.header} onLayout={onHeaderLayout}>
+              {renderHeader()}
+            </Animated.View>
+            <Animated.View
+              style={[styles.content, contentStyle]}
+              onLayout={onContentLayout}>
+              {renderContent()}
+            </Animated.View>
+            <Animated.View
+              style={[styles.footer, footerStyle]}
+              onLayout={onFooterLayout}>
+              {renderFooter()}
+            </Animated.View>
+          </Animated.View>
+        </TapGestureHandler>
+      </Animated.View>
+    </PanGestureHandler>
+  );
 }
 
 const styles = StyleSheet.create({
