@@ -6,14 +6,13 @@
     "start": "react-native start",
     "ports": "adb reverse tcp:8081 tcp:8081 && adb reverse tcp:8097 tcp:8097",
     "flipper": "adb shell am start -n com.lyra/com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity",
-    "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "debug": "cd android && ./gradlew assembleDebug",
-    "release": "cd android && ./gradlew assembleRelease",
+    "android:release": "react-native run-android --variant=release",
+    "android:bundle": "cd android && ./gradlew bundleRelease",
+    "android:lint": "eslint . && cd android && ./gradlew lint",
     "clean": "react-native-clean-project --keep-node_modules",
     "test": "jest",
-    "lint": "eslint . && cd android && ./gradlew lint",
     "postinstall": "patch-package"
   },
   "dependencies": {

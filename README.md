@@ -33,7 +33,5 @@ For debugging, install [Flipper](https://fbflipper.com/) or the [React Native De
 To build,
 
 ```sh
-yarn run bundle       # Create JS bundle
-yarn run debug        # Create debug APK
-yarn run release      # Create release APK
+yarn run android:release  # Install release version
 ```
