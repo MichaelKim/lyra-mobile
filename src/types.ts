@@ -24,7 +24,7 @@ export interface LocalSong extends SongShared {
 export interface VideoSong extends SongShared {
   source: 'YOUTUBE';
   url: SongID;
-  views: number;
+  views: string;
 }
 
 export type Song = LocalSong | VideoSong;
