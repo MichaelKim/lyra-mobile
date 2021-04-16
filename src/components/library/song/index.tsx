@@ -6,9 +6,7 @@ import { Song } from '../../../types';
 import { getSongList } from '../../../util';
 import SongItem from '../../song-item';
 
-interface Props {}
-
-const Songs = (_: Props) => {
+const Songs = () => {
   const songs = useSelector(state =>
     getSongList(state.songs, state.currScreen, state.sort)
   );

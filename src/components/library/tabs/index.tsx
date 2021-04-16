@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   },
   slider: {
     position: 'absolute',
+    height: '100%',
     flexDirection: 'row'
   },
   slideItem: {
